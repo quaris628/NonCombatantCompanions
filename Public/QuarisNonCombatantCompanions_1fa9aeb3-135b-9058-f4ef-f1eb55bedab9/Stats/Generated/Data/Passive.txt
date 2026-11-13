@@ -13,4 +13,6 @@ data "DisplayName" "hd7e4600cg8e89gc9f0g871bg4ec94e99f421;2"
 data "Description" "h00de74d5g9872g6bd0gb776g486fd6287ad9;2"
 data "Icon" "Spell_Transmutation_Blink"
 data "Properties" "IsToggled;ToggledDefaultAddToHotbar;ToggleForParty"
+data "ToggleOnFunctors" "DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1)"
+data "ToggleOffFunctors" "DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0)"
 

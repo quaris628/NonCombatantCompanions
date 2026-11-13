@@ -3,6 +3,7 @@ SubGoalCombiner SGC_AND
 INITSECTION
 
 KBSECTION
+/*
 IF
 CombatStarted(_CombatID)
 // TODO: and at least one party member is in the combat?
@@ -59,6 +60,7 @@ SetOnStage(_PartyMember, 1);
 // IsOnStage
 
 // Avoid softlock if avatar and combatants TPK; 
+*/
 EXITSECTION
 
 ENDEXITSECTION

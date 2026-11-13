@@ -1,6 +1,7 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
+// TODO: Support mod install, uninstall, and reinstall
 // Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
 DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
 KBSECTION

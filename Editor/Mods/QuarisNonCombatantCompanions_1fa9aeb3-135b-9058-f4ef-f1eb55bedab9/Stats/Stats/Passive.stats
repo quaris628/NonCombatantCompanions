@@ -21,6 +21,8 @@
         <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h00de74d5g9872g6bd0gb776g486fd6287ad9" version="2" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink" />
         <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar;ToggleForParty" enumeration_type_name="PassiveFlags" version="1" />
+        <field name="ToggleOnFunctors" type="FunctorsTableFieldDefinition" value="DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1)" />
+        <field name="ToggleOffFunctors" type="FunctorsTableFieldDefinition" value="DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0)" />
       </fields>
     </stat_object>
   </stat_objects>

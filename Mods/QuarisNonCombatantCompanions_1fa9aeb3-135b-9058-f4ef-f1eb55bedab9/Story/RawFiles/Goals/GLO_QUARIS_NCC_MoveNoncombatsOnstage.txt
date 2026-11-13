@@ -1,0 +1,40 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+
+IF
+DB_QUARIS_NCC_Is_Combatants_Offstage(0)
+AND
+DB_PartyMembers(_Noncombatant)
+AND
+HasAppliedStatus(_Noncombatant, "QUARIS_NCC_Companion_Is_Noncombatant", 1)
+AND
+QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage(_Noncombatant)
+AND
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _TargetCharacter)
+AND
+QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage(_Noncombatant)
+AND
+GetPosition(_TargetCharacter, _TargetX, _TargetY, _TargetZ)
+AND
+FindValidPosition(_TargetX, _TargetY, _TargetZ, 10.0, _Noncombatant, 1, _ValidX, _ValidY, _ValidZ)
+THEN
+// This teleports summons too, as per the 8th argument (INTEGER)_TeleportSummons
+TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 1, 0, 1, 1, 1);
+SetOnStage(_Noncombatant, 1);
+PROC_QUARIS_NCC_PutOwnedSummonsOnstage(_Noncombatant);
+
+
+PROC
+PROC_QUARIS_NCC_PutOwnedSummonsOnstage((CHARACTER)_OwnerPartyMember)
+AND
+DB_Summons(_Summon)
+AND
+CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
+THEN
+SetOnStage(_Summon, 0);
+EXITSECTION
+
+ENDEXITSECTION

@@ -1,0 +1,35 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0);
+KBSECTION
+IF
+DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1)
+THEN
+NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0);
+NOT DB_QUARIS_NCC_Is_Combatants_Offstage(0);
+DB_QUARIS_NCC_Is_Combatants_Offstage(1);
+
+IF
+DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0)
+THEN
+NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1);
+
+IF
+DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0)
+AND
+DB_PartyMembers(_PartyMembers)
+AND
+IsInCombat((GUIDSTRING)_PartyMembers, 0)
+// TODO: What about IsInNarrativeCombat? What is the difference?
+THEN
+DB_QUARIS_NCC_Is_Combatants_Offstage(0);
+NOT DB_QUARIS_NCC_Is_Combatants_Offstage(1);
+
+// Toggle force on does:
+// DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1); NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0);
+// Toggle force off does:
+// DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0); NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1);
+EXITSECTION
+
+ENDEXITSECTION

@@ -1,0 +1,34 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+
+// Move main party members off-stage
+IF
+DB_QUARIS_NCC_Is_Combatants_Offstage(1)
+AND
+DB_PartyMembers(_PartyMember)
+AND
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_Companion_Is_Noncombatant", 1)
+THEN
+SetOnStage(_PartyMember, 0);
+
+// Move summons off-stage
+IF
+DB_QUARIS_NCC_Is_Combatants_Offstage(1)
+AND
+DB_Summons(_Summon)
+AND
+CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
+AND
+HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_Companion_Is_Noncombatant", 1)
+THEN
+SetOnStage(_Summon, 0);
+
+// Do NOT move "followers" off-stage
+// This is just in case they're important to the story/dialogue after combat
+// (e.g. Halsin in Goblin camp)
+EXITSECTION
+
+ENDEXITSECTION
