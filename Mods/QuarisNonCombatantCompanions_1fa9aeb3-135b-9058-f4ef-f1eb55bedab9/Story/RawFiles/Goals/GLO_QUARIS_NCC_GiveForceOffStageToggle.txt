@@ -1,6 +1,7 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
+// Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
 DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
 KBSECTION
 IF
@@ -23,9 +24,11 @@ DB_Avatars(_Avatar)
 //AND
 //IsTagged(_Player, "AVATAR", 0)
 AND
-HasPassive(_Avatar, "QUARIS_NCC_Force_Off_Stage_Toggle", 0)
+HasPassive(_Avatar, "QUARIS_NCC_Avatar_Force_Noncombatants_Offstage_Toggle", 0)
 THEN
-AddPassive(_Avatar, "QUARIS_NCC_Force_Off_Stage_Toggle");
+AddPassive(_Avatar, "QUARIS_NCC_Avatar_Force_Noncombatants_Offstage_Toggle");
+
+// TODO: What about multiplayer where an avatar joins partway through?
 EXITSECTION
 
 ENDEXITSECTION

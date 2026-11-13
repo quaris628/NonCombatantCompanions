@@ -518793,8 +518793,86 @@ Goal(858)
 	{
 	}
 }
-Goal(859).Title("GLO_Quasit_Summon");
+Goal(859).Title("GLO_QUARIS_NCC_GiveForceOffStageToggle");
 Goal(859)
+{
+	INIT
+	{
+		// Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
+		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
+	}
+	KB
+	{
+		IF
+		LevelLoaded(_)
+		AND
+		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0)
+		THEN
+		TimerLaunch("QUARIS_NCC_Force_Off_Stage_Toggle_InitDelay", 0);
+		
+		IF
+		TimerFinished("QUARIS_NCC_Force_Off_Stage_Toggle_InitDelay")
+		THEN
+		NOT DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
+		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(1);
+		
+		IF
+		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(1)
+		AND
+		DB_Avatars(_Avatar)
+		//AND
+		//IsTagged(_Player, "AVATAR", 0)
+		AND
+		HasPassive(_Avatar, "QUARIS_NCC_Avatar_Force_Noncombatants_Offstage_Toggle", 0)
+		THEN
+		AddPassive(_Avatar, "QUARIS_NCC_Avatar_Force_Noncombatants_Offstage_Toggle");
+		
+		// TODO: What about multiplayer where an avatar joins partway through?
+	}
+	EXIT
+	{
+	}
+}
+Goal(860).Title("GLO_QUARIS_NCC_GiveNoncombatantToggle");
+Goal(860)
+{
+	INIT
+	{
+		// Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
+		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
+	}
+	KB
+	{
+		IF
+		LevelLoaded(_)
+		AND
+		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0)
+		THEN
+		TimerLaunch("QUARIS_NCC_Noncombatant_Toggle_InitDelay", 0);
+		 
+		IF
+		TimerFinished("QUARIS_NCC_Noncombatant_Toggle_InitDelay")
+		THEN
+		NOT DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
+		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1);
+		 
+		IF
+		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1)
+		AND
+		DB_Players(_Player)
+		AND
+		NOT DB_Avatars(_Player)
+		AND
+		HasPassive(_Player, "QUARIS_NCC_Companion_Is_Noncombatant_Toggle", 0)
+		THEN
+		AddPassive(_Player, "QUARIS_NCC_Companion_Is_Noncombatant_Toggle");
+	}
+	EXIT
+	{
+	}
+}
+Goal(861).Title("GLO_Quasit_Summon");
+Goal(861)
 {
 	INIT
 	{
@@ -518913,8 +518991,8 @@ Goal(859)
 	{
 	}
 }
-Goal(860).Title("GLO_RestorationStation");
-Goal(860)
+Goal(862).Title("GLO_RestorationStation");
+Goal(862)
 {
 	INIT
 	{
@@ -519007,8 +519085,8 @@ Goal(860)
 	{
 	}
 }
-Goal(861).Title("GLO_SafeRomance");
-Goal(861)
+Goal(863).Title("GLO_SafeRomance");
+Goal(863)
 {
 	INIT
 	{
@@ -519177,8 +519255,8 @@ Goal(861)
 	{
 	}
 }
-Goal(862).Title("GLO_SavegamePatchHelpers");
-Goal(862)
+Goal(864).Title("GLO_SavegamePatchHelpers");
+Goal(864)
 {
 	INIT
 	{
@@ -519229,8 +519307,8 @@ Goal(862)
 	{
 	}
 }
-Goal(863).Title("GLO_ScryingEye");
-Goal(863)
+Goal(865).Title("GLO_ScryingEye");
+Goal(865)
 {
 	INIT
 	{
@@ -519885,8 +519963,8 @@ Goal(863)
 	{
 	}
 }
-Goal(864).Title("GLO_SE_Sound");
-Goal(864)
+Goal(866).Title("GLO_SE_Sound");
+Goal(866)
 {
 	INIT
 	{
@@ -520113,8 +520191,8 @@ Goal(864)
 	{
 	}
 }
-Goal(865).Title("GLO_ShortRest");
-Goal(865)
+Goal(867).Title("GLO_ShortRest");
+Goal(867)
 {
 	INIT
 	{
@@ -520174,8 +520252,8 @@ Goal(865)
 	{
 	}
 }
-Goal(866).Title("GLO_Skillchecks");
-Goal(866)
+Goal(868).Title("GLO_Skillchecks");
+Goal(868)
 {
 	INIT
 	{
@@ -521290,8 +521368,8 @@ Goal(866)
 	{
 	}
 }
-Goal(867).Title("GLO_SocietyOfBrilliance");
-Goal(867)
+Goal(869).Title("GLO_SocietyOfBrilliance");
+Goal(869)
 {
 	INIT
 	{
@@ -521328,8 +521406,8 @@ Goal(867)
 	{
 	}
 }
-Goal(868).Title("GLO_Sorcerer");
-Goal(868)
+Goal(870).Title("GLO_Sorcerer");
+Goal(870)
 {
 	INIT
 	{
@@ -521437,8 +521515,8 @@ Goal(868)
 	{
 	}
 }
-Goal(869).Title("GLO_SpeakerSelector");
-Goal(869)
+Goal(871).Title("GLO_SpeakerSelector");
+Goal(871)
 {
 	INIT
 	{
@@ -521742,8 +521820,8 @@ Goal(869)
 	{
 	}
 }
-Goal(870).Title("GLO_SpeakWithDead");
-Goal(870)
+Goal(872).Title("GLO_SpeakWithDead");
+Goal(872)
 {
 	INIT
 	{
@@ -522002,8 +522080,8 @@ Goal(870)
 	{
 	}
 }
-Goal(871).Title("GLO_SpellEvents");
-Goal(871)
+Goal(873).Title("GLO_SpellEvents");
+Goal(873)
 {
 	INIT
 	{
@@ -522030,8 +522108,8 @@ Goal(871)
 	{
 	}
 }
-Goal(872).Title("GLO_Spells");
-Goal(872)
+Goal(874).Title("GLO_Spells");
+Goal(874)
 {
 	INIT
 	{
@@ -523229,8 +523307,8 @@ Goal(872)
 	{
 	}
 }
-Goal(873).Title("GLO_Spells_Banishment");
-Goal(873)
+Goal(875).Title("GLO_Spells_Banishment");
+Goal(875)
 {
 	INIT
 	{
@@ -523262,8 +523340,8 @@ Goal(873)
 	{
 	}
 }
-Goal(874).Title("GLO_Spells_PostEA");
-Goal(874)
+Goal(876).Title("GLO_Spells_PostEA");
+Goal(876)
 {
 	INIT
 	{
@@ -524272,8 +524350,8 @@ Goal(874)
 	{
 	}
 }
-Goal(875).Title("GLO_Spells_RemoveCurse");
-Goal(875)
+Goal(877).Title("GLO_Spells_RemoveCurse");
+Goal(877)
 {
 	INIT
 	{
@@ -524309,8 +524387,8 @@ Goal(875)
 	{
 	}
 }
-Goal(876).Title("GLO_StartupParameters");
-Goal(876)
+Goal(878).Title("GLO_StartupParameters");
+Goal(878)
 {
 	INIT
 	{
@@ -524326,8 +524404,8 @@ Goal(876)
 	{
 	}
 }
-Goal(877).Title("GLO_SteelWatch");
-Goal(877)
+Goal(879).Title("GLO_SteelWatch");
+Goal(879)
 {
 	INIT
 	{
@@ -524693,8 +524771,8 @@ Goal(877)
 	{
 	}
 }
-Goal(878).Title("GLO_StoryStateRestore");
-Goal(878)
+Goal(880).Title("GLO_StoryStateRestore");
+Goal(880)
 {
 	INIT
 	{
@@ -525244,8 +525322,8 @@ Goal(878)
 	{
 	}
 }
-Goal(879).Title("GLO_StoryStateRestoreDefinitions");
-Goal(879)
+Goal(881).Title("GLO_StoryStateRestoreDefinitions");
+Goal(881)
 {
 	INIT
 	{
@@ -525596,8 +525674,8 @@ Goal(879)
 	{
 	}
 }
-Goal(880).Title("GLO_Surrender");
-Goal(880)
+Goal(882).Title("GLO_Surrender");
+Goal(882)
 {
 	INIT
 	{
@@ -526179,8 +526257,8 @@ Goal(880)
 	{
 	}
 }
-Goal(881).Title("GLO_SussurFlowers");
-Goal(881)
+Goal(883).Title("GLO_SussurFlowers");
+Goal(883)
 {
 	INIT
 	{
@@ -526357,8 +526435,8 @@ Goal(881)
 	{
 	}
 }
-Goal(882).Title("GLO_Tadpole");
-Goal(882)
+Goal(884).Title("GLO_Tadpole");
+Goal(884)
 {
 	INIT
 	{
@@ -526693,8 +526771,8 @@ Goal(882)
 	{
 	}
 }
-Goal(883).Title("GLO_Tadpole_PostEA");
-Goal(883)
+Goal(885).Title("GLO_Tadpole_PostEA");
+Goal(885)
 {
 	INIT
 	{
@@ -527667,8 +527745,8 @@ Goal(883)
 	{
 	}
 }
-Goal(884).Title("GLO_TadpoleSharing");
-Goal(884)
+Goal(886).Title("GLO_TadpoleSharing");
+Goal(886)
 {
 	INIT
 	{
@@ -527848,8 +527926,8 @@ Goal(884)
 	{
 	}
 }
-Goal(885).Title("GLO_Test");
-Goal(885)
+Goal(887).Title("GLO_Test");
+Goal(887)
 {
 	INIT
 	{
@@ -527889,8 +527967,8 @@ Goal(885)
 	{
 	}
 }
-Goal(886).Title("GLO_ThrallOfTheAbsolute");
-Goal(886)
+Goal(888).Title("GLO_ThrallOfTheAbsolute");
+Goal(888)
 {
 	INIT
 	{
@@ -528503,8 +528581,8 @@ Goal(886)
 	{
 	}
 }
-Goal(887).Title("GLO_TieflingLeader");
-Goal(887)
+Goal(889).Title("GLO_TieflingLeader");
+Goal(889)
 {
 	INIT
 	{
@@ -528530,8 +528608,8 @@ Goal(887)
 	{
 	}
 }
-Goal(888).Title("GLO_TopicalGreetings");
-Goal(888)
+Goal(890).Title("GLO_TopicalGreetings");
+Goal(890)
 {
 	INIT
 	{
@@ -528736,8 +528814,8 @@ Goal(888)
 	{
 	}
 }
-Goal(889).Title("GLO_TopicalGreetings_Gustav");
-Goal(889)
+Goal(891).Title("GLO_TopicalGreetings_Gustav");
+Goal(891)
 {
 	INIT
 	{
@@ -529582,8 +529660,8 @@ Goal(889)
 	{
 	}
 }
-Goal(890).Title("GLO_TriggerEvents");
-Goal(890)
+Goal(892).Title("GLO_TriggerEvents");
+Goal(892)
 {
 	INIT
 	{
@@ -529859,8 +529937,8 @@ Goal(890)
 	{
 	}
 }
-Goal(891).Title("GLO_TutorialEventsHandling");
-Goal(891)
+Goal(893).Title("GLO_TutorialEventsHandling");
+Goal(893)
 {
 	INIT
 	{
@@ -530184,8 +530262,8 @@ Goal(891)
 	{
 	}
 }
-Goal(892).Title("GLO_Tutorials");
-Goal(892)
+Goal(894).Title("GLO_Tutorials");
+Goal(894)
 {
 	INIT
 	{
@@ -532155,8 +532233,8 @@ Goal(892)
 	{
 	}
 }
-Goal(893).Title("GLO_Tutorials_TimerTracking");
-Goal(893)
+Goal(895).Title("GLO_Tutorials_TimerTracking");
+Goal(895)
 {
 	INIT
 	{
@@ -532263,8 +532341,8 @@ Goal(893)
 	{
 	}
 }
-Goal(894).Title("GLO_Tutorials_TUT_Act1");
-Goal(894)
+Goal(896).Title("GLO_Tutorials_TUT_Act1");
+Goal(896)
 {
 	INIT
 	{
@@ -532346,8 +532424,8 @@ Goal(894)
 	{
 	}
 }
-Goal(895).Title("GLO_Us_Summon");
-Goal(895)
+Goal(897).Title("GLO_Us_Summon");
+Goal(897)
 {
 	INIT
 	{
@@ -532420,8 +532498,8 @@ Goal(895)
 	{
 	}
 }
-Goal(896).Title("GLO_Voss");
-Goal(896)
+Goal(898).Title("GLO_Voss");
+Goal(898)
 {
 	INIT
 	{
@@ -532839,8 +532917,8 @@ Goal(896)
 	{
 	}
 }
-Goal(897).Title("GLO_Warlock");
-Goal(897)
+Goal(899).Title("GLO_Warlock");
+Goal(899)
 {
 	INIT
 	{
@@ -532971,8 +533049,8 @@ Goal(897)
 	{
 	}
 }
-Goal(898).Title("GLO_WorldGossip");
-Goal(898)
+Goal(900).Title("GLO_WorldGossip");
+Goal(900)
 {
 	INIT
 	{
@@ -533241,8 +533319,8 @@ Goal(898)
 	{
 	}
 }
-Goal(899).Title("GLO_WorldTimelineHandler");
-Goal(899)
+Goal(901).Title("GLO_WorldTimelineHandler");
+Goal(901)
 {
 	INIT
 	{
@@ -533296,8 +533374,8 @@ Goal(899)
 	{
 	}
 }
-Goal(900).Title("GLO_ZhentAgent001");
-Goal(900)
+Goal(902).Title("GLO_ZhentAgent001");
+Goal(902)
 {
 	INIT
 	{
@@ -533336,8 +533414,8 @@ Goal(900)
 	{
 	}
 }
-Goal(901).Title("Global_Chasms");
-Goal(901)
+Goal(903).Title("Global_Chasms");
+Goal(903)
 {
 	INIT
 	{
@@ -533540,8 +533618,8 @@ Goal(901)
 	{
 	}
 }
-Goal(902).Title("HAG_HusbandSummon");
-Goal(902)
+Goal(904).Title("HAG_HusbandSummon");
+Goal(904)
 {
 	INIT
 	{
@@ -533584,8 +533662,8 @@ Goal(902)
 	{
 	}
 }
-Goal(903).Title("Hirelings");
-Goal(903)
+Goal(905).Title("Hirelings");
+Goal(905)
 {
 	INIT
 	{
@@ -534876,8 +534954,8 @@ Goal(903)
 	{
 	}
 }
-Goal(904).Title("ModWrapper_Gustav");
-Goal(904)
+Goal(906).Title("ModWrapper_Gustav");
+Goal(906)
 {
 	INIT
 	{
@@ -534893,8 +534971,8 @@ Goal(904)
 	{
 	}
 }
-Goal(905).Title("ORI_DebugBook");
-Goal(905)
+Goal(907).Title("ORI_DebugBook");
+Goal(907)
 {
 	INIT
 	{
@@ -536666,8 +536744,8 @@ Goal(905)
 	{
 	}
 }
-Goal(906).Title("ORI_DebugBook_GustavDev");
-Goal(906)
+Goal(908).Title("ORI_DebugBook_GustavDev");
+Goal(908)
 {
 	INIT
 	{
@@ -541149,8 +541227,8 @@ Goal(906)
 	{
 	}
 }
-Goal(907).Title("ORI_Gale_Elminster");
-Goal(907)
+Goal(909).Title("ORI_Gale_Elminster");
+Goal(909)
 {
 	INIT
 	{
@@ -541959,8 +542037,8 @@ Goal(907)
 		PROC_Camp_RequiredTalks_Complete(S_GLO_Elminster_75bb6396-1132-4064-bafe-205a3f156b9b);
 	}
 }
-Goal(908).Title("ORI_Gale_Elminster_Setup");
-Goal(908)
+Goal(910).Title("ORI_Gale_Elminster_Setup");
+Goal(910)
 {
 	INIT
 	{
@@ -542015,8 +542093,8 @@ Goal(908)
 	{
 	}
 }
-Goal(909).Title("ORI_ShadowheartResurrection");
-Goal(909)
+Goal(911).Title("ORI_ShadowheartResurrection");
+Goal(911)
 {
 	INIT
 	{
@@ -542288,8 +542366,8 @@ Goal(909)
 		NOT DB_DropMutingStatussesDialog(ShadowHeart_Revived_7118b9f8-38c0-02f0-8824-d7c575a3a956);
 	}
 }
-Goal(910).Title("QRY_Characters");
-Goal(910)
+Goal(912).Title("QRY_Characters");
+Goal(912)
 {
 	INIT
 	{
@@ -543215,8 +543293,8 @@ Goal(910)
 	{
 	}
 }
-Goal(911).Title("QUARIS_NCC_Combat");
-Goal(911)
+Goal(913).Title("QUARIS_NCC_Combat");
+Goal(913)
 {
 	INIT
 	{
@@ -543225,10 +543303,13 @@ Goal(911)
 	{
 		IF
 		CombatStarted(_CombatID)
+		// TODO: and at least one party member is in the combat?
+		// Do I need this for, e.g., when zhent and stone lord people
+		// start fighting on beach before players come close?
 		AND
 		DB_PartyMembers(_PartyMember)
 		AND
-		HasAppliedStatus(_PartyMember, "Quaris_NCC_Companion_Is_Noncombatant", 1)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_Companion_Is_Noncombatant", 1)
 		THEN
 		SetOnStage(_PartyMember, 0);
 		// TODO: And exclude summons/followers
@@ -543237,7 +543318,8 @@ Goal(911)
 		
 		IF
 		CombatEnded(_CombatID)
-		// TODO: Check there are no other combats still active? What if 2 combats occur, and one ends before the other does?
+		// TODO: Check there are no other combats still active (that include a party member; see TODO above)?
+		// (What if 2 combats occur, and one ends before the other does?)
 		// IsInCombat
 		THEN
 		// TODO: Add a delay of 5 seconds, to make infinite loops less bad
@@ -543245,7 +543327,7 @@ Goal(911)
 		// so the noncombatants reappear, so combat starts, etc).
 		// This still won't completely prevent such loops.
 		// Maybe automatically teleport noncombatants to avatar whenever a combat starts/ends
-		// that has only noncombatants and enemies (i.e. no combatant party members)?
+		// that has only noncombatants and enemies (i.e. no combatant party members)? <-- yes! try this!
 		TimerLaunch("QUARIS_NCC_Bring_Noncombatants_Back", 5000);
 		
 		IF
@@ -543253,7 +543335,7 @@ Goal(911)
 		AND
 		DB_PartyMembers(_PartyMember)
 		AND
-		NOT HasAppliedStatus(_PartyMember, "Quaris_NCC_Companion_Is_Noncombatant", 0)
+		NOT HasAppliedStatus(_PartyMember, "QUARIS_NCC_Companion_Is_Noncombatant", 0)
 		// TODO: Can I check to see whether coming on stage would start combat
 		// (including dialogs that would start combat, e.g. guards confronting you)
 		// without actually starting combat?
@@ -543273,80 +543355,8 @@ Goal(911)
 		// Be aware of HitProxy ?
 		// Be aware of IsDropInCCActive ?
 		// IsOnStage
-	}
-	EXIT
-	{
-	}
-}
-Goal(912).Title("QUARIS_NCC_Init_Force_Off_Stage_Toggle");
-Goal(912)
-{
-	INIT
-	{
-		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
-	}
-	KB
-	{
-		IF
-		LevelLoaded(_)
-		AND
-		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0)
-		THEN
-		TimerLaunch("QUARIS_NCC_Force_Off_Stage_Toggle_InitDelay", 0);
 		
-		IF
-		TimerFinished("QUARIS_NCC_Force_Off_Stage_Toggle_InitDelay")
-		THEN
-		NOT DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
-		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(1);
-		
-		IF
-		DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(1)
-		AND
-		DB_Avatars(_Avatar)
-		//AND
-		//IsTagged(_Player, "AVATAR", 0)
-		AND
-		HasPassive(_Avatar, "QUARIS_NCC_Force_Off_Stage_Toggle", 0)
-		THEN
-		AddPassive(_Avatar, "QUARIS_NCC_Force_Off_Stage_Toggle");
-	}
-	EXIT
-	{
-	}
-}
-Goal(913).Title("QUARIS_NCC_Init_Noncombatant_Toggle");
-Goal(913)
-{
-	INIT
-	{
-		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
-	}
-	KB
-	{
-		IF
-		LevelLoaded(_)
-		AND
-		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0)
-		THEN
-		TimerLaunch("QUARIS_NCC_Noncombatant_Toggle_InitDelay", 0);
-		
-		IF
-		TimerFinished("QUARIS_NCC_Noncombatant_Toggle_InitDelay")
-		THEN
-		NOT DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
-		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1);
-		
-		IF
-		DB_Players(_Companion)
-		AND
-		DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1)
-		AND
-		NOT DB_Avatars(_Companion)
-		AND
-		HasPassive(_Companion, "QUARIS_NCC_Noncombatant_Toggle", 0)
-		THEN
-		AddPassive(_Companion, "QUARIS_NCC_Noncombatant_Toggle");
+		// Avoid softlock if avatar and combatants TPK; 
 	}
 	EXIT
 	{
@@ -553596,7 +553606,7 @@ Goal(11).SubGoal(848);
 Goal(11).SubGoal(849);
 Goal(11).SubGoal(851);
 Goal(11).SubGoal(857);
-Goal(11).SubGoal(871);
+Goal(11).SubGoal(873);
 Goal(11).SubGoal(916);
 Goal(2).SubGoals(AND);
 Goal(3).SubGoals(AND);
@@ -553645,7 +553655,7 @@ Goal(848).SubGoals(AND);
 Goal(849).SubGoals(AND);
 Goal(851).SubGoals(AND);
 Goal(857).SubGoals(AND);
-Goal(871).SubGoals(AND);
+Goal(873).SubGoals(AND);
 Goal(916).SubGoals(AND);
 Goal(12).SubGoal(5);
 Goal(12).SubGoal(10);
@@ -553679,11 +553689,11 @@ Goal(12).SubGoal(756);
 Goal(12).SubGoal(772);
 Goal(12).SubGoal(791);
 Goal(12).SubGoal(818);
-Goal(12).SubGoal(861);
-Goal(12).SubGoal(891);
-Goal(12).SubGoal(892);
+Goal(12).SubGoal(863);
 Goal(12).SubGoal(893);
-Goal(12).SubGoal(903);
+Goal(12).SubGoal(894);
+Goal(12).SubGoal(895);
+Goal(12).SubGoal(905);
 Goal(12).SubGoal(914);
 Goal(5).SubGoals(AND);
 Goal(10).SubGoals(AND);
@@ -553717,11 +553727,11 @@ Goal(756).SubGoals(AND);
 Goal(772).SubGoals(AND);
 Goal(791).SubGoals(AND);
 Goal(818).SubGoals(AND);
-Goal(861).SubGoals(AND);
-Goal(891).SubGoals(AND);
-Goal(892).SubGoals(AND);
+Goal(863).SubGoals(AND);
 Goal(893).SubGoals(AND);
-Goal(903).SubGoals(AND);
+Goal(894).SubGoals(AND);
+Goal(895).SubGoals(AND);
+Goal(905).SubGoals(AND);
 Goal(914).SubGoals(AND);
 Goal(88).SubGoal(89);
 Goal(88).SubGoal(91);
@@ -553918,7 +553928,7 @@ Goal(88).SubGoal(287);
 Goal(88).SubGoal(288);
 Goal(88).SubGoal(732);
 Goal(88).SubGoal(733);
-Goal(88).SubGoal(909);
+Goal(88).SubGoal(911);
 Goal(89).SubGoals(AND);
 Goal(91).SubGoals(AND);
 Goal(92).SubGoals(AND);
@@ -554114,7 +554124,7 @@ Goal(287).SubGoals(AND);
 Goal(288).SubGoals(AND);
 Goal(732).SubGoals(AND);
 Goal(733).SubGoals(AND);
-Goal(909).SubGoals(AND);
+Goal(911).SubGoals(AND);
 Goal(160).SubGoal(158);
 Goal(158).SubGoals(AND);
 Goal(181).SubGoal(136);
@@ -554967,72 +554977,72 @@ Goal(798).SubGoals(AND);
 Goal(799).SubGoals(AND);
 Goal(800).SubGoals(AND);
 Goal(801).SubGoals(AND);
-Goal(904).SubGoal(14);
-Goal(904).SubGoal(77);
-Goal(904).SubGoal(80);
-Goal(904).SubGoal(83);
-Goal(904).SubGoal(290);
-Goal(904).SubGoal(441);
-Goal(904).SubGoal(735);
-Goal(904).SubGoal(737);
-Goal(904).SubGoal(740);
-Goal(904).SubGoal(741);
-Goal(904).SubGoal(742);
-Goal(904).SubGoal(743);
-Goal(904).SubGoal(745);
-Goal(904).SubGoal(746);
-Goal(904).SubGoal(762);
-Goal(904).SubGoal(763);
-Goal(904).SubGoal(764);
-Goal(904).SubGoal(765);
-Goal(904).SubGoal(766);
-Goal(904).SubGoal(767);
-Goal(904).SubGoal(768);
-Goal(904).SubGoal(769);
-Goal(904).SubGoal(770);
-Goal(904).SubGoal(771);
-Goal(904).SubGoal(776);
-Goal(904).SubGoal(778);
-Goal(904).SubGoal(779);
-Goal(904).SubGoal(782);
-Goal(904).SubGoal(784);
-Goal(904).SubGoal(789);
-Goal(904).SubGoal(790);
-Goal(904).SubGoal(808);
-Goal(904).SubGoal(809);
-Goal(904).SubGoal(816);
-Goal(904).SubGoal(822);
-Goal(904).SubGoal(823);
-Goal(904).SubGoal(824);
-Goal(904).SubGoal(826);
-Goal(904).SubGoal(830);
-Goal(904).SubGoal(831);
-Goal(904).SubGoal(832);
-Goal(904).SubGoal(833);
-Goal(904).SubGoal(835);
-Goal(904).SubGoal(836);
-Goal(904).SubGoal(837);
-Goal(904).SubGoal(838);
-Goal(904).SubGoal(839);
-Goal(904).SubGoal(840);
-Goal(904).SubGoal(841);
-Goal(904).SubGoal(842);
-Goal(904).SubGoal(843);
-Goal(904).SubGoal(844);
-Goal(904).SubGoal(845);
-Goal(904).SubGoal(850);
-Goal(904).SubGoal(856);
-Goal(904).SubGoal(858);
-Goal(904).SubGoal(863);
-Goal(904).SubGoal(868);
-Goal(904).SubGoal(875);
-Goal(904).SubGoal(877);
-Goal(904).SubGoal(881);
-Goal(904).SubGoal(889);
-Goal(904).SubGoal(917);
-Goal(904).SubGoal(919);
-Goal(904).SubGoal(934);
-Goal(904).SubGoal(935);
+Goal(906).SubGoal(14);
+Goal(906).SubGoal(77);
+Goal(906).SubGoal(80);
+Goal(906).SubGoal(83);
+Goal(906).SubGoal(290);
+Goal(906).SubGoal(441);
+Goal(906).SubGoal(735);
+Goal(906).SubGoal(737);
+Goal(906).SubGoal(740);
+Goal(906).SubGoal(741);
+Goal(906).SubGoal(742);
+Goal(906).SubGoal(743);
+Goal(906).SubGoal(745);
+Goal(906).SubGoal(746);
+Goal(906).SubGoal(762);
+Goal(906).SubGoal(763);
+Goal(906).SubGoal(764);
+Goal(906).SubGoal(765);
+Goal(906).SubGoal(766);
+Goal(906).SubGoal(767);
+Goal(906).SubGoal(768);
+Goal(906).SubGoal(769);
+Goal(906).SubGoal(770);
+Goal(906).SubGoal(771);
+Goal(906).SubGoal(776);
+Goal(906).SubGoal(778);
+Goal(906).SubGoal(779);
+Goal(906).SubGoal(782);
+Goal(906).SubGoal(784);
+Goal(906).SubGoal(789);
+Goal(906).SubGoal(790);
+Goal(906).SubGoal(808);
+Goal(906).SubGoal(809);
+Goal(906).SubGoal(816);
+Goal(906).SubGoal(822);
+Goal(906).SubGoal(823);
+Goal(906).SubGoal(824);
+Goal(906).SubGoal(826);
+Goal(906).SubGoal(830);
+Goal(906).SubGoal(831);
+Goal(906).SubGoal(832);
+Goal(906).SubGoal(833);
+Goal(906).SubGoal(835);
+Goal(906).SubGoal(836);
+Goal(906).SubGoal(837);
+Goal(906).SubGoal(838);
+Goal(906).SubGoal(839);
+Goal(906).SubGoal(840);
+Goal(906).SubGoal(841);
+Goal(906).SubGoal(842);
+Goal(906).SubGoal(843);
+Goal(906).SubGoal(844);
+Goal(906).SubGoal(845);
+Goal(906).SubGoal(850);
+Goal(906).SubGoal(856);
+Goal(906).SubGoal(858);
+Goal(906).SubGoal(865);
+Goal(906).SubGoal(870);
+Goal(906).SubGoal(877);
+Goal(906).SubGoal(879);
+Goal(906).SubGoal(883);
+Goal(906).SubGoal(891);
+Goal(906).SubGoal(917);
+Goal(906).SubGoal(919);
+Goal(906).SubGoal(934);
+Goal(906).SubGoal(935);
 Goal(14).SubGoals(AND);
 Goal(77).SubGoals(AND);
 Goal(80).SubGoals(AND);
@@ -555089,18 +555099,18 @@ Goal(845).SubGoals(AND);
 Goal(850).SubGoals(AND);
 Goal(856).SubGoals(AND);
 Goal(858).SubGoals(AND);
-Goal(863).SubGoals(AND);
-Goal(868).SubGoals(AND);
-Goal(875).SubGoals(AND);
+Goal(865).SubGoals(AND);
+Goal(870).SubGoals(AND);
 Goal(877).SubGoals(AND);
-Goal(881).SubGoals(AND);
-Goal(889).SubGoals(AND);
+Goal(879).SubGoals(AND);
+Goal(883).SubGoals(AND);
+Goal(891).SubGoals(AND);
 Goal(917).SubGoals(AND);
 Goal(919).SubGoals(AND);
 Goal(934).SubGoals(AND);
 Goal(935).SubGoals(AND);
-Goal(908).SubGoal(907);
-Goal(907).SubGoals(AND);
+Goal(910).SubGoal(909);
+Goal(909).SubGoals(AND);
 Goal(917).SubGoal(45);
 Goal(917).SubGoal(49);
 Goal(917).SubGoal(75);
@@ -555141,19 +555151,19 @@ Goal(917).SubGoal(825);
 Goal(917).SubGoal(829);
 Goal(917).SubGoal(853);
 Goal(917).SubGoal(855);
-Goal(917).SubGoal(859);
-Goal(917).SubGoal(860);
-Goal(917).SubGoal(864);
-Goal(917).SubGoal(867);
-Goal(917).SubGoal(886);
-Goal(917).SubGoal(887);
-Goal(917).SubGoal(895);
-Goal(917).SubGoal(896);
+Goal(917).SubGoal(861);
+Goal(917).SubGoal(862);
+Goal(917).SubGoal(866);
+Goal(917).SubGoal(869);
+Goal(917).SubGoal(888);
+Goal(917).SubGoal(889);
 Goal(917).SubGoal(897);
+Goal(917).SubGoal(898);
 Goal(917).SubGoal(899);
-Goal(917).SubGoal(900);
+Goal(917).SubGoal(901);
 Goal(917).SubGoal(902);
-Goal(917).SubGoal(908);
+Goal(917).SubGoal(904);
+Goal(917).SubGoal(910);
 Goal(917).SubGoal(918);
 Goal(917).SubGoal(932);
 Goal(917).SubGoal(933);
@@ -555198,24 +555208,24 @@ Goal(825).SubGoals(AND);
 Goal(829).SubGoals(AND);
 Goal(853).SubGoals(AND);
 Goal(855).SubGoals(AND);
-Goal(859).SubGoals(AND);
-Goal(860).SubGoals(AND);
-Goal(864).SubGoals(AND);
-Goal(867).SubGoals(AND);
-Goal(886).SubGoals(AND);
-Goal(887).SubGoals(AND);
-Goal(895).SubGoals(AND);
-Goal(896).SubGoals(AND);
+Goal(861).SubGoals(AND);
+Goal(862).SubGoals(AND);
+Goal(866).SubGoals(AND);
+Goal(869).SubGoals(AND);
+Goal(888).SubGoals(AND);
+Goal(889).SubGoals(AND);
 Goal(897).SubGoals(AND);
+Goal(898).SubGoals(AND);
 Goal(899).SubGoals(AND);
-Goal(900).SubGoals(AND);
+Goal(901).SubGoals(AND);
 Goal(902).SubGoals(AND);
-Goal(908).SubGoals(AND);
+Goal(904).SubGoals(AND);
+Goal(910).SubGoals(AND);
 Goal(918).SubGoals(AND);
 Goal(932).SubGoals(AND);
 Goal(933).SubGoals(AND);
 Goal(943).SubGoals(AND);
-Goal(932).SubGoal(894);
+Goal(932).SubGoal(896);
 Goal(932).SubGoal(920);
 Goal(932).SubGoal(921);
 Goal(932).SubGoal(922);
@@ -555228,7 +555238,7 @@ Goal(932).SubGoal(928);
 Goal(932).SubGoal(929);
 Goal(932).SubGoal(930);
 Goal(932).SubGoal(931);
-Goal(894).SubGoals(AND);
+Goal(896).SubGoals(AND);
 Goal(920).SubGoals(AND);
 Goal(921).SubGoals(AND);
 Goal(922).SubGoals(AND);

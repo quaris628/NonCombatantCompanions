@@ -1,6 +1,7 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
+// Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
 DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
 KBSECTION
 IF
@@ -9,23 +10,23 @@ AND
 DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0)
 THEN
 TimerLaunch("QUARIS_NCC_Noncombatant_Toggle_InitDelay", 0);
-
+ 
 IF
 TimerFinished("QUARIS_NCC_Noncombatant_Toggle_InitDelay")
 THEN
 NOT DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
 DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1);
-
+ 
 IF
 DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1)
 AND
-DB_Players(_Companion)
+DB_Players(_Player)
 AND
-NOT DB_Avatars(_Companion)
+NOT DB_Avatars(_Player)
 AND
-HasPassive(_Companion, "QUARIS_NCC_Noncombatant_Toggle", 0)
+HasPassive(_Player, "QUARIS_NCC_Companion_Is_Noncombatant_Toggle", 0)
 THEN
-AddPassive(_Companion, "QUARIS_NCC_Noncombatant_Toggle");
+AddPassive(_Player, "QUARIS_NCC_Companion_Is_Noncombatant_Toggle");
 EXITSECTION
 
 ENDEXITSECTION
