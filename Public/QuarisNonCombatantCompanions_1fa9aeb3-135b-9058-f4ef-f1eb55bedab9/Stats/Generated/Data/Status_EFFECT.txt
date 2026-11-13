@@ -1,0 +1,7 @@
+new entry "Quaris_NCC_Companion_Is_Noncombatant"
+type "StatusData"
+data "StatusType" "EFFECT"
+data "DisplayName" "hd227bb61g7691g2aa5gcddag1c7dcf4e952b;2"
+data "Description" "h65bc44a0gbc90g6377gfaacgfae4437b3afa;2"
+data "Icon" "Status_Incapacitated"
+

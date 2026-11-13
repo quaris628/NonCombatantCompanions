@@ -1,0 +1,31 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
+KBSECTION
+IF
+LevelLoaded(_)
+AND
+DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0)
+THEN
+TimerLaunch("QUARIS_NCC_Noncombatant_Toggle_InitDelay", 0);
+
+IF
+TimerFinished("QUARIS_NCC_Noncombatant_Toggle_InitDelay")
+THEN
+NOT DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
+DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1);
+
+IF
+DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1)
+AND
+DB_Players(_Companion)
+AND
+NOT DB_Avatars(_Companion)
+AND
+HasPassive(_Companion, "QUARIS_NCC_Noncombatant_Toggle", 0)
+THEN
+AddPassive(_Companion, "QUARIS_NCC_Noncombatant_Toggle");
+EXITSECTION
+
+ENDEXITSECTION

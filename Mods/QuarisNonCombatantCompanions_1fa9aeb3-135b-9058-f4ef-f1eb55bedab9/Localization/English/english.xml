@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<contentList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <content contentuid="hd227bb61g7691g2aa5gcddag1c7dcf4e952b" version="2">Non-Combatant</content>
+  <content contentuid="h65bc44a0gbc90g6377gfaacgfae4437b3afa" version="2">This companion will not join combat.</content>
+  <content contentuid="hd84d6471g083bg32d1g9e35g5621f93eb0a8" version="1">Non-Combatant</content>
+  <content contentuid="h84d4cf9fgcb18gfcbag7170gca308122c957" version="2">Enable to make this companion not join combat.</content>
+  <content contentuid="h7243af2cg23c8g048cg881eg015d12299367" version="1">Non-Combatants Teleport to You</content>
+  <content contentuid="h55155a67g173fgc237gaa53ga39e2c72a03e" version="1">Enable to make non-combatant companions who are grouped with you teleport to you when they reappear after combat. If this is disabled, noncombatants do not move from where they were before combat started.</content>
+  <content contentuid="h540987f6g62c3gc49cg8bd6ga2e88fbbd6a3" version="1">If combat ended because the players fled a hostile area, then non-combatants are always teleported to you, even if this setting is disabled.</content>
+  <content contentuid="hd7e4600cg8e89gc9f0g871bg4ec94e99f421" version="1">Force Noncombatants Away</content>
+  <content contentuid="h00de74d5g9872g6bd0gb776g486fd6287ad9" version="1">Enable to force non-combatants to temporarilty stop existing, even if no combat is happening.</content>
+</contentList>

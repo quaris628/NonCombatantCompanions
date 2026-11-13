@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stats stat_object_definition_id="afc508da-dd39-4821-b0af-9955e5e2f087">
+  <stat_objects>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="664144b5-adf6-4b66-8f04-4846ed7ea46c" />
+        <field name="Name" type="NameTableFieldDefinition" value="Quaris_NCC_Companion_Is_Noncombatant" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd227bb61g7691g2aa5gcddag1c7dcf4e952b" version="2" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h65bc44a0gbc90g6377gfaacgfae4437b3afa" version="2" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Status_Incapacitated" />
+      </fields>
+    </stat_object>
+  </stat_objects>
+</stats>

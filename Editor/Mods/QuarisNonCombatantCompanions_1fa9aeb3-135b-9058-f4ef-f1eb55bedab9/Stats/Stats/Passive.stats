@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stats stat_object_definition_id="3e76b74c-a5ae-4268-944a-aa9c31e2185e">
+  <stat_objects>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="cb1d4da1-e1e5-4772-8cde-0c7da76bb951" />
+        <field name="Name" type="NameTableFieldDefinition" value="Quaris_NCC_Companion_Is_Noncombatant_Toggle" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd84d6471g083bg32d1g9e35g5621f93eb0a8" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h84d4cf9fgcb18gfcbag7170gca308122c957" version="2" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Status_Incapacitated" />
+        <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar" enumeration_type_name="PassiveFlags" version="1" />
+        <field name="ToggleOnFunctors" type="FunctorsTableFieldDefinition" value="ApplyStatus(&quot;Quaris_NCC_Companion_Is_Noncombatant&quot;, 100, -1)" />
+        <field name="ToggleOffFunctors" type="FunctorsTableFieldDefinition" value="RemoveStatus(&quot;Quaris_NCC_Companion_Is_Noncombatant&quot;)" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="e93dd6a5-8b25-4f92-badb-808581bd3ae8" />
+        <field name="Name" type="NameTableFieldDefinition" value="Quaris_NCC_Avatar_Teleports_Grouped_Noncombatants_To_Themselves_Toggle" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h7243af2cg23c8g048cg881eg015d12299367" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h55155a67g173fgc237gaa53ga39e2c72a03e" version="1" />
+        <field name="ExtraDescription" type="TranslatedStringTableFieldDefinition" handle="h540987f6g62c3gc49cg8bd6ga2e88fbbd6a3" version="1" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Conjuration_MistyStep" />
+        <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar;ToggledDefaultOn" enumeration_type_name="PassiveFlags" version="1" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="96b4630b-8141-49da-9310-175fffca4fda" />
+        <field name="Name" type="NameTableFieldDefinition" value="Quaris_NCC_Avatar_Force_Noncombatants_Offstage_Toggle" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd7e4600cg8e89gc9f0g871bg4ec94e99f421" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h00de74d5g9872g6bd0gb776g486fd6287ad9" version="1" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink" />
+        <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar;ToggleForParty" enumeration_type_name="PassiveFlags" version="1" />
+      </fields>
+    </stat_object>
+  </stat_objects>
+</stats>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<save>
+    <version major="4" minor="8" revision="0" build="500"/>
+    <region id="MetaData">
+        <node id="root">
+            <attribute id="GameProject" type="LSString" value=""/>
+            <attribute id="Module" type="LSString" value="1fa9aeb3-135b-9058-f4ef-f1eb55bedab9"/>
+            <attribute id="Name" type="LSString" value="QuarisNonCombatantCompanions"/>
+            <attribute id="UUID" type="LSString" value="adc61391-184a-62e5-5b5a-ad9d39aa20b1"/>
+            <attribute id="UpdatedDependencies" type="bool" value="true"/>
+            <children>
+                <node id="Categories"/>
+            </children>
+        </node>
+    </region>
+</save>
