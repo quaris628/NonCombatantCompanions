@@ -3,23 +3,24 @@ SubGoalCombiner SGC_AND
 INITSECTION
 DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage((CHARACTER)NULL_00000000-0000-0000-0000-000000000000, (CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 KBSECTION
-// Where noncombatants should go after combat:
+// Determine where noncombatants should go after combat:
 // If noncombatant grouped with the host avatar, go to host avatar
 // If noncombatant grouped with one or more avatars and none are the host, pick any grouped avatar to go to
 // If noncombatant grouped with only non-avatar combatants, pick any grouped combatant to go to
 // If noncombatant not grouped with any combatants, stay where they were before combat (but still move a little bit to avoid harmful surfaces if needed)
 
+// This is probably the most complicated part of this mod's scripts
+
 // host avatar
 QRY
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 AND
-GetHostCharacter(_HostCharacter)
+GetHostCharacter(_HostAvatar)
 AND
-InSamePartyGroup(_Noncombatant, _HostCharacter, 1)
-AND
-DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _HostCharacter)
+InSamePartyGroup(_Noncombatant, _HostAvatar, 1)
 THEN
-DB_NOOP(1);
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _HostAvatar);
+DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning host avatar");
 
 // non-host avatars
 QRY
@@ -32,11 +33,10 @@ AND
 DB_Avatars(_Avatars)
 AND
 InSamePartyGroup(_Noncombatant, _Avatars, 1)
-AND
-// TODO: can I (ideally consistently) pick a single character from multiple?
-DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Avatars)
 THEN
-DB_NOOP(1);
+// TODO: can I (ideally consistently) pick a single character from multiple?
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Avatars);
+DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning non-host avatars");
 
 // non-avatar combatants
 QRY
@@ -50,12 +50,11 @@ DB_PartyMembers(_PartyMembers)
 AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 AND
-HasAppliedStatus(_PartyMembers, "QUARIS_NCC_Companion_Is_Noncombatant", 0)
-AND
-// TODO: can I (ideally consistently) pick a single character from multiple?
-DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers)
+HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 0)
 THEN
-DB_NOOP(1);
+// TODO: can I (ideally consistently) pick a single character from multiple?
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers);
+DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning non-avatar combatants");
 
 // myself
 QRY
@@ -65,26 +64,20 @@ DB_PartyMembers(_PartyMembers)
 AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 0)
 AND
-HasAppliedStatus(_PartyMembers, "QUARIS_NCC_Companion_Is_Noncombatant", 1)
-AND
-DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Noncombatant)
+HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 1)
 THEN
-DB_NOOP(1);
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Noncombatant);
+DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning myself");
 
-
-// Clear database
-
-// host avatar
+// clear the DB used for return values
 QRY
 QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 AND
 DB_PartyMembers(_PartyMembers)
 AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
-AND
-NOT DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers)
 THEN
-DB_NOOP(1);
+NOT DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers);
 EXITSECTION
 
 ENDEXITSECTION

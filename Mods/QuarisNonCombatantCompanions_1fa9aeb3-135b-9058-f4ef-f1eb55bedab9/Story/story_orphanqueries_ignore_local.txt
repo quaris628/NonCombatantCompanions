@@ -1,0 +1,1 @@
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage 2

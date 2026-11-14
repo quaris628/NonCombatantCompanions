@@ -1,33 +1,70 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
-// TODO: Support mod install, uninstall, and reinstall
-// Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
-DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
+
 KBSECTION
+// Give the is-noncombatant toggle to all non-avatar party members
+
+// TODO: Grant the is-noncombatant status to all summons of noncombatants too
+
 IF
 LevelLoaded(_)
-AND
-DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0)
 THEN
-TimerLaunch("QUARIS_NCC_Noncombatant_Toggle_InitDelay", 0);
- 
+TimerLaunch("QUARIS_NCC_CompanionIsNoncombatantToggle_InitDelay", 0);
+
 IF
-TimerFinished("QUARIS_NCC_Noncombatant_Toggle_InitDelay")
+TimerFinished("QUARIS_NCC_CompanionIsNoncombatantToggle_InitDelay")
+AND
+DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 THEN
-NOT DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(0);
-DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1);
- 
+PROC_QUARIS_NCC_GiveNoncombatantToggle();
+
 IF
-DB_QUARIS_NCC_Noncombatant_Toggle_Initialized(1)
+CharacterJoinedParty(_Character)
 AND
-DB_Players(_Player)
+DB_PartyMembers(_Character)
 AND
-NOT DB_Avatars(_Player)
-AND
-HasPassive(_Player, "QUARIS_NCC_Companion_Is_Noncombatant_Toggle", 0)
+DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 THEN
-AddPassive(_Player, "QUARIS_NCC_Companion_Is_Noncombatant_Toggle");
+PROC_QUARIS_NCC_GiveNoncombatantToggle();
+
+// Revoke the toggle while any combat is in progress
+
+IF
+DB_QUARIS_NCC_IsAnyCombatInProgress(1)
+THEN
+PROC_QUARIS_NCC_RevokeNoncombatantToggle();
+
+IF
+DB_QUARIS_NCC_IsAnyCombatInProgress(0)
+THEN
+PROC_QUARIS_NCC_GiveNoncombatantToggle();
+
+// Procedures to give/revoke the toggle
+
+PROC
+PROC_QUARIS_NCC_GiveNoncombatantToggle()
+AND
+DB_PartyMembers(_PartyMembers)
+AND
+NOT DB_Avatars(_PartyMembers)
+AND
+IsSummon(_PartyMembers, 0)
+AND
+IsPartyFollower(_PartyMembers, 0)
+AND
+HasPassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle", 0)
+THEN
+AddPassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle");
+
+PROC
+PROC_QUARIS_NCC_RevokeNoncombatantToggle()
+AND
+DB_PartyMembers(_PartyMembers)
+AND
+HasPassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle", 1)
+THEN
+RemovePassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle");
 EXITSECTION
 
 ENDEXITSECTION

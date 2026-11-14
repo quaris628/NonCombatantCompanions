@@ -1,34 +1,42 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
-// Credit to https://wiki.bg3.community/Tutorials/Osiris/Giving-Everyone-A-Passive
-DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
+
 KBSECTION
+// Give the force-noncombatants-offstage toggle to all party members (but not summons or followers)
+
 IF
 LevelLoaded(_)
-AND
-DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0)
 THEN
-TimerLaunch("QUARIS_NCC_Force_Off_Stage_Toggle_InitDelay", 0);
+TimerLaunch("QUARIS_NCC_GiveForceOffstageToggle_InitDelay", 0);
 
 IF
-TimerFinished("QUARIS_NCC_Force_Off_Stage_Toggle_InitDelay")
+TimerFinished("QUARIS_NCC_GiveForceOffstageToggle_InitDelay")
+AND
+DB_PartyMembers(_PartyMembers)
 THEN
-NOT DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(0);
-DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(1);
+PROC_QUARIS_NCC_GiveForceOffStageToggle(_PartyMembers);
 
+// TODO: Test recruting companion
+// TODO: Test multiplayer where an avatar joins partway through
+// TODO: Test summoning a summon
+// TODO: Test a follower joining the party
 IF
-DB_QUARIS_NCC_Force_Off_Stage_Toggle_Initialized(1)
-AND
-DB_Avatars(_Avatar)
-//AND
-//IsTagged(_Player, "AVATAR", 0)
-AND
-HasPassive(_Avatar, "QUARIS_NCC_Avatar_Force_Noncombatants_Offstage_Toggle", 0)
+CharacterJoinedParty(_Character)
 THEN
-AddPassive(_Avatar, "QUARIS_NCC_Avatar_Force_Noncombatants_Offstage_Toggle");
+DebugLog("CharacterJoinedParty is triggering PROC_QUARIS_NCC_GiveForceOffStageToggle");
+PROC_QUARIS_NCC_GiveForceOffStageToggle(_Character);
 
-// TODO: What about multiplayer where an avatar joins partway through?
+PROC
+PROC_QUARIS_NCC_GiveForceOffStageToggle((CHARACTER)_PartyMember)
+AND
+IsSummon(_PartyMember, 0)
+AND
+IsPartyFollower(_PartyMember, 0)
+AND
+HasPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle", 0)
+THEN
+AddPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
 EXITSECTION
 
 ENDEXITSECTION

@@ -7,6 +7,10 @@
   <content contentuid="h7243af2cg23c8g048cg881eg015d12299367" version="1">Non-Combatants Teleport to You</content>
   <content contentuid="h55155a67g173fgc237gaa53ga39e2c72a03e" version="1">Enable to make non-combatant companions who are grouped with you teleport to you when they reappear after combat. If this is disabled, noncombatants do not move from where they were before combat started.</content>
   <content contentuid="h540987f6g62c3gc49cg8bd6ga2e88fbbd6a3" version="1">If combat ended because the players fled a hostile area, then non-combatants are always teleported to you, even if this setting is disabled.</content>
-  <content contentuid="hd7e4600cg8e89gc9f0g871bg4ec94e99f421" version="2">Force Non-Combatants Away</content>
+  <content contentuid="hd7e4600cg8e89gc9f0g871bg4ec94e99f421" version="3">Toggle Non-Combatants Forced Away</content>
   <content contentuid="h00de74d5g9872g6bd0gb776g486fd6287ad9" version="2">Enable to force non-combatants to temporarily stop existing, even if no combat is happening.</content>
+  <content contentuid="h2129014bgf42ag177dg5e2bg8ed3bca963f7" version="1">Non-Combatants Forced Away</content>
+  <content contentuid="hcc68e71egafd0g0f7fgaab1g66afdd9b2deb" version="1">Non-combatants are forced to temporarily stop existing, even if no combat is happening.</content>
+  <content contentuid="hfd036db8g42fegea0eg2806ge9ffacb55296" version="1">Non-combatants won't join dialogues while this is enabled.</content>
+  <content contentuid="he391dd75ge10fgd197g59d0g1e1175bd67d0" version="2">This cannot be toggled while any combat is in progress.</content>
 </contentList>

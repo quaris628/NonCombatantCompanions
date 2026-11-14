@@ -1,7 +1,15 @@
-new entry "QUARIS_NCC_Companion_Is_Noncombatant"
+new entry "QUARIS_NCC_CompanionIsNoncombatant"
 type "StatusData"
 data "StatusType" "EFFECT"
 data "DisplayName" "hd227bb61g7691g2aa5gcddag1c7dcf4e952b;2"
 data "Description" "h65bc44a0gbc90g6377gfaacgfae4437b3afa;2"
 data "Icon" "Spell_Enchantment_CommandHalt"
+data "StatusPropertyFlags" "IsInvulnerable;ExcludeFromPortraitRendering;AllowLeaveCombat;IsInvulnerableVisible"
+
+new entry "QUARIS_NCC_NoncombatantsAreForcedOffstage"
+type "StatusData"
+data "StatusType" "EFFECT"
+data "DisplayName" "h2129014bgf42ag177dg5e2bg8ed3bca963f7;1"
+data "Description" "hcc68e71egafd0g0f7fgaab1g66afdd9b2deb;1"
+data "Icon" "Spell_Transmutation_Blink"
 

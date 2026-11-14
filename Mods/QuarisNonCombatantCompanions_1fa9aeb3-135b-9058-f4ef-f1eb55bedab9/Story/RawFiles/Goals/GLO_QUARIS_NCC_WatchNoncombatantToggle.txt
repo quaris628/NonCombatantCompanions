@@ -1,0 +1,42 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+// Watch for when the players manually toggle whether a party member is a noncombatant
+// When they do, sync that party members' summons' noncombatant status
+
+IF
+StatusApplied(_Object, "QUARIS_NCC_CompanionIsNoncombatant", _, _)
+AND
+DB_PartyMembers(_OwnerPartyMember)
+AND
+IsSummon(_OwnerPartyMember, 0)
+AND
+DB_Summons(_Summon)
+AND
+CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
+AND
+HasAppliedStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", 0)
+THEN
+DebugLog("Applied QUARIS_NCC_CompanionIsNoncombatant");
+ApplyStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", -1.0);
+
+IF
+StatusRemoved(_OwnerPartyMember, "QUARIS_NCC_CompanionIsNoncombatant", _, _)
+AND
+DB_PartyMembers((CHARACTER)_OwnerPartyMember)
+AND
+IsSummon((CHARACTER)_OwnerPartyMember, 0)
+AND
+DB_Summons(_Summon)
+AND
+CharacterGetOwner((CHARACTER)_Summon, (CHARACTER)_OwnerPartyMember)
+AND
+HasAppliedStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", 1)
+THEN
+DebugLog("Removed QUARIS_NCC_CompanionIsNoncombatant");
+RemoveStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant");
+EXITSECTION
+
+ENDEXITSECTION

@@ -1,35 +1,25 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
-DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0);
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 KBSECTION
-IF
-DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1)
-THEN
-NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0);
-NOT DB_QUARIS_NCC_Is_Combatants_Offstage(0);
-DB_QUARIS_NCC_Is_Combatants_Offstage(1);
+// Watch for when the players manually toggle whether noncombatants are forced off-stage
 
 IF
-DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0)
+StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage", _, _)
+//HasAppliedStatus(_Avatars, "QUARIS_NCC_NoncombatantsAreForcedOffstage", 1)
 THEN
-NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1);
+DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsForcedOffstage flag to 1");
+NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 
 IF
-DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0)
-AND
-DB_PartyMembers(_PartyMembers)
-AND
-IsInCombat((GUIDSTRING)_PartyMembers, 0)
-// TODO: What about IsInNarrativeCombat? What is the difference?
+StatusRemoved(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage", _, _)
+//HasAppliedStatus(_Avatars, "QUARIS_NCC_NoncombatantsAreForcedOffstage", 0)
 THEN
-DB_QUARIS_NCC_Is_Combatants_Offstage(0);
-NOT DB_QUARIS_NCC_Is_Combatants_Offstage(1);
-
-// Toggle force on does:
-// DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1); NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0);
-// Toggle force off does:
-// DB_QUARIS_NCC_IsCombatants_Offstage_Forced(0); NOT DB_QUARIS_NCC_IsCombatants_Offstage_Forced(1);
+DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsForcedOffstage flag to 0");
+NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 EXITSECTION
 
 ENDEXITSECTION
