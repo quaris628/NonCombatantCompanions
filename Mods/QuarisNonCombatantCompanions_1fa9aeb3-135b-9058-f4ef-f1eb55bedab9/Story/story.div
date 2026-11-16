@@ -520322,6 +520322,8 @@ Goal(861)
 	{
 		// Give the force-noncombatants-offstage toggle to all party members (but not summons or followers)
 		
+		// Triggers
+		
 		IF
 		LevelLoaded(_)
 		THEN
@@ -520330,30 +520332,76 @@ Goal(861)
 		IF
 		TimerFinished("QUARIS_NCC_GiveForceOffstageToggle_InitDelay")
 		AND
-		DB_PartyMembers(_PartyMembers)
+		DB_PartyMembers(_PartyMember)
 		THEN
-		PROC_QUARIS_NCC_GiveForceOffStageToggle(_PartyMembers);
+		PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
 		
-		// TODO: Test recruting companion
-		// TODO: Test multiplayer where an avatar joins partway through
-		// TODO: Test summoning a summon
-		// TODO: Test a follower joining the party
 		IF
-		CharacterJoinedParty(_Character)
+		CharacterJoinedParty(_PartyMember)
+		AND
+		DB_PartyMembers(_PartyMember)
 		THEN
-		DebugLog("CharacterJoinedParty is triggering PROC_QUARIS_NCC_GiveForceOffStageToggle");
-		PROC_QUARIS_NCC_GiveForceOffStageToggle(_Character);
+		PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
+		
+		IF
+		CharacterLeftParty(_Character)
+		THEN
+		RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		
+		// Set up a party member
 		
 		PROC
-		PROC_QUARIS_NCC_GiveForceOffStageToggle((CHARACTER)_PartyMember)
+		PROC_QUARIS_NCC_InitForceOffstageToggle((CHARACTER)_PartyMember)
 		AND
 		IsSummon(_PartyMember, 0)
 		AND
 		IsPartyFollower(_PartyMember, 0)
+		THEN
+		PROC_QUARIS_NCC_GiveForceOffstageToggle(_PartyMember);
+		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn(_PartyMember);
+		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff(_PartyMember);
+		
+		// Give toggle
+		
+		PROC
+		PROC_QUARIS_NCC_GiveForceOffstageToggle((CHARACTER)_PartyMember)
 		AND
 		HasPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle", 0)
 		THEN
 		AddPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+		PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+		THEN
+		TogglePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+		
+		// Sync visual indicator
+		
+		PROC
+		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+		THEN
+		ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+		
+		PROC
+		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+		THEN
+		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		
+		// TODO: Test recruting a companion into the active party
+		// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
+		// TODO: Test sending someone to camp and having them re-join the party
+		// TODO: Test multiplayer where an avatar joins partway through
+		// TODO: Test summoning a summon
+		// TODO: Test a follower joining the party
 	}
 	EXIT
 	{
@@ -520564,21 +520612,36 @@ Goal(865)
 		IF
 		CombatEnded(_Combat)
 		AND
-		// Include summons, followers, etc
+		// Includes summons, followers, etc
 		DB_Players(_Players)
 		AND
+		NOT IsInCombat((GUIDSTRING)_Players, 1)
+		//AND
 		// Noncombatants might technically be in combat for a very short amount of time,
 		// before they are taken off stage in reaction to the combat having started.
 		// But we don't want to count that as "in combat" for these purposes.
-		HasAppliedStatus(_Players, "QUARIS_NCC_CompanionIsNoncombatant", 0)
-		AND
-		IsInCombat((GUIDSTRING)_Players, 0)
+		//HasAppliedStatus(_Players, "QUARIS_NCC_CompanionIsNoncombatant", 0)
 		// TODO: What about IsInNarrativeCombat? What is the difference?
 		THEN
+		DebugLog("GLO_QUARIS_NCC_WatchCombat debug setting DB_QUARIS_NCC_IsAnyCombatInProgress(0)");
 		NOT DB_QUARIS_NCC_IsAnyCombatInProgress(1);
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 		
 		// TODO: Handle combat ending with TPK (excluding off-stage people)
+		
+		
+		IF
+		CombatEnded(_Combat)
+		THEN
+		DebugLog("GLO_QUARIS_NCC_WatchCombat debug CombatEnded");
+		
+		IF
+		CombatEnded(_Combat)
+		AND
+		// Includes summons, followers, etc
+		DB_Players(_Players)
+		THEN
+		DebugLog("GLO_QUARIS_NCC_WatchCombat debug CombatEnded AND DB_Players(_Players)");
 	}
 	EXIT
 	{
@@ -520595,21 +520658,50 @@ Goal(866)
 	{
 		// Watch for when the players manually toggle whether noncombatants are forced off-stage
 		
+		// The toggle adds/removes hidden technical statuses that trigger this code,
+		// instead of simply adding/removing a single status directly.
+		// This is so that...
+		//  - This code can ensure the status won't be added if it's already there
+		//  - This code can differentiate between the toggle being changed by the user
+		//    vs. the visual indicator status being added/removed programmatically
+		
+		// Watch hidden technical statuses => set flags
+		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage", _, _)
-		//HasAppliedStatus(_Avatars, "QUARIS_NCC_NoncombatantsAreForcedOffstage", 1)
+		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd", _, _)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsForcedOffstage flag to 1");
+		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd");
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		
 		IF
-		StatusRemoved(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage", _, _)
-		//HasAppliedStatus(_Avatars, "QUARIS_NCC_NoncombatantsAreForcedOffstage", 0)
+		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsForcedOffstage flag to 0");
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
+		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
+		
+		// Watch flags => give/revoke visual statuses
+		
+		IF
+		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		IsSummon(_PartyMember, 0)
+		AND
+		IsPartyFollower(_PartyMember, 0)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+		THEN
+		ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+		
+		IF
+		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+		AND
+		DB_PartyMembers(_PartyMember)
+		THEN
+		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
 	}
 	EXIT
 	{

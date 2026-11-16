@@ -5,6 +5,8 @@ INITSECTION
 KBSECTION
 // Give the force-noncombatants-offstage toggle to all party members (but not summons or followers)
 
+// Triggers
+
 IF
 LevelLoaded(_)
 THEN
@@ -13,30 +15,76 @@ TimerLaunch("QUARIS_NCC_GiveForceOffstageToggle_InitDelay", 0);
 IF
 TimerFinished("QUARIS_NCC_GiveForceOffstageToggle_InitDelay")
 AND
-DB_PartyMembers(_PartyMembers)
+DB_PartyMembers(_PartyMember)
 THEN
-PROC_QUARIS_NCC_GiveForceOffStageToggle(_PartyMembers);
+PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
 
-// TODO: Test recruting companion
-// TODO: Test multiplayer where an avatar joins partway through
-// TODO: Test summoning a summon
-// TODO: Test a follower joining the party
 IF
-CharacterJoinedParty(_Character)
+CharacterJoinedParty(_PartyMember)
+AND
+DB_PartyMembers(_PartyMember)
 THEN
-DebugLog("CharacterJoinedParty is triggering PROC_QUARIS_NCC_GiveForceOffStageToggle");
-PROC_QUARIS_NCC_GiveForceOffStageToggle(_Character);
+PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
+
+IF
+CharacterLeftParty(_Character)
+THEN
+RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+
+// Set up a party member
 
 PROC
-PROC_QUARIS_NCC_GiveForceOffStageToggle((CHARACTER)_PartyMember)
+PROC_QUARIS_NCC_InitForceOffstageToggle((CHARACTER)_PartyMember)
 AND
 IsSummon(_PartyMember, 0)
 AND
 IsPartyFollower(_PartyMember, 0)
+THEN
+PROC_QUARIS_NCC_GiveForceOffstageToggle(_PartyMember);
+PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn(_PartyMember);
+PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff(_PartyMember);
+
+// Give toggle
+
+PROC
+PROC_QUARIS_NCC_GiveForceOffstageToggle((CHARACTER)_PartyMember)
 AND
 HasPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle", 0)
 THEN
 AddPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle(_PartyMember);
+
+PROC
+PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+THEN
+TogglePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+
+// Sync visual indicator
+
+PROC
+PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+AND
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+THEN
+ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+
+PROC
+PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+THEN
+RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+
+// TODO: Test recruting a companion into the active party
+// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
+// TODO: Test sending someone to camp and having them re-join the party
+// TODO: Test multiplayer where an avatar joins partway through
+// TODO: Test summoning a summon
+// TODO: Test a follower joining the party
 EXITSECTION
 
 ENDEXITSECTION

@@ -5,21 +5,50 @@ DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 KBSECTION
 // Watch for when the players manually toggle whether noncombatants are forced off-stage
 
+// The toggle adds/removes hidden technical statuses that trigger this code,
+// instead of simply adding/removing a single status directly.
+// This is so that...
+//  - This code can ensure the status won't be added if it's already there
+//  - This code can differentiate between the toggle being changed by the user
+//    vs. the visual indicator status being added/removed programmatically
+
+// Watch hidden technical statuses => set flags
+
 IF
-StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage", _, _)
-//HasAppliedStatus(_Avatars, "QUARIS_NCC_NoncombatantsAreForcedOffstage", 1)
+StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd", _, _)
 THEN
-DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsForcedOffstage flag to 1");
+RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd");
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 
 IF
-StatusRemoved(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage", _, _)
-//HasAppliedStatus(_Avatars, "QUARIS_NCC_NoncombatantsAreForcedOffstage", 0)
+StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
 THEN
-DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsForcedOffstage flag to 0");
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
+RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
+
+// Watch flags => give/revoke visual statuses
+
+IF
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+AND
+DB_PartyMembers(_PartyMember)
+AND
+IsSummon(_PartyMember, 0)
+AND
+IsPartyFollower(_PartyMember, 0)
+AND
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+THEN
+ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+
+IF
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+AND
+DB_PartyMembers(_PartyMember)
+THEN
+RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
 EXITSECTION
 
 ENDEXITSECTION
