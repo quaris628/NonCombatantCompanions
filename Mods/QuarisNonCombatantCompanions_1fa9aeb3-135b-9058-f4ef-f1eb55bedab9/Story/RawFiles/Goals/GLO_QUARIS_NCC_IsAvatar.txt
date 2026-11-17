@@ -1,0 +1,15 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+
+QRY
+QRY_QUARIS_NCC_IsAvatar((CHARACTER)_Character)
+AND
+DB_Avatars(_Character)
+THEN
+DB_NOOP(1);
+EXITSECTION
+
+ENDEXITSECTION

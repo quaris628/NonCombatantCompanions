@@ -7,6 +7,8 @@ KBSECTION
 
 IF
 CombatStarted(_Combat)
+AND
+QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 THEN
 NOT DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 DB_QUARIS_NCC_IsAnyCombatInProgress(1);
@@ -14,36 +16,27 @@ DB_QUARIS_NCC_IsAnyCombatInProgress(1);
 IF
 CombatEnded(_Combat)
 AND
-// Includes summons, followers, etc
-DB_Players(_Players)
-AND
-NOT IsInCombat((GUIDSTRING)_Players, 1)
-//AND
-// Noncombatants might technically be in combat for a very short amount of time,
-// before they are taken off stage in reaction to the combat having started.
-// But we don't want to count that as "in combat" for these purposes.
-//HasAppliedStatus(_Players, "QUARIS_NCC_CompanionIsNoncombatant", 0)
-// TODO: What about IsInNarrativeCombat? What is the difference?
+NOT QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 THEN
-DebugLog("GLO_QUARIS_NCC_WatchCombat debug setting DB_QUARIS_NCC_IsAnyCombatInProgress(0)");
 NOT DB_QUARIS_NCC_IsAnyCombatInProgress(1);
 DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 
-// TODO: Handle combat ending with TPK (excluding off-stage people)
-
-
-IF
-CombatEnded(_Combat)
-THEN
-DebugLog("GLO_QUARIS_NCC_WatchCombat debug CombatEnded");
-
-IF
-CombatEnded(_Combat)
+QRY
+QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 AND
-// Includes summons, followers, etc
-DB_Players(_Players)
+DB_PartyMembers(_PartyMember)
+AND
+// Noncombatants might technically be in combat for a very short amount of time,
+// before they are taken off stage in reaction to the combat having started?
+// But we don't want to count that
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 0)
+AND
+// I suspect IsInCombat would return 1 for narrative combats, but I couldn't
+// find any documentation to confirm, and it's difficult to test.
+// If it doesn't, then it might be necessary to check IsInNarrativeCombat here.
+IsInCombat(_PartyMember, 1)
 THEN
-DebugLog("GLO_QUARIS_NCC_WatchCombat debug CombatEnded AND DB_Players(_Players)");
+DB_NOOP(1);
 EXITSECTION
 
 ENDEXITSECTION

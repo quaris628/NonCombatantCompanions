@@ -31,7 +31,7 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 IF
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
 THEN
-DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 0 b/c force flag was set to 1");
+DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 1 b/c force flag was set to 1");
 NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
 EXITSECTION

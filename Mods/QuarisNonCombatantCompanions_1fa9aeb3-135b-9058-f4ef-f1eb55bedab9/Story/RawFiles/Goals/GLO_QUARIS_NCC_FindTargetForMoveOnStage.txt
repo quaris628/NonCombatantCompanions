@@ -9,8 +9,6 @@ KBSECTION
 // If noncombatant grouped with only non-avatar combatants, pick any grouped combatant to go to
 // If noncombatant not grouped with any combatants, stay where they were before combat (but still move a little bit to avoid harmful surfaces if needed)
 
-// This is probably the most complicated part of this mod's scripts
-
 // host avatar
 QRY
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
@@ -26,33 +24,37 @@ DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning host av
 QRY
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 AND
+QRY_OnlyOnce_Reset("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonHostAvatars")
+AND
 GetHostCharacter(_HostCharacter)
 AND
 InSamePartyGroup(_Noncombatant, _HostCharacter, 0)
 AND
-DB_Avatars(_Avatars)
+DB_Avatars(_Avatar)
 AND
-InSamePartyGroup(_Noncombatant, _Avatars, 1)
+InSamePartyGroup(_Noncombatant, _Avatar, 1)
+AND
+QRY_OnlyOnce("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonHostAvatars")
 THEN
-// TODO: can I (ideally consistently) pick a single character from multiple?
-DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Avatars);
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Avatar);
 DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning non-host avatars");
 
 // non-avatar combatants
 QRY
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 AND
-DB_Avatars(_Avatars)
+QRY_OnlyOnce_Reset("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonAvatarCompanions")
 AND
-InSamePartyGroup(_Noncombatant, _Avatars, 0)
+NOT QRY_QUARIS_NCC_IsGroupedWithAnyAvatar(_Noncombatant)
 AND
 DB_PartyMembers(_PartyMembers)
 AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 AND
 HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 0)
+AND
+QRY_OnlyOnce("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonAvatarCompanions")
 THEN
-// TODO: can I (ideally consistently) pick a single character from multiple?
 DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers);
 DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning non-avatar combatants");
 
@@ -62,7 +64,7 @@ QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 AND
 DB_PartyMembers(_PartyMembers)
 AND
-InSamePartyGroup(_Noncombatant, _PartyMembers, 0)
+InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 AND
 HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 1)
 THEN
@@ -78,6 +80,17 @@ AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 THEN
 NOT DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers);
+
+// is character grouped with any avatar?
+
+QRY
+QRY_QUARIS_NCC_IsGroupedWithAnyAvatar((CHARACTER)_Character)
+AND
+DB_Avatars(_Avatar)
+AND
+InSamePartyGroup(_Character, _Avatar, 1)
+THEN
+DB_NOOP(1);
 EXITSECTION
 
 ENDEXITSECTION

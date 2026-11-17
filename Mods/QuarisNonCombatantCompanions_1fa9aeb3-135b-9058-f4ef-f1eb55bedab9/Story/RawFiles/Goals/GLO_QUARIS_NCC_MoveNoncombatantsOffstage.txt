@@ -3,43 +3,51 @@ SubGoalCombiner SGC_AND
 INITSECTION
 
 KBSECTION
-// Move party members and their summons off-stage
-
-// Do NOT move "followers" off-stage, just in case it's important to the story that they be in combat
-// (e.g. Florin in Wyrm's Rock, or Halsin in the Goblin camp)
+// Move party members off-stage
 
 IF
 DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 AND
 DB_PartyMembers(_PartyMember)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_CompanionIsNoncombatant", 1)
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 THEN
-PROC_QUARIS_NCC_MovePartyMemberAndSummonsOffStage(_PartyMember);
+SetOnStage(_PartyMember, 0);
 
 IF
-StatusApplied(_Object, "QUARIS_NCC_CompanionIsNoncombatant", _, _)
+StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
 AND
 DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 AND
 DB_PartyMembers((CHARACTER)_Object)
 THEN
-PROC_QUARIS_NCC_MovePartyMemberAndSummonsOffStage((CHARACTER)_Object);
+SetOnStage(_Object, 0);
 
-PROC
-PROC_QUARIS_NCC_MovePartyMemberAndSummonsOffStage((CHARACTER)_PartyMember)
-THEN
-SetOnStage(_PartyMember, 0);
-PROC_QUARIS_NCC_MoveSummonsOffStage(_PartyMember);
 
-PROC
-PROC_QUARIS_NCC_MoveSummonsOffStage((CHARACTER)_OwnerPartyMember)
-AND
-DB_Summons(_Summon)
-AND
-CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
+
+// debug
+/*
+IF
+DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 THEN
-SetOnStage(_Summon, 0);
+DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1");
+
+IF
+DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+AND
+DB_PartyMembers(_PartyMember)
+THEN
+DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1 AND DB_PartyMembers(_PartyMember)");
+
+IF
+DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+AND
+DB_PartyMembers(_PartyMember)
+AND
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant", 1)
+THEN
+DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1 AND DB_PartyMembers(_PartyMember) AND HasAppliedStatus(_PartyMember, 'QUARIS_NCC_IsNoncombatant', 1)");
+*/
 EXITSECTION
 
 ENDEXITSECTION

@@ -8,8 +8,7 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 AND
 DB_PartyMembers(_Noncombatant)
 AND
-HasAppliedStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant", 1)
-//IsOnStage(_Noncombatant, 0)
+HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
 AND
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage(_Noncombatant)
 AND
@@ -17,15 +16,12 @@ DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _TargetCharacter
 AND
 QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage(_Noncombatant)
 AND
-HasAppliedStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant", 1)
-//GetHostCharacter(_TargetCharacter)
-// temp ^
+HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
 AND
 GetPosition(_TargetCharacter, _TargetX, _TargetY, _TargetZ)
 AND
 FindValidPosition(_TargetX, _TargetY, _TargetZ, 10.0, _Noncombatant, 1, _ValidX, _ValidY, _ValidZ)
 THEN
-DebugLog("Moving noncombatant onto stage");
 // The last few arguments for this TeleportToPosition call are:
 //  - TeleportLinkedCharacters = 0
 //  - TeleportPartyFollowers = 0
@@ -35,8 +31,8 @@ DebugLog("Moving noncombatant onto stage");
 TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
 SetOnStage(_Noncombatant, 1);
 // Workaround to this status not showing after the noncombatant comes back on stage
-RemoveStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant");
-ApplyStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant", -1.0);
+RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
+ApplyStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
 PROC_QUARIS_NCC_PutOwnedSummonsOnstage(_Noncombatant);
 
 PROC
@@ -48,8 +44,9 @@ CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 THEN
 SetOnStage(_Summon, 1);
 // Attempt to fix the status not showing when the noncombatant comes back on stage
-RemoveStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant");
-ApplyStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", -1.0);
+// TODO: Test, is this still an issue?
+//RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
+//ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
 EXITSECTION
 
 ENDEXITSECTION

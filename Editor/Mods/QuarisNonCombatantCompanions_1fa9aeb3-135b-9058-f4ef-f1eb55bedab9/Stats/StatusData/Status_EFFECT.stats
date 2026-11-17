@@ -4,19 +4,33 @@
     <stat_object is_substat="false">
       <fields>
         <field name="UUID" type="IdTableFieldDefinition" value="664144b5-adf6-4b66-8f04-4846ed7ea46c" />
-        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_CompanionIsNoncombatant" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_Main" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd227bb61g7691g2aa5gcddag1c7dcf4e952b" version="2" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h65bc44a0gbc90g6377gfaacgfae4437b3afa" version="2" />
-        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Enchantment_CommandHalt" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h65bc44a0gbc90g6377gfaacgfae4437b3afa" version="3" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_BanishingSmite_Melee" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="f27e248f-2ab6-499d-b8e2-bed856658de1" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd" />
+        <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisableCombatlog;DisablePortraitIndicator" enumeration_type_name="StatusPropertyFlags" version="1" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="cf4cd246-6a34-45b6-a827-dba1006c93ec" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove" />
+        <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisableCombatlog;DisablePortraitIndicator" enumeration_type_name="StatusPropertyFlags" version="1" />
       </fields>
     </stat_object>
     <stat_object is_substat="false">
       <fields>
         <field name="UUID" type="IdTableFieldDefinition" value="687abe31-8873-47de-802d-dd59a625289e" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator" />
-        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h2129014bgf42ag177dg5e2bg8ed3bca963f7" version="2" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hcc68e71egafd0g0f7fgaab1g66afdd9b2deb" version="1" />
-        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h2129014bgf42ag177dg5e2bg8ed3bca963f7" version="3" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hcc68e71egafd0g0f7fgaab1g66afdd9b2deb" version="2" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink_Dismiss" />
         <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableCombatlog;DisableOverhead" enumeration_type_name="StatusPropertyFlags" version="1" />
       </fields>
     </stat_object>

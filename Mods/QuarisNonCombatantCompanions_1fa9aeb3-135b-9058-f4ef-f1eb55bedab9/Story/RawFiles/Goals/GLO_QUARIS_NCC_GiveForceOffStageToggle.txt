@@ -29,7 +29,11 @@ PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
 IF
 CharacterLeftParty(_Character)
 THEN
-RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+// Removing the toggle passive now should let us correctly toggle it to the
+// correct default setting when it's re-added.
+// (Although it seemed to be defaulting correctly even when it wasn't removed,
+// for reasons I don't understand...)
+RemovePassive(_Character, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
 
 // Set up a party member
 

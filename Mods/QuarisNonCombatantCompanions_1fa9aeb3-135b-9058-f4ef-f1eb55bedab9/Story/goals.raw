@@ -518830,7 +518830,7 @@ Goal(859)
 		IF
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 0 b/c force flag was set to 1");
+		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 1 b/c force flag was set to 1");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
 	}
@@ -518853,8 +518853,6 @@ Goal(860)
 		// If noncombatant grouped with only non-avatar combatants, pick any grouped combatant to go to
 		// If noncombatant not grouped with any combatants, stay where they were before combat (but still move a little bit to avoid harmful surfaces if needed)
 		
-		// This is probably the most complicated part of this mod's scripts
-		
 		// host avatar
 		QRY
 		QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
@@ -518870,33 +518868,37 @@ Goal(860)
 		QRY
 		QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 		AND
+		QRY_OnlyOnce_Reset("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonHostAvatars")
+		AND
 		GetHostCharacter(_HostCharacter)
 		AND
 		InSamePartyGroup(_Noncombatant, _HostCharacter, 0)
 		AND
-		DB_Avatars(_Avatars)
+		DB_Avatars(_Avatar)
 		AND
-		InSamePartyGroup(_Noncombatant, _Avatars, 1)
+		InSamePartyGroup(_Noncombatant, _Avatar, 1)
+		AND
+		QRY_OnlyOnce("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonHostAvatars")
 		THEN
-		// TODO: can I (ideally consistently) pick a single character from multiple?
-		DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Avatars);
+		DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Avatar);
 		DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning non-host avatars");
 		
 		// non-avatar combatants
 		QRY
 		QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage((CHARACTER)_Noncombatant)
 		AND
-		DB_Avatars(_Avatars)
+		QRY_OnlyOnce_Reset("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonAvatarCompanions")
 		AND
-		InSamePartyGroup(_Noncombatant, _Avatars, 0)
+		NOT QRY_QUARIS_NCC_IsGroupedWithAnyAvatar(_Noncombatant)
 		AND
 		DB_PartyMembers(_PartyMembers)
 		AND
 		InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 		AND
 		HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 0)
+		AND
+		QRY_OnlyOnce("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonAvatarCompanions")
 		THEN
-		// TODO: can I (ideally consistently) pick a single character from multiple?
 		DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers);
 		DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning non-avatar combatants");
 		
@@ -518906,7 +518908,7 @@ Goal(860)
 		AND
 		DB_PartyMembers(_PartyMembers)
 		AND
-		InSamePartyGroup(_Noncombatant, _PartyMembers, 0)
+		InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 		AND
 		HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 1)
 		THEN
@@ -518922,6 +518924,17 @@ Goal(860)
 		InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 		THEN
 		NOT DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _PartyMembers);
+		
+		// is character grouped with any avatar?
+		
+		QRY
+		QRY_QUARIS_NCC_IsGroupedWithAnyAvatar((CHARACTER)_Character)
+		AND
+		DB_Avatars(_Avatar)
+		AND
+		InSamePartyGroup(_Character, _Avatar, 1)
+		THEN
+		DB_NOOP(1);
 	}
 	EXIT
 	{
@@ -518961,7 +518974,11 @@ Goal(861)
 		IF
 		CharacterLeftParty(_Character)
 		THEN
-		RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		// Removing the toggle passive now should let us correctly toggle it to the
+		// correct default setting when it's re-added.
+		// (Although it seemed to be defaulting correctly even when it wasn't removed,
+		// for reasons I don't understand...)
+		RemovePassive(_Character, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
 		
 		// Set up a party member
 		
@@ -519030,74 +519047,77 @@ Goal(862)
 	}
 	KB
 	{
-		// Give the is-noncombatant toggle to all non-avatar party members
+		// Give the is-noncombatant toggle to all non-avatar party members (but not summons or followers)
 		
-		// TODO: Grant the is-noncombatant status to all summons of noncombatants too
+		// When (re)joining the party, always default to not combatant,
+		// to avoid being locked out of controlling the character
+		// in case a combat is occurring halfway across the map.
+		// (Plus it's much simpler to implement.)
+		
+		// Game load => give toggle
 		
 		IF
 		LevelLoaded(_)
 		THEN
-		TimerLaunch("QUARIS_NCC_CompanionIsNoncombatantToggle_InitDelay", 0);
+		TimerLaunch("QUARIS_NCC_IsNoncombatantToggle_InitDelay", 0);
 		
 		IF
-		TimerFinished("QUARIS_NCC_CompanionIsNoncombatantToggle_InitDelay")
+		TimerFinished("QUARIS_NCC_IsNoncombatantToggle_InitDelay")
 		AND
-		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
+		DB_PartyMembers(_PartyMember)
 		THEN
-		PROC_QUARIS_NCC_GiveNoncombatantToggle();
+		PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
+		
+		// Character joins party => give toggle
 		
 		IF
-		CharacterJoinedParty(_Character)
+		CharacterJoinedParty(_PartyMember)
 		AND
-		DB_PartyMembers(_Character)
-		AND
-		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
+		DB_PartyMembers(_PartyMember)
 		THEN
-		PROC_QUARIS_NCC_GiveNoncombatantToggle();
+		PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
 		
-		// Revoke the toggle while any combat is in progress
 		
+		// Character leaves party => remove toggle
 		IF
-		DB_QUARIS_NCC_IsAnyCombatInProgress(1)
+		CharacterLeftParty(_PartyMember)
 		THEN
-		PROC_QUARIS_NCC_RevokeNoncombatantToggle();
+		PROC_QUARIS_NCC_RemoveIsNoncombatantToggle(_PartyMember);
 		
-		IF
-		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
-		THEN
-		PROC_QUARIS_NCC_GiveNoncombatantToggle();
-		
-		// Procedures to give/revoke the toggle
+		// Give toggle (and set to the correct default)
 		
 		PROC
-		PROC_QUARIS_NCC_GiveNoncombatantToggle()
+		PROC_QUARIS_NCC_GiveIsNoncombatantToggle((CHARACTER)_PartyMember)
 		AND
-		DB_PartyMembers(_PartyMembers)
+		IsSummon(_PartyMember, 0)
 		AND
-		NOT DB_Avatars(_PartyMembers)
+		IsPartyFollower(_PartyMember, 0)
 		AND
-		IsSummon(_PartyMembers, 0)
+		NOT QRY_QUARIS_NCC_IsAvatar(_PartyMember)
 		AND
-		IsPartyFollower(_PartyMembers, 0)
-		AND
-		HasPassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle", 0)
+		HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 0)
 		THEN
-		AddPassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle");
+		AddPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
+		
+		// Remove toggle
 		
 		PROC
-		PROC_QUARIS_NCC_RevokeNoncombatantToggle()
-		AND
-		DB_PartyMembers(_PartyMembers)
-		AND
-		HasPassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle", 1)
+		PROC_QUARIS_NCC_RemoveIsNoncombatantToggle((CHARACTER)_PartyMember)
 		THEN
-		RemovePassive(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatantToggle");
+		RemovePassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
+		
+		// TODO: Test recruting a companion into the active party
+		// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
+		// TODO: Test sending someone to camp and having them re-join the party
+		// TODO: Test multiplayer where an avatar joins partway through
+		// TODO: Test summoning a summon
+		// TODO: Test a follower joining the party
 	}
 	EXIT
 	{
 	}
 }
-Goal(863).Title("GLO_QUARIS_NCC_MoveNoncombatantsOffstage");
+Goal(863).Title("GLO_QUARIS_NCC_IsAvatar");
 Goal(863)
 {
 	INIT
@@ -519105,50 +519125,77 @@ Goal(863)
 	}
 	KB
 	{
-		// Move party members and their summons off-stage
-		
-		// Do NOT move "followers" off-stage, just in case it's important to the story that they be in combat
-		// (e.g. Florin in Wyrm's Rock, or Halsin in the Goblin camp)
+		QRY
+		QRY_QUARIS_NCC_IsAvatar((CHARACTER)_Character)
+		AND
+		DB_Avatars(_Character)
+		THEN
+		DB_NOOP(1);
+	}
+	EXIT
+	{
+	}
+}
+Goal(864).Title("GLO_QUARIS_NCC_MoveNoncombatantsOffstage");
+Goal(864)
+{
+	INIT
+	{
+	}
+	KB
+	{
+		// Move party members off-stage
 		
 		IF
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		AND
 		DB_PartyMembers(_PartyMember)
 		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_CompanionIsNoncombatant", 1)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		THEN
-		PROC_QUARIS_NCC_MovePartyMemberAndSummonsOffStage(_PartyMember);
+		SetOnStage(_PartyMember, 0);
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_CompanionIsNoncombatant", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		AND
 		DB_PartyMembers((CHARACTER)_Object)
 		THEN
-		PROC_QUARIS_NCC_MovePartyMemberAndSummonsOffStage((CHARACTER)_Object);
+		SetOnStage(_Object, 0);
 		
-		PROC
-		PROC_QUARIS_NCC_MovePartyMemberAndSummonsOffStage((CHARACTER)_PartyMember)
-		THEN
-		SetOnStage(_PartyMember, 0);
-		PROC_QUARIS_NCC_MoveSummonsOffStage(_PartyMember);
 		
-		PROC
-		PROC_QUARIS_NCC_MoveSummonsOffStage((CHARACTER)_OwnerPartyMember)
-		AND
-		DB_Summons(_Summon)
-		AND
-		CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
+		
+		// debug
+		/*
+		IF
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
-		SetOnStage(_Summon, 0);
+		DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1");
+		
+		IF
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+		AND
+		DB_PartyMembers(_PartyMember)
+		THEN
+		DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1 AND DB_PartyMembers(_PartyMember)");
+		
+		IF
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant", 1)
+		THEN
+		DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1 AND DB_PartyMembers(_PartyMember) AND HasAppliedStatus(_PartyMember, 'QUARIS_NCC_IsNoncombatant', 1)");
+		*/
 	}
 	EXIT
 	{
 	}
 }
-Goal(864).Title("GLO_QUARIS_NCC_MoveNoncombatsOnstage");
-Goal(864)
+Goal(865).Title("GLO_QUARIS_NCC_MoveNoncombatsOnstage");
+Goal(865)
 {
 	INIT
 	{
@@ -519160,8 +519207,7 @@ Goal(864)
 		AND
 		DB_PartyMembers(_Noncombatant)
 		AND
-		HasAppliedStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant", 1)
-		//IsOnStage(_Noncombatant, 0)
+		HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		AND
 		QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage(_Noncombatant)
 		AND
@@ -519169,15 +519215,12 @@ Goal(864)
 		AND
 		QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage(_Noncombatant)
 		AND
-		HasAppliedStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant", 1)
-		//GetHostCharacter(_TargetCharacter)
-		// temp ^
+		HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		AND
 		GetPosition(_TargetCharacter, _TargetX, _TargetY, _TargetZ)
 		AND
 		FindValidPosition(_TargetX, _TargetY, _TargetZ, 10.0, _Noncombatant, 1, _ValidX, _ValidY, _ValidZ)
 		THEN
-		DebugLog("Moving noncombatant onto stage");
 		// The last few arguments for this TeleportToPosition call are:
 		//  - TeleportLinkedCharacters = 0
 		//  - TeleportPartyFollowers = 0
@@ -519187,8 +519230,8 @@ Goal(864)
 		TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
 		SetOnStage(_Noncombatant, 1);
 		// Workaround to this status not showing after the noncombatant comes back on stage
-		RemoveStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant");
-		ApplyStatus(_Noncombatant, "QUARIS_NCC_CompanionIsNoncombatant", -1.0);
+		RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
+		ApplyStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
 		PROC_QUARIS_NCC_PutOwnedSummonsOnstage(_Noncombatant);
 		
 		PROC
@@ -519200,15 +519243,16 @@ Goal(864)
 		THEN
 		SetOnStage(_Summon, 1);
 		// Attempt to fix the status not showing when the noncombatant comes back on stage
-		RemoveStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant");
-		ApplyStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", -1.0);
+		// TODO: Test, is this still an issue?
+		//RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
+		//ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
 	}
 	EXIT
 	{
 	}
 }
-Goal(865).Title("GLO_QUARIS_NCC_WatchCombat");
-Goal(865)
+Goal(866).Title("GLO_QUARIS_NCC_WatchCombat");
+Goal(866)
 {
 	INIT
 	{
@@ -519220,6 +519264,8 @@ Goal(865)
 		
 		IF
 		CombatStarted(_Combat)
+		AND
+		QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 		THEN
 		NOT DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 		DB_QUARIS_NCC_IsAnyCombatInProgress(1);
@@ -519227,43 +519273,34 @@ Goal(865)
 		IF
 		CombatEnded(_Combat)
 		AND
-		// Includes summons, followers, etc
-		DB_Players(_Players)
-		AND
-		NOT IsInCombat((GUIDSTRING)_Players, 1)
-		//AND
-		// Noncombatants might technically be in combat for a very short amount of time,
-		// before they are taken off stage in reaction to the combat having started.
-		// But we don't want to count that as "in combat" for these purposes.
-		//HasAppliedStatus(_Players, "QUARIS_NCC_CompanionIsNoncombatant", 0)
-		// TODO: What about IsInNarrativeCombat? What is the difference?
+		NOT QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 		THEN
-		DebugLog("GLO_QUARIS_NCC_WatchCombat debug setting DB_QUARIS_NCC_IsAnyCombatInProgress(0)");
 		NOT DB_QUARIS_NCC_IsAnyCombatInProgress(1);
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 		
-		// TODO: Handle combat ending with TPK (excluding off-stage people)
-		
-		
-		IF
-		CombatEnded(_Combat)
-		THEN
-		DebugLog("GLO_QUARIS_NCC_WatchCombat debug CombatEnded");
-		
-		IF
-		CombatEnded(_Combat)
+		QRY
+		QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 		AND
-		// Includes summons, followers, etc
-		DB_Players(_Players)
+		DB_PartyMembers(_PartyMember)
+		AND
+		// Noncombatants might technically be in combat for a very short amount of time,
+		// before they are taken off stage in reaction to the combat having started?
+		// But we don't want to count that
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		AND
+		// I suspect IsInCombat would return 1 for narrative combats, but I couldn't
+		// find any documentation to confirm, and it's difficult to test.
+		// If it doesn't, then it might be necessary to check IsInNarrativeCombat here.
+		IsInCombat(_PartyMember, 1)
 		THEN
-		DebugLog("GLO_QUARIS_NCC_WatchCombat debug CombatEnded AND DB_Players(_Players)");
+		DB_NOOP(1);
 	}
 	EXIT
 	{
 	}
 }
-Goal(866).Title("GLO_QUARIS_NCC_WatchForceOffStage");
-Goal(866)
+Goal(867).Title("GLO_QUARIS_NCC_WatchForceOffStage");
+Goal(867)
 {
 	INIT
 	{
@@ -519292,11 +519329,11 @@ Goal(866)
 		IF
 		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
 		THEN
+		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
-		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
 		
-		// Watch flags => give/revoke visual statuses
+		// Watch flags => give/revoke visual status
 		
 		IF
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
@@ -519317,13 +519354,63 @@ Goal(866)
 		DB_PartyMembers(_PartyMember)
 		THEN
 		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		
+		// Watch leaving the party => revoke visual status
+		
+		IF
+		CharacterLeftParty(_Character)
+		THEN
+		RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		
+		// When (re)joining the party, if the force flag is enabled,
+		// then defaulting the passive toggle should apply
+		// QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd
+		// which should make everything else be taken care of
 	}
 	EXIT
 	{
 	}
 }
-Goal(867).Title("GLO_QUARIS_NCC_WatchNoncombatantToggle");
-Goal(867)
+Goal(868).Title("GLO_QUARIS_NCC_WatchForTPK");
+Goal(868)
+{
+	INIT
+	{
+	}
+	KB
+	{
+		
+		IF
+		Died(_Character)
+		AND
+		NOT QRY_QUARIS_NCC_IsAnyPartyMemberCombatantAlive()
+		THEN
+		ShowGameOverMenu();
+		
+		QRY
+		QRY_QUARIS_NCC_IsAnyPartyMemberCombatantAlive()
+		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		IsDead(_PartyMember, 0)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		AND
+		IsSummon(_PartyMember, 0)
+		AND
+		IsPartyFollower(_PartyMember, 0)
+		THEN
+		DB_NOOP(1);
+		
+		// TODO: Is there any possibility of a softlock if only a follower or summon is left alive?
+		// In vanilla, does companions + avatar dying but at least one summon living trigger game over or not?
+	}
+	EXIT
+	{
+	}
+}
+Goal(869).Title("GLO_QUARIS_NCC_WatchNoncombatantToggle");
+Goal(869)
 {
 	INIT
 	{
@@ -519331,46 +519418,108 @@ Goal(867)
 	KB
 	{
 		// Watch for when the players manually toggle whether a party member is a noncombatant
-		// When they do, sync that party members' summons' noncombatant status
+		// When they do, sync that party members' and their summons' noncombatant status
+		
+		// The toggle adds/removes hidden technical statuses that trigger this code,
+		// instead of simply adding/removing a single status directly.
+		// This is so that...
+		//  - This code can ensure the status won't be added if it's already there
+		//  - This code can differentiate between the toggle being changed by the user
+		//    vs. the visual indicator status being added/removed programmatically
+		
+		// If someone leaves the party, then they might need to enter combat
+		// (E.g.: Laezel or Shadowheart in act 1; or Jaheira, Minsc, and maybe Wyll in act 3).
+		// So remove the non-combatant status whenever someone leaves the party.
+		
+		// When (re)joining the party, always default to not combatant,
+		// to avoid being locked out of controlling the character
+		// in case a combat is occurring halfway across the map.
+		// (Plus it's much simpler to implement.)
+		
+		// TODO: Add some sort of exception for the Lae'zel romance scene where she fights you?
+		// (Or does she technically leave the party? And so would that already be handled?)
+		// Any other exceptions for combat?
+		
+		// Watch hidden technical statuses => apply/remove main status
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_CompanionIsNoncombatant", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd", _, _)
+		THEN
+		RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd");
+		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToCompanion((CHARACTER)_Object);
+		
+		IF
+		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove", _, _)
+		THEN
+		RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove");
+		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Object);
+		
+		// Character leaves party => revoke main status
+		
+		IF
+		CharacterLeftParty(_Character)
+		THEN
+		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion(_Character);
+		
+		// Apply main status
+		
+		PROC
+		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToCompanion((CHARACTER)_Companion)
+		THEN
+		PROC_QUARIS_NCC_IfNoCombatApplyStatusIsNoncombatantToCompanion(_Companion);
+		PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle(_Companion);
+		
+		PROC
+		PROC_QUARIS_NCC_IfNoCombatApplyStatusIsNoncombatantToCompanion((CHARACTER)_Companion)
 		AND
-		DB_PartyMembers(_OwnerPartyMember)
+		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 		AND
-		IsSummon(_OwnerPartyMember, 0)
+		HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		THEN
+		ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons(_Companion);
+		
+		PROC
+		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons((CHARACTER)_OwnerCompanion)
 		AND
 		DB_Summons(_Summon)
 		AND
-		CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
+		CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 		AND
-		HasAppliedStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", 0)
+		HasAppliedStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", 0)
 		THEN
-		DebugLog("Applied QUARIS_NCC_CompanionIsNoncombatant");
-		ApplyStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
 		
-		IF
-		StatusRemoved(_OwnerPartyMember, "QUARIS_NCC_CompanionIsNoncombatant", _, _)
+		PROC
+		PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle((CHARACTER)_Companion)
 		AND
-		DB_PartyMembers((CHARACTER)_OwnerPartyMember)
-		AND
-		IsSummon((CHARACTER)_OwnerPartyMember, 0)
+		DB_QUARIS_NCC_IsAnyCombatInProgress(1)
+		THEN
+		TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
+		
+		// Remove main status
+		
+		PROC
+		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Companion)
+		THEN
+		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
+		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
+		
+		PROC
+		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons((CHARACTER)_OwnerCompanion)
 		AND
 		DB_Summons(_Summon)
 		AND
-		CharacterGetOwner((CHARACTER)_Summon, (CHARACTER)_OwnerPartyMember)
-		AND
-		HasAppliedStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant", 1)
+		CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 		THEN
-		DebugLog("Removed QUARIS_NCC_CompanionIsNoncombatant");
-		RemoveStatus(_Summon, "QUARIS_NCC_CompanionIsNoncombatant");
+		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
 	}
 	EXIT
 	{
 	}
 }
-Goal(868).Title("GLO_Quasit_Summon");
-Goal(868)
+Goal(870).Title("GLO_Quasit_Summon");
+Goal(870)
 {
 	INIT
 	{
@@ -519489,8 +519638,8 @@ Goal(868)
 	{
 	}
 }
-Goal(869).Title("GLO_RestorationStation");
-Goal(869)
+Goal(871).Title("GLO_RestorationStation");
+Goal(871)
 {
 	INIT
 	{
@@ -519583,8 +519732,8 @@ Goal(869)
 	{
 	}
 }
-Goal(870).Title("GLO_SafeRomance");
-Goal(870)
+Goal(872).Title("GLO_SafeRomance");
+Goal(872)
 {
 	INIT
 	{
@@ -519753,8 +519902,8 @@ Goal(870)
 	{
 	}
 }
-Goal(871).Title("GLO_SavegamePatchHelpers");
-Goal(871)
+Goal(873).Title("GLO_SavegamePatchHelpers");
+Goal(873)
 {
 	INIT
 	{
@@ -519805,8 +519954,8 @@ Goal(871)
 	{
 	}
 }
-Goal(872).Title("GLO_ScryingEye");
-Goal(872)
+Goal(874).Title("GLO_ScryingEye");
+Goal(874)
 {
 	INIT
 	{
@@ -520461,8 +520610,8 @@ Goal(872)
 	{
 	}
 }
-Goal(873).Title("GLO_SE_Sound");
-Goal(873)
+Goal(875).Title("GLO_SE_Sound");
+Goal(875)
 {
 	INIT
 	{
@@ -520689,8 +520838,8 @@ Goal(873)
 	{
 	}
 }
-Goal(874).Title("GLO_ShortRest");
-Goal(874)
+Goal(876).Title("GLO_ShortRest");
+Goal(876)
 {
 	INIT
 	{
@@ -520750,8 +520899,8 @@ Goal(874)
 	{
 	}
 }
-Goal(875).Title("GLO_Skillchecks");
-Goal(875)
+Goal(877).Title("GLO_Skillchecks");
+Goal(877)
 {
 	INIT
 	{
@@ -521866,8 +522015,8 @@ Goal(875)
 	{
 	}
 }
-Goal(876).Title("GLO_SocietyOfBrilliance");
-Goal(876)
+Goal(878).Title("GLO_SocietyOfBrilliance");
+Goal(878)
 {
 	INIT
 	{
@@ -521904,8 +522053,8 @@ Goal(876)
 	{
 	}
 }
-Goal(877).Title("GLO_Sorcerer");
-Goal(877)
+Goal(879).Title("GLO_Sorcerer");
+Goal(879)
 {
 	INIT
 	{
@@ -522013,8 +522162,8 @@ Goal(877)
 	{
 	}
 }
-Goal(878).Title("GLO_SpeakerSelector");
-Goal(878)
+Goal(880).Title("GLO_SpeakerSelector");
+Goal(880)
 {
 	INIT
 	{
@@ -522318,8 +522467,8 @@ Goal(878)
 	{
 	}
 }
-Goal(879).Title("GLO_SpeakWithDead");
-Goal(879)
+Goal(881).Title("GLO_SpeakWithDead");
+Goal(881)
 {
 	INIT
 	{
@@ -522578,8 +522727,8 @@ Goal(879)
 	{
 	}
 }
-Goal(880).Title("GLO_SpellEvents");
-Goal(880)
+Goal(882).Title("GLO_SpellEvents");
+Goal(882)
 {
 	INIT
 	{
@@ -522606,8 +522755,8 @@ Goal(880)
 	{
 	}
 }
-Goal(881).Title("GLO_Spells");
-Goal(881)
+Goal(883).Title("GLO_Spells");
+Goal(883)
 {
 	INIT
 	{
@@ -523805,8 +523954,8 @@ Goal(881)
 	{
 	}
 }
-Goal(882).Title("GLO_Spells_Banishment");
-Goal(882)
+Goal(884).Title("GLO_Spells_Banishment");
+Goal(884)
 {
 	INIT
 	{
@@ -523838,8 +523987,8 @@ Goal(882)
 	{
 	}
 }
-Goal(883).Title("GLO_Spells_PostEA");
-Goal(883)
+Goal(885).Title("GLO_Spells_PostEA");
+Goal(885)
 {
 	INIT
 	{
@@ -524848,8 +524997,8 @@ Goal(883)
 	{
 	}
 }
-Goal(884).Title("GLO_Spells_RemoveCurse");
-Goal(884)
+Goal(886).Title("GLO_Spells_RemoveCurse");
+Goal(886)
 {
 	INIT
 	{
@@ -524885,8 +525034,8 @@ Goal(884)
 	{
 	}
 }
-Goal(885).Title("GLO_StartupParameters");
-Goal(885)
+Goal(887).Title("GLO_StartupParameters");
+Goal(887)
 {
 	INIT
 	{
@@ -524902,8 +525051,8 @@ Goal(885)
 	{
 	}
 }
-Goal(886).Title("GLO_SteelWatch");
-Goal(886)
+Goal(888).Title("GLO_SteelWatch");
+Goal(888)
 {
 	INIT
 	{
@@ -525269,8 +525418,8 @@ Goal(886)
 	{
 	}
 }
-Goal(887).Title("GLO_StoryStateRestore");
-Goal(887)
+Goal(889).Title("GLO_StoryStateRestore");
+Goal(889)
 {
 	INIT
 	{
@@ -525820,8 +525969,8 @@ Goal(887)
 	{
 	}
 }
-Goal(888).Title("GLO_StoryStateRestoreDefinitions");
-Goal(888)
+Goal(890).Title("GLO_StoryStateRestoreDefinitions");
+Goal(890)
 {
 	INIT
 	{
@@ -526172,8 +526321,8 @@ Goal(888)
 	{
 	}
 }
-Goal(889).Title("GLO_Surrender");
-Goal(889)
+Goal(891).Title("GLO_Surrender");
+Goal(891)
 {
 	INIT
 	{
@@ -526755,8 +526904,8 @@ Goal(889)
 	{
 	}
 }
-Goal(890).Title("GLO_SussurFlowers");
-Goal(890)
+Goal(892).Title("GLO_SussurFlowers");
+Goal(892)
 {
 	INIT
 	{
@@ -526933,8 +527082,8 @@ Goal(890)
 	{
 	}
 }
-Goal(891).Title("GLO_Tadpole");
-Goal(891)
+Goal(893).Title("GLO_Tadpole");
+Goal(893)
 {
 	INIT
 	{
@@ -527269,8 +527418,8 @@ Goal(891)
 	{
 	}
 }
-Goal(892).Title("GLO_Tadpole_PostEA");
-Goal(892)
+Goal(894).Title("GLO_Tadpole_PostEA");
+Goal(894)
 {
 	INIT
 	{
@@ -528243,8 +528392,8 @@ Goal(892)
 	{
 	}
 }
-Goal(893).Title("GLO_TadpoleSharing");
-Goal(893)
+Goal(895).Title("GLO_TadpoleSharing");
+Goal(895)
 {
 	INIT
 	{
@@ -528424,8 +528573,8 @@ Goal(893)
 	{
 	}
 }
-Goal(894).Title("GLO_Test");
-Goal(894)
+Goal(896).Title("GLO_Test");
+Goal(896)
 {
 	INIT
 	{
@@ -528465,8 +528614,8 @@ Goal(894)
 	{
 	}
 }
-Goal(895).Title("GLO_ThrallOfTheAbsolute");
-Goal(895)
+Goal(897).Title("GLO_ThrallOfTheAbsolute");
+Goal(897)
 {
 	INIT
 	{
@@ -529079,8 +529228,8 @@ Goal(895)
 	{
 	}
 }
-Goal(896).Title("GLO_TieflingLeader");
-Goal(896)
+Goal(898).Title("GLO_TieflingLeader");
+Goal(898)
 {
 	INIT
 	{
@@ -529106,8 +529255,8 @@ Goal(896)
 	{
 	}
 }
-Goal(897).Title("GLO_TopicalGreetings");
-Goal(897)
+Goal(899).Title("GLO_TopicalGreetings");
+Goal(899)
 {
 	INIT
 	{
@@ -529312,8 +529461,8 @@ Goal(897)
 	{
 	}
 }
-Goal(898).Title("GLO_TopicalGreetings_Gustav");
-Goal(898)
+Goal(900).Title("GLO_TopicalGreetings_Gustav");
+Goal(900)
 {
 	INIT
 	{
@@ -530158,8 +530307,8 @@ Goal(898)
 	{
 	}
 }
-Goal(899).Title("GLO_TriggerEvents");
-Goal(899)
+Goal(901).Title("GLO_TriggerEvents");
+Goal(901)
 {
 	INIT
 	{
@@ -530435,8 +530584,8 @@ Goal(899)
 	{
 	}
 }
-Goal(900).Title("GLO_TutorialEventsHandling");
-Goal(900)
+Goal(902).Title("GLO_TutorialEventsHandling");
+Goal(902)
 {
 	INIT
 	{
@@ -530760,8 +530909,8 @@ Goal(900)
 	{
 	}
 }
-Goal(901).Title("GLO_Tutorials");
-Goal(901)
+Goal(903).Title("GLO_Tutorials");
+Goal(903)
 {
 	INIT
 	{
@@ -532731,8 +532880,8 @@ Goal(901)
 	{
 	}
 }
-Goal(902).Title("GLO_Tutorials_TimerTracking");
-Goal(902)
+Goal(904).Title("GLO_Tutorials_TimerTracking");
+Goal(904)
 {
 	INIT
 	{
@@ -532839,8 +532988,8 @@ Goal(902)
 	{
 	}
 }
-Goal(903).Title("GLO_Tutorials_TUT_Act1");
-Goal(903)
+Goal(905).Title("GLO_Tutorials_TUT_Act1");
+Goal(905)
 {
 	INIT
 	{
@@ -532922,8 +533071,8 @@ Goal(903)
 	{
 	}
 }
-Goal(904).Title("GLO_Us_Summon");
-Goal(904)
+Goal(906).Title("GLO_Us_Summon");
+Goal(906)
 {
 	INIT
 	{
@@ -532996,8 +533145,8 @@ Goal(904)
 	{
 	}
 }
-Goal(905).Title("GLO_Voss");
-Goal(905)
+Goal(907).Title("GLO_Voss");
+Goal(907)
 {
 	INIT
 	{
@@ -533415,8 +533564,8 @@ Goal(905)
 	{
 	}
 }
-Goal(906).Title("GLO_Warlock");
-Goal(906)
+Goal(908).Title("GLO_Warlock");
+Goal(908)
 {
 	INIT
 	{
@@ -533547,8 +533696,8 @@ Goal(906)
 	{
 	}
 }
-Goal(907).Title("GLO_WorldGossip");
-Goal(907)
+Goal(909).Title("GLO_WorldGossip");
+Goal(909)
 {
 	INIT
 	{
@@ -533817,8 +533966,8 @@ Goal(907)
 	{
 	}
 }
-Goal(908).Title("GLO_WorldTimelineHandler");
-Goal(908)
+Goal(910).Title("GLO_WorldTimelineHandler");
+Goal(910)
 {
 	INIT
 	{
@@ -533872,8 +534021,8 @@ Goal(908)
 	{
 	}
 }
-Goal(909).Title("GLO_ZhentAgent001");
-Goal(909)
+Goal(911).Title("GLO_ZhentAgent001");
+Goal(911)
 {
 	INIT
 	{
@@ -533912,8 +534061,8 @@ Goal(909)
 	{
 	}
 }
-Goal(910).Title("Global_Chasms");
-Goal(910)
+Goal(912).Title("Global_Chasms");
+Goal(912)
 {
 	INIT
 	{
@@ -534116,8 +534265,8 @@ Goal(910)
 	{
 	}
 }
-Goal(911).Title("HAG_HusbandSummon");
-Goal(911)
+Goal(913).Title("HAG_HusbandSummon");
+Goal(913)
 {
 	INIT
 	{
@@ -534160,8 +534309,8 @@ Goal(911)
 	{
 	}
 }
-Goal(912).Title("Hirelings");
-Goal(912)
+Goal(914).Title("Hirelings");
+Goal(914)
 {
 	INIT
 	{
@@ -535452,8 +535601,8 @@ Goal(912)
 	{
 	}
 }
-Goal(913).Title("ModWrapper_Gustav");
-Goal(913)
+Goal(915).Title("ModWrapper_Gustav");
+Goal(915)
 {
 	INIT
 	{
@@ -535469,8 +535618,8 @@ Goal(913)
 	{
 	}
 }
-Goal(914).Title("ORI_DebugBook");
-Goal(914)
+Goal(916).Title("ORI_DebugBook");
+Goal(916)
 {
 	INIT
 	{
@@ -537242,8 +537391,8 @@ Goal(914)
 	{
 	}
 }
-Goal(915).Title("ORI_DebugBook_GustavDev");
-Goal(915)
+Goal(917).Title("ORI_DebugBook_GustavDev");
+Goal(917)
 {
 	INIT
 	{
@@ -541725,8 +541874,8 @@ Goal(915)
 	{
 	}
 }
-Goal(916).Title("ORI_Gale_Elminster");
-Goal(916)
+Goal(918).Title("ORI_Gale_Elminster");
+Goal(918)
 {
 	INIT
 	{
@@ -542535,8 +542684,8 @@ Goal(916)
 		PROC_Camp_RequiredTalks_Complete(S_GLO_Elminster_75bb6396-1132-4064-bafe-205a3f156b9b);
 	}
 }
-Goal(917).Title("ORI_Gale_Elminster_Setup");
-Goal(917)
+Goal(919).Title("ORI_Gale_Elminster_Setup");
+Goal(919)
 {
 	INIT
 	{
@@ -542591,8 +542740,8 @@ Goal(917)
 	{
 	}
 }
-Goal(918).Title("ORI_ShadowheartResurrection");
-Goal(918)
+Goal(920).Title("ORI_ShadowheartResurrection");
+Goal(920)
 {
 	INIT
 	{
@@ -542864,8 +543013,8 @@ Goal(918)
 		NOT DB_DropMutingStatussesDialog(ShadowHeart_Revived_7118b9f8-38c0-02f0-8824-d7c575a3a956);
 	}
 }
-Goal(919).Title("QRY_Characters");
-Goal(919)
+Goal(921).Title("QRY_Characters");
+Goal(921)
 {
 	INIT
 	{
@@ -543791,79 +543940,8 @@ Goal(919)
 	{
 	}
 }
-Goal(920).Title("QUARIS_NCC_Combat");
-Goal(920)
-{
-	INIT
-	{
-	}
-	KB
-	{
-		/*
-		IF
-		CombatStarted(_CombatID)
-		// TODO: and at least one party member is in the combat?
-		// Do I need this for, e.g., when zhent and stone lord people
-		// start fighting on beach before players come close?
-		AND
-		DB_PartyMembers(_PartyMember)
-		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_Companion_Is_Noncombatant", 1)
-		THEN
-		SetOnStage(_PartyMember, 0);
-		// TODO: And exclude summons/followers
-		// maybe use query CharacterGetOwner([in](CHARACTERGUID)_Character, [out](CHARACTERGUID)_Owner)
-		
-		
-		IF
-		CombatEnded(_CombatID)
-		// TODO: Check there are no other combats still active (that include a party member; see TODO above)?
-		// (What if 2 combats occur, and one ends before the other does?)
-		// IsInCombat
-		THEN
-		// TODO: Add a delay of 5 seconds, to make infinite loops less bad
-		// (where only noncombatants join a combat, so they all disappear, so combat ends,
-		// so the noncombatants reappear, so combat starts, etc).
-		// This still won't completely prevent such loops.
-		// Maybe automatically teleport noncombatants to avatar whenever a combat starts/ends
-		// that has only noncombatants and enemies (i.e. no combatant party members)? <-- yes! try this!
-		TimerLaunch("QUARIS_NCC_Bring_Noncombatants_Back", 5000);
-		
-		IF
-		TimerFinished("QUARIS_NCC_Bring_Noncombatants_Back")
-		AND
-		DB_PartyMembers(_PartyMember)
-		AND
-		NOT HasAppliedStatus(_PartyMember, "QUARIS_NCC_Companion_Is_Noncombatant", 0)
-		// TODO: Can I check to see whether coming on stage would start combat
-		// (including dialogs that would start combat, e.g. guards confronting you)
-		// without actually starting combat?
-		THEN
-		SetOnStage(_PartyMember, 1);
-		// TODO: only if the combat ended because the party fled, teleport to an avatar
-		// should prefer avatars who you're grouped with -- InSamePartyGroup([in](CHARACTER)_Character1, [in](CHARACTER)_Character2, [out](INTEGER)_Bool)
-		// 
-		// query FindValidPosition([in](REAL)_SourceX, [in](REAL)_SourceY, [in](REAL)_SourceZ, [in](REAL)_Radius, [in](GUIDSTRING)_Object, [in](INTEGER)_AvoidDangerousSurfaces, [out](REAL)_ValidPositionX, [out](REAL)_ValidPositionY, [out](REAL)_ValidPositionZ)
-		// GetClosestAlivePlayer
-		// GetClosestAliveUserPlayer
-		// GetClosestPlayer
-		// GetClosestPlayerToPosition
-		// GetPosition
-		
-		// Maybe CanJoinCombat would be useful somehow
-		// Be aware of HitProxy ?
-		// Be aware of IsDropInCCActive ?
-		// IsOnStage
-		
-		// Avoid softlock if avatar and combatants TPK; 
-		*/
-	}
-	EXIT
-	{
-	}
-}
-Goal(921).Title("Respec");
-Goal(921)
+Goal(922).Title("Respec");
+Goal(922)
 {
 	INIT
 	{
@@ -543915,8 +543993,8 @@ Goal(921)
 	{
 	}
 }
-Goal(922).Title("SCL_Inquisition");
-Goal(922)
+Goal(923).Title("SCL_Inquisition");
+Goal(923)
 {
 	INIT
 	{
@@ -544004,8 +544082,8 @@ Goal(922)
 	{
 	}
 }
-Goal(923).Title("Shared_CombatDialogs");
-Goal(923)
+Goal(924).Title("Shared_CombatDialogs");
+Goal(924)
 {
 	INIT
 	{
@@ -544135,8 +544213,8 @@ Goal(923)
 	{
 	}
 }
-Goal(924).Title("Start");
-Goal(924)
+Goal(925).Title("Start");
+Goal(925)
 {
 	INIT
 	{
@@ -544167,8 +544245,8 @@ Goal(924)
 		SetFlag(Hireling_State_AllowReplace_a8bffa48-dffb-4615-a318-cc2df8b8a551, NULL_00000000-0000-0000-0000-000000000000, 0, 1);
 	}
 }
-Goal(925).Title("Test");
-Goal(925)
+Goal(926).Title("Test");
+Goal(926)
 {
 	INIT
 	{
@@ -544911,8 +544989,8 @@ Goal(925)
 	{
 	}
 }
-Goal(926).Title("Test_PostEA");
-Goal(926)
+Goal(927).Title("Test_PostEA");
+Goal(927)
 {
 	INIT
 	{
@@ -545044,8 +545122,8 @@ Goal(926)
 	{
 	}
 }
-Goal(927).Title("TUT_GameOverLogic");
-Goal(927)
+Goal(928).Title("TUT_GameOverLogic");
+Goal(928)
 {
 	INIT
 	{
@@ -545068,8 +545146,8 @@ Goal(927)
 	{
 	}
 }
-Goal(928).Title("TUT_Helm");
-Goal(928)
+Goal(929).Title("TUT_Helm");
+Goal(929)
 {
 	INIT
 	{
@@ -547205,8 +547283,8 @@ Goal(928)
 		PROC_CheckPartyFull();
 	}
 }
-Goal(929).Title("TUT_Laboratory");
-Goal(929)
+Goal(930).Title("TUT_Laboratory");
+Goal(930)
 {
 	INIT
 	{
@@ -547838,8 +547916,8 @@ Goal(929)
 	{
 	}
 }
-Goal(930).Title("TUT_LowerDeck");
-Goal(930)
+Goal(931).Title("TUT_LowerDeck");
+Goal(931)
 {
 	INIT
 	{
@@ -548339,8 +548417,8 @@ Goal(930)
 	{
 	}
 }
-Goal(931).Title("TUT_Misc");
-Goal(931)
+Goal(932).Title("TUT_Misc");
+Goal(932)
 {
 	INIT
 	{
@@ -549495,8 +549573,8 @@ Goal(931)
 	{
 	}
 }
-Goal(932).Title("TUT_NOT_EA");
-Goal(932)
+Goal(933).Title("TUT_NOT_EA");
+Goal(933)
 {
 	INIT
 	{
@@ -549524,8 +549602,8 @@ Goal(932)
 	{
 	}
 }
-Goal(933).Title("TUT_OriginMoments_Shadowheart");
-Goal(933)
+Goal(934).Title("TUT_OriginMoments_Shadowheart");
+Goal(934)
 {
 	INIT
 	{
@@ -549553,8 +549631,8 @@ Goal(933)
 	{
 	}
 }
-Goal(934).Title("TUT_OriginMoments_Shadowheart_PostEA");
-Goal(934)
+Goal(935).Title("TUT_OriginMoments_Shadowheart_PostEA");
+Goal(935)
 {
 	INIT
 	{
@@ -549580,8 +549658,8 @@ Goal(934)
 	{
 	}
 }
-Goal(935).Title("TUT_Start");
-Goal(935)
+Goal(936).Title("TUT_Start");
+Goal(936)
 {
 	INIT
 	{
@@ -550119,8 +550197,8 @@ Goal(935)
 	{
 	}
 }
-Goal(936).Title("TUT_TransformChamber");
-Goal(936)
+Goal(937).Title("TUT_TransformChamber");
+Goal(937)
 {
 	INIT
 	{
@@ -551113,8 +551191,8 @@ Goal(936)
 		
 	}
 }
-Goal(937).Title("TUT_Tutorials_TUTOnly");
-Goal(937)
+Goal(938).Title("TUT_Tutorials_TUTOnly");
+Goal(938)
 {
 	INIT
 	{
@@ -551355,8 +551433,8 @@ Goal(937)
 	{
 	}
 }
-Goal(938).Title("TUT_WakeUp");
-Goal(938)
+Goal(939).Title("TUT_WakeUp");
+Goal(939)
 {
 	INIT
 	{
@@ -551386,8 +551464,8 @@ Goal(938)
 	{
 	}
 }
-Goal(939).Title("Tutorial");
-Goal(939)
+Goal(940).Title("Tutorial");
+Goal(940)
 {
 	INIT
 	{
@@ -551413,8 +551491,8 @@ Goal(939)
 	{
 	}
 }
-Goal(940).Title("Vignettes");
-Goal(940)
+Goal(941).Title("Vignettes");
+Goal(941)
 {
 	INIT
 	{
@@ -551942,8 +552020,8 @@ Goal(940)
 	{
 	}
 }
-Goal(941).Title("Z_GLO_Act2_DebugSetup");
-Goal(941)
+Goal(942).Title("Z_GLO_Act2_DebugSetup");
+Goal(942)
 {
 	INIT
 	{
@@ -552080,8 +552158,8 @@ Goal(941)
 	{
 	}
 }
-Goal(942).Title("Z_GLO_Act3_DebugSetup");
-Goal(942)
+Goal(943).Title("Z_GLO_Act3_DebugSetup");
+Goal(943)
 {
 	INIT
 	{
@@ -552806,8 +552884,8 @@ Goal(942)
 	{
 	}
 }
-Goal(943).Title("Z_GLO_DLC");
-Goal(943)
+Goal(944).Title("Z_GLO_DLC");
+Goal(944)
 {
 	INIT
 	{
@@ -553352,8 +553430,8 @@ Goal(943)
 	{
 	}
 }
-Goal(944).Title("Z_Shared_Campaign_At_End");
-Goal(944)
+Goal(945).Title("Z_Shared_Campaign_At_End");
+Goal(945)
 {
 	INIT
 	{
@@ -553372,8 +553450,8 @@ Goal(944)
 	{
 	}
 }
-Goal(945).Title("Z_Shared_CharacterCreation");
-Goal(945)
+Goal(946).Title("Z_Shared_CharacterCreation");
+Goal(946)
 {
 	INIT
 	{
@@ -553577,8 +553655,8 @@ Goal(945)
 	{
 	}
 }
-Goal(946).Title("Z_Shared_CharacterCreation_AfterEvents");
-Goal(946)
+Goal(947).Title("Z_Shared_CharacterCreation_AfterEvents");
+Goal(947)
 {
 	INIT
 	{
@@ -553615,8 +553693,8 @@ Goal(946)
 	{
 	}
 }
-Goal(947).Title("Z_Shared_CharacterCreation_CCStartNewSupport");
-Goal(947)
+Goal(948).Title("Z_Shared_CharacterCreation_CCStartNewSupport");
+Goal(948)
 {
 	INIT
 	{
@@ -553638,8 +553716,8 @@ Goal(947)
 	{
 	}
 }
-Goal(948).Title("Z_Shared_TutorialCharacterCreation");
-Goal(948)
+Goal(949).Title("Z_Shared_TutorialCharacterCreation");
+Goal(949)
 {
 	INIT
 	{
@@ -553755,8 +553833,8 @@ Goal(948)
 	{
 	}
 }
-Goal(949).Title("ZZZ_LastGoal");
-Goal(949)
+Goal(950).Title("ZZZ_LastGoal");
+Goal(950)
 {
 	INIT
 	{
@@ -553997,8 +554075,8 @@ Goal(949)
 	{
 	}
 }
-Goal(950).Title("Zzz_LastUnderStart");
-Goal(950)
+Goal(951).Title("Zzz_LastUnderStart");
+Goal(951)
 {
 	INIT
 	{
@@ -554032,8 +554110,8 @@ Goal(950)
 	{
 	}
 }
-Goal(951).Title("ZZZ_Tutorials");
-Goal(951)
+Goal(952).Title("ZZZ_Tutorials");
+Goal(952)
 {
 	INIT
 	{
@@ -554106,8 +554184,8 @@ Goal(11).SubGoal(848);
 Goal(11).SubGoal(849);
 Goal(11).SubGoal(851);
 Goal(11).SubGoal(857);
-Goal(11).SubGoal(880);
-Goal(11).SubGoal(923);
+Goal(11).SubGoal(882);
+Goal(11).SubGoal(924);
 Goal(2).SubGoals(AND);
 Goal(3).SubGoals(AND);
 Goal(15).SubGoals(AND);
@@ -554155,8 +554233,8 @@ Goal(848).SubGoals(AND);
 Goal(849).SubGoals(AND);
 Goal(851).SubGoals(AND);
 Goal(857).SubGoals(AND);
-Goal(880).SubGoals(AND);
-Goal(923).SubGoals(AND);
+Goal(882).SubGoals(AND);
+Goal(924).SubGoals(AND);
 Goal(12).SubGoal(5);
 Goal(12).SubGoal(10);
 Goal(12).SubGoal(43);
@@ -554189,12 +554267,12 @@ Goal(12).SubGoal(756);
 Goal(12).SubGoal(772);
 Goal(12).SubGoal(791);
 Goal(12).SubGoal(818);
-Goal(12).SubGoal(870);
-Goal(12).SubGoal(900);
-Goal(12).SubGoal(901);
+Goal(12).SubGoal(872);
 Goal(12).SubGoal(902);
-Goal(12).SubGoal(912);
-Goal(12).SubGoal(921);
+Goal(12).SubGoal(903);
+Goal(12).SubGoal(904);
+Goal(12).SubGoal(914);
+Goal(12).SubGoal(922);
 Goal(5).SubGoals(AND);
 Goal(10).SubGoals(AND);
 Goal(43).SubGoals(AND);
@@ -554227,12 +554305,12 @@ Goal(756).SubGoals(AND);
 Goal(772).SubGoals(AND);
 Goal(791).SubGoals(AND);
 Goal(818).SubGoals(AND);
-Goal(870).SubGoals(AND);
-Goal(900).SubGoals(AND);
-Goal(901).SubGoals(AND);
+Goal(872).SubGoals(AND);
 Goal(902).SubGoals(AND);
-Goal(912).SubGoals(AND);
-Goal(921).SubGoals(AND);
+Goal(903).SubGoals(AND);
+Goal(904).SubGoals(AND);
+Goal(914).SubGoals(AND);
+Goal(922).SubGoals(AND);
 Goal(88).SubGoal(89);
 Goal(88).SubGoal(91);
 Goal(88).SubGoal(92);
@@ -554428,7 +554506,7 @@ Goal(88).SubGoal(287);
 Goal(88).SubGoal(288);
 Goal(88).SubGoal(732);
 Goal(88).SubGoal(733);
-Goal(88).SubGoal(918);
+Goal(88).SubGoal(920);
 Goal(89).SubGoals(AND);
 Goal(91).SubGoals(AND);
 Goal(92).SubGoals(AND);
@@ -554624,7 +554702,7 @@ Goal(287).SubGoals(AND);
 Goal(288).SubGoals(AND);
 Goal(732).SubGoals(AND);
 Goal(733).SubGoals(AND);
-Goal(918).SubGoals(AND);
+Goal(920).SubGoals(AND);
 Goal(160).SubGoal(158);
 Goal(158).SubGoals(AND);
 Goal(181).SubGoal(136);
@@ -554836,7 +554914,7 @@ Goal(318).SubGoal(476);
 Goal(318).SubGoal(477);
 Goal(318).SubGoal(478);
 Goal(318).SubGoal(479);
-Goal(318).SubGoal(922);
+Goal(318).SubGoal(923);
 Goal(319).SubGoals(AND);
 Goal(320).SubGoals(AND);
 Goal(321).SubGoals(AND);
@@ -554982,7 +555060,7 @@ Goal(476).SubGoals(AND);
 Goal(477).SubGoals(AND);
 Goal(478).SubGoals(AND);
 Goal(479).SubGoals(AND);
-Goal(922).SubGoals(AND);
+Goal(923).SubGoals(AND);
 Goal(363).SubGoal(365);
 Goal(363).SubGoal(371);
 Goal(365).SubGoals(AND);
@@ -555477,72 +555555,72 @@ Goal(798).SubGoals(AND);
 Goal(799).SubGoals(AND);
 Goal(800).SubGoals(AND);
 Goal(801).SubGoals(AND);
-Goal(913).SubGoal(14);
-Goal(913).SubGoal(77);
-Goal(913).SubGoal(80);
-Goal(913).SubGoal(83);
-Goal(913).SubGoal(290);
-Goal(913).SubGoal(441);
-Goal(913).SubGoal(735);
-Goal(913).SubGoal(737);
-Goal(913).SubGoal(740);
-Goal(913).SubGoal(741);
-Goal(913).SubGoal(742);
-Goal(913).SubGoal(743);
-Goal(913).SubGoal(745);
-Goal(913).SubGoal(746);
-Goal(913).SubGoal(762);
-Goal(913).SubGoal(763);
-Goal(913).SubGoal(764);
-Goal(913).SubGoal(765);
-Goal(913).SubGoal(766);
-Goal(913).SubGoal(767);
-Goal(913).SubGoal(768);
-Goal(913).SubGoal(769);
-Goal(913).SubGoal(770);
-Goal(913).SubGoal(771);
-Goal(913).SubGoal(776);
-Goal(913).SubGoal(778);
-Goal(913).SubGoal(779);
-Goal(913).SubGoal(782);
-Goal(913).SubGoal(784);
-Goal(913).SubGoal(789);
-Goal(913).SubGoal(790);
-Goal(913).SubGoal(808);
-Goal(913).SubGoal(809);
-Goal(913).SubGoal(816);
-Goal(913).SubGoal(822);
-Goal(913).SubGoal(823);
-Goal(913).SubGoal(824);
-Goal(913).SubGoal(826);
-Goal(913).SubGoal(830);
-Goal(913).SubGoal(831);
-Goal(913).SubGoal(832);
-Goal(913).SubGoal(833);
-Goal(913).SubGoal(835);
-Goal(913).SubGoal(836);
-Goal(913).SubGoal(837);
-Goal(913).SubGoal(838);
-Goal(913).SubGoal(839);
-Goal(913).SubGoal(840);
-Goal(913).SubGoal(841);
-Goal(913).SubGoal(842);
-Goal(913).SubGoal(843);
-Goal(913).SubGoal(844);
-Goal(913).SubGoal(845);
-Goal(913).SubGoal(850);
-Goal(913).SubGoal(856);
-Goal(913).SubGoal(858);
-Goal(913).SubGoal(872);
-Goal(913).SubGoal(877);
-Goal(913).SubGoal(884);
-Goal(913).SubGoal(886);
-Goal(913).SubGoal(890);
-Goal(913).SubGoal(898);
-Goal(913).SubGoal(924);
-Goal(913).SubGoal(926);
-Goal(913).SubGoal(941);
-Goal(913).SubGoal(942);
+Goal(915).SubGoal(14);
+Goal(915).SubGoal(77);
+Goal(915).SubGoal(80);
+Goal(915).SubGoal(83);
+Goal(915).SubGoal(290);
+Goal(915).SubGoal(441);
+Goal(915).SubGoal(735);
+Goal(915).SubGoal(737);
+Goal(915).SubGoal(740);
+Goal(915).SubGoal(741);
+Goal(915).SubGoal(742);
+Goal(915).SubGoal(743);
+Goal(915).SubGoal(745);
+Goal(915).SubGoal(746);
+Goal(915).SubGoal(762);
+Goal(915).SubGoal(763);
+Goal(915).SubGoal(764);
+Goal(915).SubGoal(765);
+Goal(915).SubGoal(766);
+Goal(915).SubGoal(767);
+Goal(915).SubGoal(768);
+Goal(915).SubGoal(769);
+Goal(915).SubGoal(770);
+Goal(915).SubGoal(771);
+Goal(915).SubGoal(776);
+Goal(915).SubGoal(778);
+Goal(915).SubGoal(779);
+Goal(915).SubGoal(782);
+Goal(915).SubGoal(784);
+Goal(915).SubGoal(789);
+Goal(915).SubGoal(790);
+Goal(915).SubGoal(808);
+Goal(915).SubGoal(809);
+Goal(915).SubGoal(816);
+Goal(915).SubGoal(822);
+Goal(915).SubGoal(823);
+Goal(915).SubGoal(824);
+Goal(915).SubGoal(826);
+Goal(915).SubGoal(830);
+Goal(915).SubGoal(831);
+Goal(915).SubGoal(832);
+Goal(915).SubGoal(833);
+Goal(915).SubGoal(835);
+Goal(915).SubGoal(836);
+Goal(915).SubGoal(837);
+Goal(915).SubGoal(838);
+Goal(915).SubGoal(839);
+Goal(915).SubGoal(840);
+Goal(915).SubGoal(841);
+Goal(915).SubGoal(842);
+Goal(915).SubGoal(843);
+Goal(915).SubGoal(844);
+Goal(915).SubGoal(845);
+Goal(915).SubGoal(850);
+Goal(915).SubGoal(856);
+Goal(915).SubGoal(858);
+Goal(915).SubGoal(874);
+Goal(915).SubGoal(879);
+Goal(915).SubGoal(886);
+Goal(915).SubGoal(888);
+Goal(915).SubGoal(892);
+Goal(915).SubGoal(900);
+Goal(915).SubGoal(925);
+Goal(915).SubGoal(927);
+Goal(915).SubGoal(942);
+Goal(915).SubGoal(943);
 Goal(14).SubGoals(AND);
 Goal(77).SubGoals(AND);
 Goal(80).SubGoals(AND);
@@ -555599,75 +555677,75 @@ Goal(845).SubGoals(AND);
 Goal(850).SubGoals(AND);
 Goal(856).SubGoals(AND);
 Goal(858).SubGoals(AND);
-Goal(872).SubGoals(AND);
-Goal(877).SubGoals(AND);
-Goal(884).SubGoals(AND);
+Goal(874).SubGoals(AND);
+Goal(879).SubGoals(AND);
 Goal(886).SubGoals(AND);
-Goal(890).SubGoals(AND);
-Goal(898).SubGoals(AND);
-Goal(924).SubGoals(AND);
-Goal(926).SubGoals(AND);
-Goal(941).SubGoals(AND);
+Goal(888).SubGoals(AND);
+Goal(892).SubGoals(AND);
+Goal(900).SubGoals(AND);
+Goal(925).SubGoals(AND);
+Goal(927).SubGoals(AND);
 Goal(942).SubGoals(AND);
-Goal(917).SubGoal(916);
-Goal(916).SubGoals(AND);
-Goal(924).SubGoal(45);
-Goal(924).SubGoal(49);
-Goal(924).SubGoal(75);
-Goal(924).SubGoal(76);
-Goal(924).SubGoal(78);
-Goal(924).SubGoal(79);
-Goal(924).SubGoal(88);
-Goal(924).SubGoal(213);
-Goal(924).SubGoal(289);
-Goal(924).SubGoal(291);
-Goal(924).SubGoal(318);
-Goal(924).SubGoal(346);
-Goal(924).SubGoal(425);
-Goal(924).SubGoal(480);
-Goal(924).SubGoal(491);
-Goal(924).SubGoal(496);
-Goal(924).SubGoal(572);
-Goal(924).SubGoal(668);
-Goal(924).SubGoal(687);
-Goal(924).SubGoal(702);
-Goal(924).SubGoal(730);
-Goal(924).SubGoal(731);
-Goal(924).SubGoal(739);
-Goal(924).SubGoal(744);
-Goal(924).SubGoal(749);
-Goal(924).SubGoal(751);
-Goal(924).SubGoal(752);
-Goal(924).SubGoal(773);
-Goal(924).SubGoal(781);
-Goal(924).SubGoal(787);
-Goal(924).SubGoal(806);
-Goal(924).SubGoal(810);
-Goal(924).SubGoal(811);
-Goal(924).SubGoal(813);
-Goal(924).SubGoal(814);
-Goal(924).SubGoal(815);
-Goal(924).SubGoal(825);
-Goal(924).SubGoal(829);
-Goal(924).SubGoal(853);
-Goal(924).SubGoal(855);
-Goal(924).SubGoal(868);
-Goal(924).SubGoal(869);
-Goal(924).SubGoal(873);
-Goal(924).SubGoal(876);
-Goal(924).SubGoal(895);
-Goal(924).SubGoal(896);
-Goal(924).SubGoal(904);
-Goal(924).SubGoal(905);
-Goal(924).SubGoal(906);
-Goal(924).SubGoal(908);
-Goal(924).SubGoal(909);
-Goal(924).SubGoal(911);
-Goal(924).SubGoal(917);
-Goal(924).SubGoal(925);
-Goal(924).SubGoal(939);
-Goal(924).SubGoal(940);
-Goal(924).SubGoal(950);
+Goal(943).SubGoals(AND);
+Goal(919).SubGoal(918);
+Goal(918).SubGoals(AND);
+Goal(925).SubGoal(45);
+Goal(925).SubGoal(49);
+Goal(925).SubGoal(75);
+Goal(925).SubGoal(76);
+Goal(925).SubGoal(78);
+Goal(925).SubGoal(79);
+Goal(925).SubGoal(88);
+Goal(925).SubGoal(213);
+Goal(925).SubGoal(289);
+Goal(925).SubGoal(291);
+Goal(925).SubGoal(318);
+Goal(925).SubGoal(346);
+Goal(925).SubGoal(425);
+Goal(925).SubGoal(480);
+Goal(925).SubGoal(491);
+Goal(925).SubGoal(496);
+Goal(925).SubGoal(572);
+Goal(925).SubGoal(668);
+Goal(925).SubGoal(687);
+Goal(925).SubGoal(702);
+Goal(925).SubGoal(730);
+Goal(925).SubGoal(731);
+Goal(925).SubGoal(739);
+Goal(925).SubGoal(744);
+Goal(925).SubGoal(749);
+Goal(925).SubGoal(751);
+Goal(925).SubGoal(752);
+Goal(925).SubGoal(773);
+Goal(925).SubGoal(781);
+Goal(925).SubGoal(787);
+Goal(925).SubGoal(806);
+Goal(925).SubGoal(810);
+Goal(925).SubGoal(811);
+Goal(925).SubGoal(813);
+Goal(925).SubGoal(814);
+Goal(925).SubGoal(815);
+Goal(925).SubGoal(825);
+Goal(925).SubGoal(829);
+Goal(925).SubGoal(853);
+Goal(925).SubGoal(855);
+Goal(925).SubGoal(870);
+Goal(925).SubGoal(871);
+Goal(925).SubGoal(875);
+Goal(925).SubGoal(878);
+Goal(925).SubGoal(897);
+Goal(925).SubGoal(898);
+Goal(925).SubGoal(906);
+Goal(925).SubGoal(907);
+Goal(925).SubGoal(908);
+Goal(925).SubGoal(910);
+Goal(925).SubGoal(911);
+Goal(925).SubGoal(913);
+Goal(925).SubGoal(919);
+Goal(925).SubGoal(926);
+Goal(925).SubGoal(940);
+Goal(925).SubGoal(941);
+Goal(925).SubGoal(951);
 Goal(45).SubGoals(AND);
 Goal(49).SubGoals(AND);
 Goal(75).SubGoals(AND);
@@ -555708,38 +555786,37 @@ Goal(825).SubGoals(AND);
 Goal(829).SubGoals(AND);
 Goal(853).SubGoals(AND);
 Goal(855).SubGoals(AND);
-Goal(868).SubGoals(AND);
-Goal(869).SubGoals(AND);
-Goal(873).SubGoals(AND);
-Goal(876).SubGoals(AND);
-Goal(895).SubGoals(AND);
-Goal(896).SubGoals(AND);
-Goal(904).SubGoals(AND);
-Goal(905).SubGoals(AND);
+Goal(870).SubGoals(AND);
+Goal(871).SubGoals(AND);
+Goal(875).SubGoals(AND);
+Goal(878).SubGoals(AND);
+Goal(897).SubGoals(AND);
+Goal(898).SubGoals(AND);
 Goal(906).SubGoals(AND);
+Goal(907).SubGoals(AND);
 Goal(908).SubGoals(AND);
-Goal(909).SubGoals(AND);
+Goal(910).SubGoals(AND);
 Goal(911).SubGoals(AND);
-Goal(917).SubGoals(AND);
-Goal(925).SubGoals(AND);
-Goal(939).SubGoals(AND);
+Goal(913).SubGoals(AND);
+Goal(919).SubGoals(AND);
+Goal(926).SubGoals(AND);
 Goal(940).SubGoals(AND);
-Goal(950).SubGoals(AND);
-Goal(939).SubGoal(903);
-Goal(939).SubGoal(927);
-Goal(939).SubGoal(928);
-Goal(939).SubGoal(929);
-Goal(939).SubGoal(930);
-Goal(939).SubGoal(931);
-Goal(939).SubGoal(932);
-Goal(939).SubGoal(933);
-Goal(939).SubGoal(934);
-Goal(939).SubGoal(935);
-Goal(939).SubGoal(936);
-Goal(939).SubGoal(937);
-Goal(939).SubGoal(938);
-Goal(903).SubGoals(AND);
-Goal(927).SubGoals(AND);
+Goal(941).SubGoals(AND);
+Goal(951).SubGoals(AND);
+Goal(940).SubGoal(905);
+Goal(940).SubGoal(928);
+Goal(940).SubGoal(929);
+Goal(940).SubGoal(930);
+Goal(940).SubGoal(931);
+Goal(940).SubGoal(932);
+Goal(940).SubGoal(933);
+Goal(940).SubGoal(934);
+Goal(940).SubGoal(935);
+Goal(940).SubGoal(936);
+Goal(940).SubGoal(937);
+Goal(940).SubGoal(938);
+Goal(940).SubGoal(939);
+Goal(905).SubGoals(AND);
 Goal(928).SubGoals(AND);
 Goal(929).SubGoals(AND);
 Goal(930).SubGoals(AND);
@@ -555751,9 +555828,10 @@ Goal(935).SubGoals(AND);
 Goal(936).SubGoals(AND);
 Goal(937).SubGoals(AND);
 Goal(938).SubGoals(AND);
-Goal(944).SubGoal(945);
-Goal(944).SubGoal(946);
-Goal(945).SubGoals(AND);
-Goal(946).SubGoals(AND);
+Goal(939).SubGoals(AND);
+Goal(945).SubGoal(946);
 Goal(945).SubGoal(947);
+Goal(946).SubGoals(AND);
 Goal(947).SubGoals(AND);
+Goal(946).SubGoal(948);
+Goal(948).SubGoals(AND);

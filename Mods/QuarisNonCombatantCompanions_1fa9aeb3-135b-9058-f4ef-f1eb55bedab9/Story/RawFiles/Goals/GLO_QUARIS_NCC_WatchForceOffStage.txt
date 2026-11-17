@@ -24,11 +24,11 @@ DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 IF
 StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
 THEN
+RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
-RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
 
-// Watch flags => give/revoke visual statuses
+// Watch flags => give/revoke visual status
 
 IF
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
@@ -49,6 +49,18 @@ AND
 DB_PartyMembers(_PartyMember)
 THEN
 RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+
+// Watch leaving the party => revoke visual status
+
+IF
+CharacterLeftParty(_Character)
+THEN
+RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+
+// When (re)joining the party, if the force flag is enabled,
+// then defaulting the passive toggle should apply
+// QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd
+// which should make everything else be taken care of
 EXITSECTION
 
 ENDEXITSECTION
