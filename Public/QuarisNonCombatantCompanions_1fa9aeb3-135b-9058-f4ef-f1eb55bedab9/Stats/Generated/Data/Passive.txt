@@ -21,3 +21,8 @@ data "Properties" "IsToggled;ToggledDefaultAddToHotbar;ToggleForParty"
 data "ToggleOnFunctors" "ApplyStatus(QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd, 100, -1)"
 data "ToggleOffFunctors" "ApplyStatus(QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove, 100, -1)"
 
+new entry "QUARIS_NCC_TestPassive"
+type "PassiveData"
+data "DisplayName" "h20f78501gce73g56f4g6b73ge14bf0dd9630;1"
+data "Properties" "IsToggled;ToggledDefaultAddToHotbar"
+

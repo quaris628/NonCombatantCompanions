@@ -1,0 +1,21 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+
+// Character joins party => give toggle
+
+IF
+CharacterJoinedParty(_PartyMember)
+THEN
+AddPassive(_PartyMember, "QUARIS_NCC_TestPassive");
+
+// Character leaves party => remove toggle
+IF
+CharacterLeftParty(_PartyMember)
+THEN
+RemovePassive(_PartyMember, "QUARIS_NCC_TestPassive");
+EXITSECTION
+
+ENDEXITSECTION

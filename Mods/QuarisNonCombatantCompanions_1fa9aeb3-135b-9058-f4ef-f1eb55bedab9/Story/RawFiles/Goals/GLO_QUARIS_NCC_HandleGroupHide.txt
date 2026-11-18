@@ -1,0 +1,20 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+
+IF
+CastSpellFailed(_Object, "Shout_Hide", "shout", "", 0)
+AND
+DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+AND
+HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
+AND
+HasAppliedStatus(_Object, "SNEAKING", 0)
+THEN
+DebugLog("CastSpellFailed for Shout_Hide on a noncombatant while noncombatants are off-stage; applying SNEAKING status anyway");
+ApplyStatus(_Object, "SNEAKING", -1.0);
+EXITSECTION
+
+ENDEXITSECTION
