@@ -519189,31 +519189,8 @@ Goal(865)
 		THEN
 		SetOnStage(_Object, 0);
 		
-		
-		
-		// debug
-		/*
-		IF
-		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
-		THEN
-		DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1");
-		
-		IF
-		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
-		AND
-		DB_PartyMembers(_PartyMember)
-		THEN
-		DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1 AND DB_PartyMembers(_PartyMember)");
-		
-		IF
-		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
-		AND
-		DB_PartyMembers(_PartyMember)
-		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant", 1)
-		THEN
-		DebugLog("DB_QUARIS_NCC_AreNoncombatantsOffstage was set to 1 AND DB_PartyMembers(_PartyMember) AND HasAppliedStatus(_PartyMember, 'QUARIS_NCC_IsNoncombatant', 1)");
-		*/
+		// TODO: Somehow show all status icons on the sidebar (etc?) while character is off-stage
+		// TODO: Somehow show armour/clothing while character is off-stage
 	}
 	EXIT
 	{
