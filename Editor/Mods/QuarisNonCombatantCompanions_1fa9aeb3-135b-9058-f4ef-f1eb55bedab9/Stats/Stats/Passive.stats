@@ -30,13 +30,5 @@
         <field name="LoreDescription" type="TranslatedStringTableFieldDefinition" handle="he307a95fg1a65g5f78g74dbg33bed70fc0b1" version="1" />
       </fields>
     </stat_object>
-    <stat_object is_substat="false">
-      <fields>
-        <field name="UUID" type="IdTableFieldDefinition" value="bc79a64b-a6de-440e-a5e5-2808720b35f3" />
-        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_TestPassive" />
-        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h20f78501gce73g56f4g6b73ge14bf0dd9630" version="1" />
-        <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar" enumeration_type_name="PassiveFlags" version="1" />
-      </fields>
-    </stat_object>
   </stat_objects>
 </stats>
