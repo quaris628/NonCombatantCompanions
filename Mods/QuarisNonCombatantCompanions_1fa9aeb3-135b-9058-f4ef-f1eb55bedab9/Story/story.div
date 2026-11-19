@@ -520856,6 +520856,21 @@ Goal(870)
 		RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove");
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Object);
 		
+		// Noncombatant summons something => make summon a noncombatant too
+		
+		IF
+		CharacterJoinedParty(_Summon)
+		AND
+		IsSummon(_Summon, 1)
+		AND
+		DB_PartyMembers(_OwnerPartyMember)
+		AND
+		CharacterGetOwner(_Summon, _OwnerPartyMember)
+		AND
+		HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		THEN
+		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		
 		// Character leaves party => ensure they're a combatant
 		
 		IF
