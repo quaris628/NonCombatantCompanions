@@ -520189,6 +520189,8 @@ Goal(859)
 	{
 		IF
 		DB_QUARIS_NCC_IsAnyCombatInProgress(1)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 		THEN
 		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 1 b/c combat started");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
@@ -520198,6 +520200,8 @@ Goal(859)
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
 		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 0 b/c combat ended and force flag is 0");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
@@ -520207,6 +520211,8 @@ Goal(859)
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 		AND
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
 		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 0 b/c force flag was set to 0 and no combats are in progress");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
@@ -520214,6 +520220,8 @@ Goal(859)
 		
 		IF
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 		THEN
 		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 1 b/c force flag was set to 1");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
@@ -520356,15 +520364,6 @@ Goal(861)
 		THEN
 		PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
 		
-		IF
-		CharacterLeftParty(_Character)
-		THEN
-		// Removing the toggle passive now should let us correctly toggle it to the
-		// correct default setting when it's re-added.
-		// (Although it seemed to be defaulting correctly even when it wasn't removed,
-		// for reasons I don't understand...)
-		RemovePassive(_Character, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
-		
 		// Set up a party member
 		
 		PROC
@@ -520375,25 +520374,66 @@ Goal(861)
 		IsPartyFollower(_PartyMember, 0)
 		THEN
 		PROC_QUARIS_NCC_GiveForceOffstageToggle(_PartyMember);
+		// Sometimes the above procedure doesn't do any programmatic toggling
+		// and the visual indicator status still needs to be synced
 		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn(_PartyMember);
 		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff(_PartyMember);
 		
 		// Give toggle
 		
+		// no passive, force on, (no tracking) => give passive, toggle
+		// no passive, force off, (no tracking) => give it
+		// passive, force on, no tracking => toggle
+		// passive, force on, tracking => -
+		// passive, force off, no tracking => -
+		// passive, force off, tracking => toggle
+		
 		PROC
 		PROC_QUARIS_NCC_GiveForceOffstageToggle((CHARACTER)_PartyMember)
+		THEN
+		PROC_QUARIS_NCC_GiveForceOffstageTogglePassiveIfNotPresent(_PartyMember);
+		PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOffAndForceOn(_PartyMember);
+		PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOnAndForceOff(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_GiveForceOffstageTogglePassiveIfNotPresent((CHARACTER)_PartyMember)
 		AND
 		HasPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle", 0)
 		THEN
 		AddPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
-		PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle(_PartyMember);
+		// I believe this would always be not set already, but sync it just in case
+		NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn(_PartyMember);
 		
 		PROC
-		PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle((CHARACTER)_PartyMember)
+		PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOffAndForceOn((CHARACTER)_PartyMember)
+		AND
+		NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn(_PartyMember)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
 		THEN
 		TogglePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+		// Toggling this ^ should also apply QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd
+		// which should take care of syncing the visual indicator status, etc.
+		
+		PROC
+		PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOnAndForceOff((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn(_PartyMember)
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+		THEN
+		TogglePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+		// Toggling this ^ should also apply QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove
+		// which should take care of syncing the visual indicator status, etc.
+		
+		// Remove toggle
+		
+		PROC
+		PROC_QUARIS_NCC_RemoveForceOffstageToggle((CHARACTER)_PartyMember)
+		THEN
+		RemovePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		
 		
 		// Sync visual indicator
 		
@@ -520462,14 +520502,7 @@ Goal(862)
 		THEN
 		PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
 		
-		
-		// Character leaves party => remove toggle
-		IF
-		CharacterLeftParty(_PartyMember)
-		THEN
-		PROC_QUARIS_NCC_RemoveIsNoncombatantToggle(_PartyMember);
-		
-		// Give toggle (and set to the correct default)
+		// Give toggle
 		
 		PROC
 		PROC_QUARIS_NCC_GiveIsNoncombatantToggle((CHARACTER)_PartyMember)
@@ -520483,13 +520516,6 @@ Goal(862)
 		HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 0)
 		THEN
 		AddPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
-		
-		// Remove toggle
-		
-		PROC
-		PROC_QUARIS_NCC_RemoveIsNoncombatantToggle((CHARACTER)_PartyMember)
-		THEN
-		RemovePassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
 		
 		// TODO: Test recruting a companion into the active party
 		// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
@@ -520510,7 +520536,6 @@ Goal(863)
 	}
 	KB
 	{
-		
 		IF
 		CastSpellFailed(_Object, "Shout_Hide", "shout", "", 0)
 		AND
@@ -520643,31 +520668,6 @@ Goal(867)
 {
 	INIT
 	{
-	}
-	KB
-	{
-		// Character joins party => give toggle
-		
-		IF
-		CharacterJoinedParty(_PartyMember)
-		THEN
-		AddPassive(_PartyMember, "QUARIS_NCC_TestPassive");
-		
-		// Character leaves party => remove toggle
-		IF
-		CharacterLeftParty(_PartyMember)
-		THEN
-		RemovePassive(_PartyMember, "QUARIS_NCC_TestPassive");
-	}
-	EXIT
-	{
-	}
-}
-Goal(868).Title("GLO_QUARIS_NCC_WatchCombat");
-Goal(868)
-{
-	INIT
-	{
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 	}
 	KB
@@ -520711,12 +520711,13 @@ Goal(868)
 	{
 	}
 }
-Goal(868).Title("GLO_QUARIS_NCC_WatchForceOffStage");
+Goal(868).Title("GLO_QUARIS_NCC_WatchForceOffStageToggle");
 Goal(868)
 {
 	INIT
 	{
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
+		DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 	}
 	KB
 	{
@@ -520735,6 +520736,7 @@ Goal(868)
 		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd", _, _)
 		THEN
 		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd");
+		DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		
@@ -520742,6 +520744,7 @@ Goal(868)
 		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
 		THEN
 		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
+		NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 		
@@ -520853,12 +520856,12 @@ Goal(870)
 		RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove");
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Object);
 		
-		// Character leaves party => revoke main status
+		// Character leaves party => ensure they're a combatant
 		
 		IF
 		CharacterLeftParty(_Character)
 		THEN
-		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion(_Character);
+		PROC_QUARIS_NCC_SetNoncombatantToggleOff(_Character);
 		
 		// Apply main status
 		
@@ -520895,14 +520898,26 @@ Goal(870)
 		DB_QUARIS_NCC_IsAnyCombatInProgress(1)
 		THEN
 		TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
+		// This ^ should also trigger QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove
+		// which shouldn't do anything else in this case
 		
 		// Remove main status
 		
 		PROC
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Companion)
 		THEN
-		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
+		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
+		
+		PROC
+		PROC_QUARIS_NCC_SetNoncombatantToggleOff((CHARACTER)_Companion)
+		AND
+		HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		THEN
+		TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
+		// This ^ should also trigger QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove
+		// which should take care of removing QUARIS_NCC_IsNoncombatant_Main
+		// from the companion and their summons
 		
 		PROC
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons((CHARACTER)_OwnerCompanion)

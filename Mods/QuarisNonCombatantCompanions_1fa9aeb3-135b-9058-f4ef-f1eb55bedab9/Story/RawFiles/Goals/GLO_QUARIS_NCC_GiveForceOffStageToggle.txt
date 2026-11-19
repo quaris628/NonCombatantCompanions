@@ -26,15 +26,6 @@ DB_PartyMembers(_PartyMember)
 THEN
 PROC_QUARIS_NCC_InitForceOffstageToggle(_PartyMember);
 
-IF
-CharacterLeftParty(_Character)
-THEN
-// Removing the toggle passive now should let us correctly toggle it to the
-// correct default setting when it's re-added.
-// (Although it seemed to be defaulting correctly even when it wasn't removed,
-// for reasons I don't understand...)
-RemovePassive(_Character, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
-
 // Set up a party member
 
 PROC
@@ -45,25 +36,66 @@ AND
 IsPartyFollower(_PartyMember, 0)
 THEN
 PROC_QUARIS_NCC_GiveForceOffstageToggle(_PartyMember);
+// Sometimes the above procedure doesn't do any programmatic toggling
+// and the visual indicator status still needs to be synced
 PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn(_PartyMember);
 PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff(_PartyMember);
 
 // Give toggle
 
+// no passive, force on, (no tracking) => give passive, toggle
+// no passive, force off, (no tracking) => give it
+// passive, force on, no tracking => toggle
+// passive, force on, tracking => -
+// passive, force off, no tracking => -
+// passive, force off, tracking => toggle
+
 PROC
 PROC_QUARIS_NCC_GiveForceOffstageToggle((CHARACTER)_PartyMember)
+THEN
+PROC_QUARIS_NCC_GiveForceOffstageTogglePassiveIfNotPresent(_PartyMember);
+PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOffAndForceOn(_PartyMember);
+PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOnAndForceOff(_PartyMember);
+
+PROC
+PROC_QUARIS_NCC_GiveForceOffstageTogglePassiveIfNotPresent((CHARACTER)_PartyMember)
 AND
 HasPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle", 0)
 THEN
 AddPassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
-PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle(_PartyMember);
+// I believe this would always be not set already, but sync it just in case
+NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn(_PartyMember);
 
 PROC
-PROC_QUARIS_NCC_DefaultForceNoncombatantsOffstageToggle((CHARACTER)_PartyMember)
+PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOffAndForceOn((CHARACTER)_PartyMember)
+AND
+NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn(_PartyMember)
 AND
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
 THEN
 TogglePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+// Toggling this ^ should also apply QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd
+// which should take care of syncing the visual indicator status, etc.
+
+PROC
+PROC_QUARIS_NCC_ToggleForceNoncombatantsOffstageIfTrackedOnAndForceOff((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn(_PartyMember)
+AND
+DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
+THEN
+TogglePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+// Toggling this ^ should also apply QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove
+// which should take care of syncing the visual indicator status, etc.
+
+// Remove toggle
+
+PROC
+PROC_QUARIS_NCC_RemoveForceOffstageToggle((CHARACTER)_PartyMember)
+THEN
+RemovePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
+RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+
 
 // Sync visual indicator
 

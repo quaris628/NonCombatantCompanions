@@ -33,14 +33,7 @@ DB_PartyMembers(_PartyMember)
 THEN
 PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
 
-
-// Character leaves party => remove toggle
-IF
-CharacterLeftParty(_PartyMember)
-THEN
-PROC_QUARIS_NCC_RemoveIsNoncombatantToggle(_PartyMember);
-
-// Give toggle (and set to the correct default)
+// Give toggle
 
 PROC
 PROC_QUARIS_NCC_GiveIsNoncombatantToggle((CHARACTER)_PartyMember)
@@ -54,13 +47,6 @@ AND
 HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 0)
 THEN
 AddPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
-
-// Remove toggle
-
-PROC
-PROC_QUARIS_NCC_RemoveIsNoncombatantToggle((CHARACTER)_PartyMember)
-THEN
-RemovePassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
 
 // TODO: Test recruting a companion into the active party
 // TODO: Test recruting a companion and sending them to camp, then having them re-join the party

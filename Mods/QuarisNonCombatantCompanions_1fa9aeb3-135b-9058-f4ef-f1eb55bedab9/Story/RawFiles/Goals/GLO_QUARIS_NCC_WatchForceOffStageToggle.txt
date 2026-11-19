@@ -2,6 +2,7 @@ Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
+DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 KBSECTION
 // Watch for when the players manually toggle whether noncombatants are forced off-stage
 
@@ -18,6 +19,7 @@ IF
 StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd", _, _)
 THEN
 RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd");
+DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 
@@ -25,6 +27,7 @@ IF
 StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
 THEN
 RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
+NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 
@@ -49,18 +52,6 @@ AND
 DB_PartyMembers(_PartyMember)
 THEN
 RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
-
-// Watch leaving the party => revoke visual status
-
-IF
-CharacterLeftParty(_Character)
-THEN
-RemoveStatus(_Character, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
-
-// When (re)joining the party, if the force flag is enabled,
-// then defaulting the passive toggle should apply
-// QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd
-// which should make everything else be taken care of
 EXITSECTION
 
 ENDEXITSECTION
