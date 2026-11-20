@@ -519148,22 +519148,132 @@ Goal(863)
 {
 	INIT
 	{
-		DB_QUARIS_NCC_OffstagePartyMemberIsHiding((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 	}
 	KB
 	{
-		IF
-		CastSpellFailed(_Object, "Shout_Hide", "shout", "", 0)
+		// Handle group hide
+		
+		
+		PROC
+		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
+		THEN
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+		
+		// Noncombatant moves offstage => make their hiding status persist
+		
+		PROC
+		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage()
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		// I have no idea why, but BOTH of these ApplyStatus calls (one now and one delayed)
+		// are NECESSARY in order to successfully apply the status to an off-stage party member.
+		// If only one of these calls happens, then the status will not be applied.
+		// *shrugs vigorously*
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		TimerLaunch("QUARIS_NCC_HideOffstageNoncombatants_DelayForSecondApplyStatus", 0);
+		
+		IF
+		TimerFinished("QUARIS_NCC_HideOffstageNoncombatants_DelayForSecondApplyStatus")
+		AND
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		
+		
+		// When group hide is used and fails for an offstage noncombatant => toggle their hiding state
+		
+		IF
+		CastSpellFailed(_Object, "Shout_Hide", "shout", "", 0)
+		AND
 		HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		AND
-		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding((CHARACTER)_Object)
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
-		DebugLog("CastSpellFailed for Shout_Hide on a noncombatant while noncombatants are off-stage; applying SNEAKING status anyway");
-		ApplyStatus(_Object, "SNEAKING", -1.0);
-		DB_QUARIS_NCC_OffstagePartyMemberIsHiding((CHARACTER)_Object);
+		PROC_QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus((CHARACTER)_Object);
+		PROC_QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus((CHARACTER)_Object);
+		PROC_QUARIS_NCC_IfOffstageNoncombatantWasHidingSetIsHidingFalse((CHARACTER)_Object);
+		PROC_QUARIS_NCC_IfOffstageNoncombatantWasNotHidingSetIsHidingTrue((CHARACTER)_Object);
+		
+		PROC
+		PROC_QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		// TODO: Does this vvv work? Or do I need to RemoveStatus a second time after a delay?
+		RemoveStatus(_PartyMember, "SNEAKING");
+		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember);
+		// TODO: handle race conditions here better
+		TimerLaunch("QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus_DelayForSecondRemoveStatus", 0);
+		
+		IF
+		TimerFinished("QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus_DelayForSecondRemoveStatus")
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember)
+		THEN
+		RemoveStatus(_PartyMember, "SNEAKING");
+		NOT DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus((CHARACTER)_PartyMember)
+		AND
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		// TODO: Does this vvv work? Or do I need to ApplyStatus a second time after a delay?
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember);
+		// TODO: handle race conditions here better
+		TimerLaunch("QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus_DelayForSecondApplyStatus", 0);
+		
+		IF
+		TimerFinished("QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus_DelayForSecondApplyStatus")
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember)
+		THEN
+		PROC_ApplySneakingStatusIfNotAlreadyApplied(_PartyMember);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember);
+		
+		PROC
+		PROC_ApplySneakingStatusIfNotAlreadyApplied((CHARACTER)_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
+		THEN
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		
+		PROC
+		PROC_QUARIS_NCC_IfOffstageNoncombatantWasHidingSetIsHidingFalse((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember)
+		THEN
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_IfOffstageNoncombatantWasNotHidingSetIsHidingTrue((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember)
+		THEN
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+		
+		// Noncombatant moves onstage => make their hiding status persist
+		
+		// TODO
 	}
 	EXIT
 	{
@@ -519205,9 +519315,9 @@ Goal(865)
 		AND
 		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		THEN
-		//PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding(_PartyMember);
+		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding(_PartyMember);
 		SetOnStage(_PartyMember, 0);
-		//PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding(_PartyMember);
+		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage();
 		
 		IF
 		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
@@ -519216,35 +519326,12 @@ Goal(865)
 		AND
 		DB_PartyMembers((CHARACTER)_Object)
 		THEN
-		//PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
+		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
 		SetOnStage(_Object, 0);
-		//PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding((CHARACTER)_Object);
+		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage();
 		
 		// TODO: Somehow show all status icons on the sidebar (etc?) while character is off-stage
 		// TODO: Somehow show armour/clothing while character is off-stage
-		
-		// Handle hiding stuff
-		
-		PROC
-		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_PartyMember)
-		AND
-		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
-		THEN
-		DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember);
-		
-		PROC
-		PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding((CHARACTER)_PartyMember)
-		AND
-		DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember)
-		THEN
-		TimerLaunch("QUARIS_NCC_HideOffstagePartyMembers_WaitForActuallyOffstageDelay", 1);
-		
-		IF
-		TimerFinished("QUARIS_NCC_HideOffstagePartyMembers_WaitForActuallyOffstageDelay")
-		AND
-		DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember)
-		THEN
-		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 	}
 	EXIT
 	{
@@ -519298,7 +519385,7 @@ Goal(866)
 		AND
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 		THEN
-		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Summon);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Summon);
 		SetOnStage(_Summon, 1);
 		// Attempt to fix the status not showing when the noncombatant comes back on stage
 		// TODO: Test, is this still an issue?
@@ -519308,7 +519395,7 @@ Goal(866)
 		IF
 		CharacterLeftParty(_Character)
 		THEN
-		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Character);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Character);
 		// Weirdly, someone leaving the party seems to make them move on-stage automatically?
 		// But do it explicitly too, just it case this helps handle something I'm not anticipating
 		SetOnStage(_Character, 1);
