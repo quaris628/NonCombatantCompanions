@@ -12,7 +12,9 @@ DB_PartyMembers(_PartyMember)
 AND
 HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 THEN
+//PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding(_PartyMember);
 SetOnStage(_PartyMember, 0);
+//PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding(_PartyMember);
 
 IF
 StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
@@ -21,10 +23,35 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 AND
 DB_PartyMembers((CHARACTER)_Object)
 THEN
+//PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
 SetOnStage(_Object, 0);
+//PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding((CHARACTER)_Object);
 
 // TODO: Somehow show all status icons on the sidebar (etc?) while character is off-stage
 // TODO: Somehow show armour/clothing while character is off-stage
+
+// Handle hiding stuff
+
+PROC
+PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_PartyMember)
+AND
+HasAppliedStatus(_PartyMember, "SNEAKING", 1)
+THEN
+DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember);
+
+PROC
+PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember)
+THEN
+TimerLaunch("QUARIS_NCC_HideOffstagePartyMembers_WaitForActuallyOffstageDelay", 1);
+
+IF
+TimerFinished("QUARIS_NCC_HideOffstagePartyMembers_WaitForActuallyOffstageDelay")
+AND
+DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember)
+THEN
+ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 EXITSECTION
 
 ENDEXITSECTION

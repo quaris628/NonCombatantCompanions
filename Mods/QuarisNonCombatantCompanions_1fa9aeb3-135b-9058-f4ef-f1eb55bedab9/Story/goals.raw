@@ -519148,6 +519148,7 @@ Goal(863)
 {
 	INIT
 	{
+		DB_QUARIS_NCC_OffstagePartyMemberIsHiding((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 	}
 	KB
 	{
@@ -519158,10 +519159,11 @@ Goal(863)
 		AND
 		HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		AND
-		HasAppliedStatus(_Object, "SNEAKING", 0)
+		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding((CHARACTER)_Object)
 		THEN
 		DebugLog("CastSpellFailed for Shout_Hide on a noncombatant while noncombatants are off-stage; applying SNEAKING status anyway");
 		ApplyStatus(_Object, "SNEAKING", -1.0);
+		DB_QUARIS_NCC_OffstagePartyMemberIsHiding((CHARACTER)_Object);
 	}
 	EXIT
 	{
@@ -519203,7 +519205,9 @@ Goal(865)
 		AND
 		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		THEN
+		//PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding(_PartyMember);
 		SetOnStage(_PartyMember, 0);
+		//PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding(_PartyMember);
 		
 		IF
 		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
@@ -519212,10 +519216,35 @@ Goal(865)
 		AND
 		DB_PartyMembers((CHARACTER)_Object)
 		THEN
+		//PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
 		SetOnStage(_Object, 0);
+		//PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding((CHARACTER)_Object);
 		
 		// TODO: Somehow show all status icons on the sidebar (etc?) while character is off-stage
 		// TODO: Somehow show armour/clothing while character is off-stage
+		
+		// Handle hiding stuff
+		
+		PROC
+		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
+		THEN
+		DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_HideOffstagePartyMembersIfIsHiding((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember)
+		THEN
+		TimerLaunch("QUARIS_NCC_HideOffstagePartyMembers_WaitForActuallyOffstageDelay", 1);
+		
+		IF
+		TimerFinished("QUARIS_NCC_HideOffstagePartyMembers_WaitForActuallyOffstageDelay")
+		AND
+		DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_PartyMember)
+		THEN
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 	}
 	EXIT
 	{
@@ -519255,6 +519284,7 @@ Goal(866)
 		//  - LeaveCombat = 1
 		//  - SnapToGround = 1
 		TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
+		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Noncombatant);
 		SetOnStage(_Noncombatant, 1);
 		// Workaround to this status not showing after the noncombatant comes back on stage
 		RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
@@ -519268,11 +519298,20 @@ Goal(866)
 		AND
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 		THEN
+		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Summon);
 		SetOnStage(_Summon, 1);
 		// Attempt to fix the status not showing when the noncombatant comes back on stage
 		// TODO: Test, is this still an issue?
 		//RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
 		//ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		
+		IF
+		CharacterLeftParty(_Character)
+		THEN
+		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Character);
+		// Weirdly, someone leaving the party seems to make them move on-stage automatically?
+		// But do it explicitly too, just it case this helps handle something I'm not anticipating
+		SetOnStage(_Character, 1);
 	}
 	EXIT
 	{
