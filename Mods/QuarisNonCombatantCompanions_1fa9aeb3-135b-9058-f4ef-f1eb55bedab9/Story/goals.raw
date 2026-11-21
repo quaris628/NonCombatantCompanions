@@ -518807,7 +518807,6 @@ Goal(859)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 1 b/c combat started");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
 		
@@ -518818,7 +518817,6 @@ Goal(859)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 0 b/c combat ended and force flag is 0");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 		
@@ -518829,7 +518827,6 @@ Goal(859)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 0 b/c force flag was set to 0 and no combats are in progress");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 		
@@ -518838,7 +518835,6 @@ Goal(859)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 		THEN
-		DebugLog("Setting DB_QUARIS_NCC_AreNoncombatantsOffstage flag to 1 b/c force flag was set to 1");
 		NOT DB_QUARIS_NCC_AreNoncombatantsOffstage(0);
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1);
 	}
