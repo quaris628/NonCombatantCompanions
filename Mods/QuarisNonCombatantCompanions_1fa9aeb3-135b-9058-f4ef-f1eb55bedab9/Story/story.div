@@ -520556,36 +520556,43 @@ Goal(863)
 		PROC_QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus((CHARACTER)_Object);
 		PROC_QUARIS_NCC_IfOffstageNoncombatantWasHidingSetIsHidingFalse((CHARACTER)_Object);
 		PROC_QUARIS_NCC_IfOffstageNoncombatantWasNotHidingSetIsHidingTrue((CHARACTER)_Object);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp((CHARACTER)_Object);
+		// if DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp was set, then it gets cleared after a 0-tick delay
 		
 		PROC
 		PROC_QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus((CHARACTER)_PartyMember)
 		AND
 		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 		THEN
-		RemoveStatus(_PartyMember, "SNEAKING");
 		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember);
+		RemoveStatus(_PartyMember, "SNEAKING");
 		
 		PROC
 		PROC_QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus((CHARACTER)_PartyMember)
 		AND
 		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 		THEN
-		// TODO: Does this vvv work? Or do I need to ApplyStatus a second time after a delay?
-		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember);
 		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember);
-		// TODO: handle race conditions here better
+		// Not a typo; we actually do need both this ApplyStatus call and the one after the 0-tick delay
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 		TimerLaunch("QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus_DelayForSecondApplyStatus", 0);
 		
+		// Timer is essentially cancelled by the temp DBs being toggled again or by character moving on-stage
+		// Therefore, I beleive this is safe from race condition shennanigans
 		IF
 		TimerFinished("QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus_DelayForSecondApplyStatus")
 		AND
 		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember)
 		THEN
-		PROC_ApplySneakingStatusIfNotAlreadyApplied(_PartyMember);
 		NOT DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember);
+		PROC_ApplySneakingStatusIfOffstageAndNotAlreadyApplied(_PartyMember);
 		
 		PROC
-		PROC_ApplySneakingStatusIfNotAlreadyApplied((CHARACTER)_PartyMember)
+		PROC_ApplySneakingStatusIfOffstageAndNotAlreadyApplied((CHARACTER)_PartyMember)
+		AND
+		IsOnStage(_PartyMember, 0)
 		AND
 		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
 		THEN
@@ -520636,7 +520643,7 @@ Goal(863)
 		AND
 		DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember)
 		THEN
-		PROC_ApplySneakingStatusIfNotAlreadyApplied(_PartyMember);
+		PROC_ApplySneakingStatusIfOffstageAndNotAlreadyApplied(_PartyMember);
 		NOT DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember);
 		
 		PROC
