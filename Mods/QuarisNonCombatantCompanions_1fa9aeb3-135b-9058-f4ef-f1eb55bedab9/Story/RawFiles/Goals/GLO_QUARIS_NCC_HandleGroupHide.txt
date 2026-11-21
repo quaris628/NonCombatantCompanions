@@ -18,36 +18,14 @@ DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
 
 // Noncombatant moves offstage => make their hiding status persist
 
-PROC
-PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage()
-AND
-DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
-AND
-DB_PartyMembers(_PartyMember)
-AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
-AND
-DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
-THEN
-// I have no idea why, but BOTH of these ApplyStatus calls (one now and one delayed)
-// are NECESSARY in order to successfully apply the status to an off-stage party member.
-// If only one of these calls happens, then the status will not be applied.
-// *shrugs vigorously*
-ApplyStatus(_PartyMember, "SNEAKING", -1.0);
-// TODO: Hande race conditions here better?
-TimerLaunch("QUARIS_NCC_HideOffstageNoncombatants_DelayForSecondApplyStatus", 0);
-
 IF
-TimerFinished("QUARIS_NCC_HideOffstageNoncombatants_DelayForSecondApplyStatus")
-AND
-DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
-AND
-DB_PartyMembers(_PartyMember)
-AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+WentOnStage(_Object, 0)
 AND
 DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 THEN
+// This is not a typo; both ApplyStatus calls actually are necessary.
+// I don't understand why.
+ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 
 // When group hide is used and fails for an offstage noncombatant => toggle their hiding state

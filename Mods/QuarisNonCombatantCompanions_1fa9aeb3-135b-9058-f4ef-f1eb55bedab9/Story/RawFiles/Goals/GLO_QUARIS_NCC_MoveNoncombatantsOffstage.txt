@@ -14,7 +14,6 @@ HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 THEN
 PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding(_PartyMember);
 SetOnStage(_PartyMember, 0);
-PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage();
 
 IF
 StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
@@ -25,7 +24,6 @@ DB_PartyMembers((CHARACTER)_Object)
 THEN
 PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
 SetOnStage(_Object, 0);
-PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage();
 EXITSECTION
 
 ENDEXITSECTION
