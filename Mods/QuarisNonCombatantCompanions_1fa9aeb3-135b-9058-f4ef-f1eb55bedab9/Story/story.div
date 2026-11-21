@@ -520549,6 +520549,7 @@ Goal(863)
 		// If only one of these calls happens, then the status will not be applied.
 		// *shrugs vigorously*
 		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		// TODO: Hande race conditions here better?
 		TimerLaunch("QUARIS_NCC_HideOffstageNoncombatants_DelayForSecondApplyStatus", 0);
 		
 		IF
