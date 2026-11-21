@@ -520584,19 +520584,8 @@ Goal(863)
 		AND
 		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 		THEN
-		// TODO: Does this vvv work? Or do I need to RemoveStatus a second time after a delay?
 		RemoveStatus(_PartyMember, "SNEAKING");
 		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember);
-		// TODO: handle race conditions here better
-		TimerLaunch("QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus_DelayForSecondRemoveStatus", 0);
-		
-		IF
-		TimerFinished("QUARIS_NCC_IfOffstageNoncombatantHidingRemoveStatus_DelayForSecondRemoveStatus")
-		AND
-		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember)
-		THEN
-		RemoveStatus(_PartyMember, "SNEAKING");
-		NOT DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp(_PartyMember);
 		
 		PROC
 		PROC_QUARIS_NCC_IfOffstageNoncombatantNotHidingApplyStatus((CHARACTER)_PartyMember)
