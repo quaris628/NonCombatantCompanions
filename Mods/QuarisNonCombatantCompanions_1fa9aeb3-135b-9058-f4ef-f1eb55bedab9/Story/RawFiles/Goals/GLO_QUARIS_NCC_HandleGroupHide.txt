@@ -146,12 +146,7 @@ PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_PartyMember)
 AND
 DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 THEN
-//DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember);
-// Workaround to this status not showing after the noncombatant comes back on stage
-//RemoveStatus(_PartyMember, "SNEAKING");
 ApplyStatus(_PartyMember, "SNEAKING", -1.0);
-// TODO: handle race conditions here better
-//TimerLaunch("QUARIS_NCC_IfWasHidingApplyStatus_DelayForSecondApplyStatus", 0);
 NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
 
 IF
