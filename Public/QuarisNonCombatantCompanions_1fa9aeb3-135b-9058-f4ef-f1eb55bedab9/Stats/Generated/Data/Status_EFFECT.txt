@@ -45,3 +45,10 @@ data "StatusType" "EFFECT"
 using "QUARIS_NCC_IsNoncombatant_Parent"
 data "StatusPropertyFlags" "DisableOverhead;DisablePortraitIndicator"
 
+new entry "QUARIS_NCC_IsOffstageNoncombatant_VisualIndicator"
+type "StatusData"
+data "StatusType" "EFFECT"
+data "DisplayName" "h7c8b9c4cgb9adg2fdag4cbcg9737faa30721;1"
+data "Description" "h8be4cf7cg3f11ga41agdcf3g2a1112739585;1"
+data "Icon" "PassiveFeature_Generic_Darkness"
+

@@ -1,0 +1,25 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+// Give is-offstage status while off-stage
+
+// Noncombatant moves offstage => apply is-offstage status
+
+IF
+WentOnStage(_Object, 0)
+AND
+DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object)
+THEN
+ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IsOffstageNoncombatant_VisualIndicator", -1.0);
+
+// Noncombatant moves onstage => remove is-offstage status
+
+IF
+WentOnStage(_Object, 1)
+THEN
+RemoveStatus((CHARACTER)_Object, "QUARIS_NCC_IsOffstageNoncombatant_VisualIndicator");
+EXITSECTION
+
+ENDEXITSECTION
