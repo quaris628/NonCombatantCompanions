@@ -96,7 +96,6 @@ THEN
 RemovePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
 RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
 
-
 // Sync visual indicator
 
 PROC
@@ -114,13 +113,6 @@ AND
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 THEN
 RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
-
-// TODO: Test recruting a companion into the active party
-// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
-// TODO: Test sending someone to camp and having them re-join the party
-// TODO: Test multiplayer where an avatar joins partway through
-// TODO: Test summoning a summon
-// TODO: Test a follower joining the party
 EXITSECTION
 
 ENDEXITSECTION

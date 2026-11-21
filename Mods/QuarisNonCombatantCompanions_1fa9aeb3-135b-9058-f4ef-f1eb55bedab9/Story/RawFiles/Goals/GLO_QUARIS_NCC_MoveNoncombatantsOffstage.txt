@@ -26,9 +26,6 @@ THEN
 PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
 SetOnStage(_Object, 0);
 PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage();
-
-// TODO: Somehow show all status icons on the sidebar (etc?) while character is off-stage
-// TODO: Somehow show armour/clothing while character is off-stage
 EXITSECTION
 
 ENDEXITSECTION

@@ -3,7 +3,6 @@ SubGoalCombiner SGC_AND
 INITSECTION
 
 KBSECTION
-
 IF
 Died(_Character)
 AND
@@ -25,9 +24,6 @@ AND
 IsPartyFollower(_PartyMember, 0)
 THEN
 DB_NOOP(1);
-
-// TODO: Is there any possibility of a softlock if only a follower or summon is left alive?
-// In vanilla, does companions + avatar dying but at least one summon living trigger game over or not?
 EXITSECTION
 
 ENDEXITSECTION

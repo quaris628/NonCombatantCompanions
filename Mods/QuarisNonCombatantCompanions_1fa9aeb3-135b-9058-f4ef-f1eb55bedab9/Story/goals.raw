@@ -519045,7 +519045,6 @@ Goal(861)
 		RemovePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
 		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
 		
-		
 		// Sync visual indicator
 		
 		PROC
@@ -519063,13 +519062,6 @@ Goal(861)
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 		THEN
 		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
-		
-		// TODO: Test recruting a companion into the active party
-		// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
-		// TODO: Test sending someone to camp and having them re-join the party
-		// TODO: Test multiplayer where an avatar joins partway through
-		// TODO: Test summoning a summon
-		// TODO: Test a follower joining the party
 	}
 	EXIT
 	{
@@ -519127,13 +519119,6 @@ Goal(862)
 		HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 0)
 		THEN
 		AddPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
-		
-		// TODO: Test recruting a companion into the active party
-		// TODO: Test recruting a companion and sending them to camp, then having them re-join the party
-		// TODO: Test sending someone to camp and having them re-join the party
-		// TODO: Test multiplayer where an avatar joins partway through
-		// TODO: Test summoning a summon
-		// TODO: Test a follower joining the party
 	}
 	EXIT
 	{
@@ -519193,7 +519178,6 @@ Goal(863)
 		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 		THEN
 		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
-		
 		
 		// When group hide is used and fails for an offstage noncombatant => toggle their hiding state
 		
@@ -519363,9 +519347,6 @@ Goal(865)
 		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_Object);
 		SetOnStage(_Object, 0);
 		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOffstage();
-		
-		// TODO: Somehow show all status icons on the sidebar (etc?) while character is off-stage
-		// TODO: Somehow show armour/clothing while character is off-stage
 	}
 	EXIT
 	{
@@ -519405,9 +519386,7 @@ Goal(866)
 		//  - LeaveCombat = 1
 		//  - SnapToGround = 1
 		TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
-		//NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Noncombatant);
 		SetOnStage(_Noncombatant, 1);
-		//PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Noncombatant);
 		// Workaround to this status not showing after the noncombatant comes back on stage
 		RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
 		ApplyStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
@@ -519420,7 +519399,6 @@ Goal(866)
 		AND
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 		THEN
-		//NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Summon);
 		SetOnStage(_Summon, 1);
 		// Workaround to this status not showing after the noncombatant comes back on stage
 		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
@@ -519430,7 +519408,6 @@ Goal(866)
 		IF
 		CharacterLeftParty(_Character)
 		THEN
-		//NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Character);
 		// Weirdly, someone leaving the party seems to make them move on-stage automatically?
 		// But do it explicitly too, just it case this helps handle something I'm not anticipating
 		SetOnStage(_Character, 1);
@@ -519580,9 +519557,6 @@ Goal(869)
 		IsPartyFollower(_PartyMember, 0)
 		THEN
 		DB_NOOP(1);
-		
-		// TODO: Is there any possibility of a softlock if only a follower or summon is left alive?
-		// In vanilla, does companions + avatar dying but at least one summon living trigger game over or not?
 	}
 	EXIT
 	{
