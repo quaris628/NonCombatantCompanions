@@ -16772,6 +16772,7 @@ database DB_DebugBookEntry_Temp([in](STRING)_, [in](STRING)_, [in](STRING)_, [in
 database DB_END_DEBUG_BrainBattle_MindBattleCombatJoin([in](INTEGER)_)
 database DB_GLO_Spells_AnimateDead_Infected([in](GUIDSTRING)_, [in](CHARACTER)_)
 database DB_LOW_FishAndGrime_Barrels([in](ITEM)_, [in](TRIGGER)_)
+database DB_QUARIS_NCC_IsOffstageNoncombatant([in](CHARACTER)_)
 database DB_SpotPlayers_IncludeDefeated([in](CHARACTER)_, [in](STRING)_)
 call PROC_ClearOneShotADCount([in](TRIGGER)_)
 call PROC_GOB_FestivSleepers_CheckBooze([in](CHARACTER)_)

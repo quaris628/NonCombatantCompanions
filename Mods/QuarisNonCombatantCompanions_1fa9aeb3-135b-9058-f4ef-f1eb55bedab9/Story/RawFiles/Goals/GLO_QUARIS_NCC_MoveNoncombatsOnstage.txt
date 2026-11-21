@@ -28,11 +28,9 @@ THEN
 //  - TeleportSummons = 1
 //  - LeaveCombat = 1
 //  - SnapToGround = 1
+// Note that this will also teleport the character's summons, but not their followers
 TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
 SetOnStage(_Noncombatant, 1);
-// Workaround to this status not showing after the noncombatant comes back on stage
-RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
-ApplyStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
 PROC_QUARIS_NCC_PutOwnedSummonsOnstage(_Noncombatant);
 
 PROC
