@@ -1,0 +1,40 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+KBSECTION
+// Handle syncing/displaying statuses while off-stage
+
+// Use separate DB to track whether someone is hiding, b/c HasAppliedStatus isn't reliable when off-stage
+
+PROC
+PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
+AND
+HasAppliedStatus(_PartyMember, "SNEAKING", 1)
+THEN
+DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+ 
+// Noncombatant moves offstage => make their hiding status persist
+
+IF
+WentOnStage(_Object, 0)
+AND
+DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+THEN
+// This is not a typo; both ApplyStatus calls actually are necessary.
+// I don't understand why.
+ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+
+// Noncombatant moves onstage => make their hiding status persist
+
+IF
+WentOnStage(_Object, 1)
+AND
+DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object)
+THEN
+NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object);
+ApplyStatus((CHARACTER)_Object, "SNEAKING", -1.0);
+EXITSECTION
+
+ENDEXITSECTION

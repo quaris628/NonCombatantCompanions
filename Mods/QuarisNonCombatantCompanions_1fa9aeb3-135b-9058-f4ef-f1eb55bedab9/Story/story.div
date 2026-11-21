@@ -520514,45 +520514,11 @@ Goal(863)
 {
 	INIT
 	{
-		DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 		DB_QUARIS_NCC_OffstageNoncombatantWasHidingTemp((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 		DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
 	}
 	KB
 	{
-		// Handle group hide
-		
-		// Use separate DB to track whether someone is hiding, b/c HasAppliedStatus isn't reliable when off-stage
-		
-		PROC
-		PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
-		AND
-		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
-		THEN
-		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
-		
-		// Noncombatant moves offstage => make their hiding status persist
-		
-		IF
-		WentOnStage(_Object, 0)
-		AND
-		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
-		THEN
-		// This is not a typo; both ApplyStatus calls actually are necessary.
-		// I don't understand why.
-		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
-		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
-		
-		// Noncombatant moves onstage => make their hiding status persist
-		
-		IF
-		WentOnStage(_Object, 1)
-		AND
-		DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object)
-		THEN
-		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object);
-		ApplyStatus((CHARACTER)_Object, "SNEAKING", -1.0);
-		
 		// When group hide is used and fails for an offstage noncombatant => toggle their hiding state
 		
 		IF
@@ -520742,8 +520708,54 @@ Goal(866)
 	{
 	}
 }
-Goal(867).Title("GLO_QUARIS_NCC_WatchCombat");
+Goal(867).Title("GLO_QUARIS_NCC_PersistHidingThruStageTransitions");
 Goal(867)
+{
+	INIT
+	{
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+	}
+	KB
+	{
+		// Handle syncing/displaying statuses while off-stage
+		
+		// Use separate DB to track whether someone is hiding, b/c HasAppliedStatus isn't reliable when off-stage
+		
+		PROC
+		PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "SNEAKING", 1)
+		THEN
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+		 
+		// Noncombatant moves offstage => make their hiding status persist
+		
+		IF
+		WentOnStage(_Object, 0)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		// This is not a typo; both ApplyStatus calls actually are necessary.
+		// I don't understand why.
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		
+		// Noncombatant moves onstage => make their hiding status persist
+		
+		IF
+		WentOnStage(_Object, 1)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object)
+		THEN
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object);
+		ApplyStatus((CHARACTER)_Object, "SNEAKING", -1.0);
+	}
+	EXIT
+	{
+	}
+}
+Goal(868).Title("GLO_QUARIS_NCC_WatchCombat");
+Goal(868)
 {
 	INIT
 	{
@@ -520790,8 +520802,8 @@ Goal(867)
 	{
 	}
 }
-Goal(868).Title("GLO_QUARIS_NCC_WatchForceOffStageToggle");
-Goal(868)
+Goal(869).Title("GLO_QUARIS_NCC_WatchForceOffStageToggle");
+Goal(869)
 {
 	INIT
 	{
@@ -520853,8 +520865,8 @@ Goal(868)
 	{
 	}
 }
-Goal(869).Title("GLO_QUARIS_NCC_WatchForTPK");
-Goal(869)
+Goal(870).Title("GLO_QUARIS_NCC_WatchForTPK");
+Goal(870)
 {
 	INIT
 	{
@@ -520887,8 +520899,8 @@ Goal(869)
 	{
 	}
 }
-Goal(870).Title("GLO_QUARIS_NCC_WatchNoncombatantToggle");
-Goal(870)
+Goal(871).Title("GLO_QUARIS_NCC_WatchNoncombatantToggle");
+Goal(871)
 {
 	INIT
 	{
@@ -521028,8 +521040,8 @@ Goal(870)
 	{
 	}
 }
-Goal(871).Title("GLO_Quasit_Summon");
-Goal(871)
+Goal(872).Title("GLO_Quasit_Summon");
+Goal(872)
 {
 	INIT
 	{
@@ -521148,8 +521160,8 @@ Goal(871)
 	{
 	}
 }
-Goal(872).Title("GLO_RestorationStation");
-Goal(872)
+Goal(873).Title("GLO_RestorationStation");
+Goal(873)
 {
 	INIT
 	{
@@ -521242,8 +521254,8 @@ Goal(872)
 	{
 	}
 }
-Goal(873).Title("GLO_SafeRomance");
-Goal(873)
+Goal(874).Title("GLO_SafeRomance");
+Goal(874)
 {
 	INIT
 	{
@@ -521412,8 +521424,8 @@ Goal(873)
 	{
 	}
 }
-Goal(874).Title("GLO_SavegamePatchHelpers");
-Goal(874)
+Goal(875).Title("GLO_SavegamePatchHelpers");
+Goal(875)
 {
 	INIT
 	{
@@ -521464,8 +521476,8 @@ Goal(874)
 	{
 	}
 }
-Goal(875).Title("GLO_ScryingEye");
-Goal(875)
+Goal(876).Title("GLO_ScryingEye");
+Goal(876)
 {
 	INIT
 	{
@@ -522120,8 +522132,8 @@ Goal(875)
 	{
 	}
 }
-Goal(876).Title("GLO_SE_Sound");
-Goal(876)
+Goal(877).Title("GLO_SE_Sound");
+Goal(877)
 {
 	INIT
 	{
@@ -522348,8 +522360,8 @@ Goal(876)
 	{
 	}
 }
-Goal(877).Title("GLO_ShortRest");
-Goal(877)
+Goal(878).Title("GLO_ShortRest");
+Goal(878)
 {
 	INIT
 	{
@@ -522409,8 +522421,8 @@ Goal(877)
 	{
 	}
 }
-Goal(878).Title("GLO_Skillchecks");
-Goal(878)
+Goal(879).Title("GLO_Skillchecks");
+Goal(879)
 {
 	INIT
 	{
@@ -523525,8 +523537,8 @@ Goal(878)
 	{
 	}
 }
-Goal(879).Title("GLO_SocietyOfBrilliance");
-Goal(879)
+Goal(880).Title("GLO_SocietyOfBrilliance");
+Goal(880)
 {
 	INIT
 	{
@@ -523563,8 +523575,8 @@ Goal(879)
 	{
 	}
 }
-Goal(880).Title("GLO_Sorcerer");
-Goal(880)
+Goal(881).Title("GLO_Sorcerer");
+Goal(881)
 {
 	INIT
 	{
@@ -523672,8 +523684,8 @@ Goal(880)
 	{
 	}
 }
-Goal(881).Title("GLO_SpeakerSelector");
-Goal(881)
+Goal(882).Title("GLO_SpeakerSelector");
+Goal(882)
 {
 	INIT
 	{
@@ -523977,8 +523989,8 @@ Goal(881)
 	{
 	}
 }
-Goal(882).Title("GLO_SpeakWithDead");
-Goal(882)
+Goal(883).Title("GLO_SpeakWithDead");
+Goal(883)
 {
 	INIT
 	{
@@ -524237,8 +524249,8 @@ Goal(882)
 	{
 	}
 }
-Goal(883).Title("GLO_SpellEvents");
-Goal(883)
+Goal(884).Title("GLO_SpellEvents");
+Goal(884)
 {
 	INIT
 	{
@@ -524265,8 +524277,8 @@ Goal(883)
 	{
 	}
 }
-Goal(884).Title("GLO_Spells");
-Goal(884)
+Goal(885).Title("GLO_Spells");
+Goal(885)
 {
 	INIT
 	{
@@ -525464,8 +525476,8 @@ Goal(884)
 	{
 	}
 }
-Goal(885).Title("GLO_Spells_Banishment");
-Goal(885)
+Goal(886).Title("GLO_Spells_Banishment");
+Goal(886)
 {
 	INIT
 	{
@@ -525497,8 +525509,8 @@ Goal(885)
 	{
 	}
 }
-Goal(886).Title("GLO_Spells_PostEA");
-Goal(886)
+Goal(887).Title("GLO_Spells_PostEA");
+Goal(887)
 {
 	INIT
 	{
@@ -526507,8 +526519,8 @@ Goal(886)
 	{
 	}
 }
-Goal(887).Title("GLO_Spells_RemoveCurse");
-Goal(887)
+Goal(888).Title("GLO_Spells_RemoveCurse");
+Goal(888)
 {
 	INIT
 	{
@@ -526544,8 +526556,8 @@ Goal(887)
 	{
 	}
 }
-Goal(888).Title("GLO_StartupParameters");
-Goal(888)
+Goal(889).Title("GLO_StartupParameters");
+Goal(889)
 {
 	INIT
 	{
@@ -526561,8 +526573,8 @@ Goal(888)
 	{
 	}
 }
-Goal(889).Title("GLO_SteelWatch");
-Goal(889)
+Goal(890).Title("GLO_SteelWatch");
+Goal(890)
 {
 	INIT
 	{
@@ -526928,8 +526940,8 @@ Goal(889)
 	{
 	}
 }
-Goal(890).Title("GLO_StoryStateRestore");
-Goal(890)
+Goal(891).Title("GLO_StoryStateRestore");
+Goal(891)
 {
 	INIT
 	{
@@ -527479,8 +527491,8 @@ Goal(890)
 	{
 	}
 }
-Goal(891).Title("GLO_StoryStateRestoreDefinitions");
-Goal(891)
+Goal(892).Title("GLO_StoryStateRestoreDefinitions");
+Goal(892)
 {
 	INIT
 	{
@@ -527831,8 +527843,8 @@ Goal(891)
 	{
 	}
 }
-Goal(892).Title("GLO_Surrender");
-Goal(892)
+Goal(893).Title("GLO_Surrender");
+Goal(893)
 {
 	INIT
 	{
@@ -528414,8 +528426,8 @@ Goal(892)
 	{
 	}
 }
-Goal(893).Title("GLO_SussurFlowers");
-Goal(893)
+Goal(894).Title("GLO_SussurFlowers");
+Goal(894)
 {
 	INIT
 	{
@@ -528592,8 +528604,8 @@ Goal(893)
 	{
 	}
 }
-Goal(894).Title("GLO_Tadpole");
-Goal(894)
+Goal(895).Title("GLO_Tadpole");
+Goal(895)
 {
 	INIT
 	{
@@ -528928,8 +528940,8 @@ Goal(894)
 	{
 	}
 }
-Goal(895).Title("GLO_Tadpole_PostEA");
-Goal(895)
+Goal(896).Title("GLO_Tadpole_PostEA");
+Goal(896)
 {
 	INIT
 	{
@@ -529902,8 +529914,8 @@ Goal(895)
 	{
 	}
 }
-Goal(896).Title("GLO_TadpoleSharing");
-Goal(896)
+Goal(897).Title("GLO_TadpoleSharing");
+Goal(897)
 {
 	INIT
 	{
@@ -530083,8 +530095,8 @@ Goal(896)
 	{
 	}
 }
-Goal(897).Title("GLO_Test");
-Goal(897)
+Goal(898).Title("GLO_Test");
+Goal(898)
 {
 	INIT
 	{
@@ -530124,8 +530136,8 @@ Goal(897)
 	{
 	}
 }
-Goal(898).Title("GLO_ThrallOfTheAbsolute");
-Goal(898)
+Goal(899).Title("GLO_ThrallOfTheAbsolute");
+Goal(899)
 {
 	INIT
 	{
@@ -530738,8 +530750,8 @@ Goal(898)
 	{
 	}
 }
-Goal(899).Title("GLO_TieflingLeader");
-Goal(899)
+Goal(900).Title("GLO_TieflingLeader");
+Goal(900)
 {
 	INIT
 	{
@@ -530765,8 +530777,8 @@ Goal(899)
 	{
 	}
 }
-Goal(900).Title("GLO_TopicalGreetings");
-Goal(900)
+Goal(901).Title("GLO_TopicalGreetings");
+Goal(901)
 {
 	INIT
 	{
@@ -530971,8 +530983,8 @@ Goal(900)
 	{
 	}
 }
-Goal(901).Title("GLO_TopicalGreetings_Gustav");
-Goal(901)
+Goal(902).Title("GLO_TopicalGreetings_Gustav");
+Goal(902)
 {
 	INIT
 	{
@@ -531817,8 +531829,8 @@ Goal(901)
 	{
 	}
 }
-Goal(902).Title("GLO_TriggerEvents");
-Goal(902)
+Goal(903).Title("GLO_TriggerEvents");
+Goal(903)
 {
 	INIT
 	{
@@ -532094,8 +532106,8 @@ Goal(902)
 	{
 	}
 }
-Goal(903).Title("GLO_TutorialEventsHandling");
-Goal(903)
+Goal(904).Title("GLO_TutorialEventsHandling");
+Goal(904)
 {
 	INIT
 	{
@@ -532419,8 +532431,8 @@ Goal(903)
 	{
 	}
 }
-Goal(904).Title("GLO_Tutorials");
-Goal(904)
+Goal(905).Title("GLO_Tutorials");
+Goal(905)
 {
 	INIT
 	{
@@ -534390,8 +534402,8 @@ Goal(904)
 	{
 	}
 }
-Goal(905).Title("GLO_Tutorials_TimerTracking");
-Goal(905)
+Goal(906).Title("GLO_Tutorials_TimerTracking");
+Goal(906)
 {
 	INIT
 	{
@@ -534498,8 +534510,8 @@ Goal(905)
 	{
 	}
 }
-Goal(906).Title("GLO_Tutorials_TUT_Act1");
-Goal(906)
+Goal(907).Title("GLO_Tutorials_TUT_Act1");
+Goal(907)
 {
 	INIT
 	{
@@ -534581,8 +534593,8 @@ Goal(906)
 	{
 	}
 }
-Goal(907).Title("GLO_Us_Summon");
-Goal(907)
+Goal(908).Title("GLO_Us_Summon");
+Goal(908)
 {
 	INIT
 	{
@@ -534655,8 +534667,8 @@ Goal(907)
 	{
 	}
 }
-Goal(908).Title("GLO_Voss");
-Goal(908)
+Goal(909).Title("GLO_Voss");
+Goal(909)
 {
 	INIT
 	{
@@ -535074,8 +535086,8 @@ Goal(908)
 	{
 	}
 }
-Goal(909).Title("GLO_Warlock");
-Goal(909)
+Goal(910).Title("GLO_Warlock");
+Goal(910)
 {
 	INIT
 	{
@@ -535206,8 +535218,8 @@ Goal(909)
 	{
 	}
 }
-Goal(910).Title("GLO_WorldGossip");
-Goal(910)
+Goal(911).Title("GLO_WorldGossip");
+Goal(911)
 {
 	INIT
 	{
@@ -535476,8 +535488,8 @@ Goal(910)
 	{
 	}
 }
-Goal(911).Title("GLO_WorldTimelineHandler");
-Goal(911)
+Goal(912).Title("GLO_WorldTimelineHandler");
+Goal(912)
 {
 	INIT
 	{
@@ -535531,8 +535543,8 @@ Goal(911)
 	{
 	}
 }
-Goal(912).Title("GLO_ZhentAgent001");
-Goal(912)
+Goal(913).Title("GLO_ZhentAgent001");
+Goal(913)
 {
 	INIT
 	{
@@ -535571,8 +535583,8 @@ Goal(912)
 	{
 	}
 }
-Goal(913).Title("Global_Chasms");
-Goal(913)
+Goal(914).Title("Global_Chasms");
+Goal(914)
 {
 	INIT
 	{
@@ -535775,8 +535787,8 @@ Goal(913)
 	{
 	}
 }
-Goal(914).Title("HAG_HusbandSummon");
-Goal(914)
+Goal(915).Title("HAG_HusbandSummon");
+Goal(915)
 {
 	INIT
 	{
@@ -535819,8 +535831,8 @@ Goal(914)
 	{
 	}
 }
-Goal(915).Title("Hirelings");
-Goal(915)
+Goal(916).Title("Hirelings");
+Goal(916)
 {
 	INIT
 	{
@@ -537111,8 +537123,8 @@ Goal(915)
 	{
 	}
 }
-Goal(916).Title("ModWrapper_Gustav");
-Goal(916)
+Goal(917).Title("ModWrapper_Gustav");
+Goal(917)
 {
 	INIT
 	{
@@ -537128,8 +537140,8 @@ Goal(916)
 	{
 	}
 }
-Goal(917).Title("ORI_DebugBook");
-Goal(917)
+Goal(918).Title("ORI_DebugBook");
+Goal(918)
 {
 	INIT
 	{
@@ -538901,8 +538913,8 @@ Goal(917)
 	{
 	}
 }
-Goal(918).Title("ORI_DebugBook_GustavDev");
-Goal(918)
+Goal(919).Title("ORI_DebugBook_GustavDev");
+Goal(919)
 {
 	INIT
 	{
@@ -543384,8 +543396,8 @@ Goal(918)
 	{
 	}
 }
-Goal(919).Title("ORI_Gale_Elminster");
-Goal(919)
+Goal(920).Title("ORI_Gale_Elminster");
+Goal(920)
 {
 	INIT
 	{
@@ -544194,8 +544206,8 @@ Goal(919)
 		PROC_Camp_RequiredTalks_Complete(S_GLO_Elminster_75bb6396-1132-4064-bafe-205a3f156b9b);
 	}
 }
-Goal(920).Title("ORI_Gale_Elminster_Setup");
-Goal(920)
+Goal(921).Title("ORI_Gale_Elminster_Setup");
+Goal(921)
 {
 	INIT
 	{
@@ -544250,8 +544262,8 @@ Goal(920)
 	{
 	}
 }
-Goal(921).Title("ORI_ShadowheartResurrection");
-Goal(921)
+Goal(922).Title("ORI_ShadowheartResurrection");
+Goal(922)
 {
 	INIT
 	{
@@ -544523,8 +544535,8 @@ Goal(921)
 		NOT DB_DropMutingStatussesDialog(ShadowHeart_Revived_7118b9f8-38c0-02f0-8824-d7c575a3a956);
 	}
 }
-Goal(922).Title("QRY_Characters");
-Goal(922)
+Goal(923).Title("QRY_Characters");
+Goal(923)
 {
 	INIT
 	{
@@ -545450,8 +545462,8 @@ Goal(922)
 	{
 	}
 }
-Goal(923).Title("Respec");
-Goal(923)
+Goal(924).Title("Respec");
+Goal(924)
 {
 	INIT
 	{
@@ -545503,8 +545515,8 @@ Goal(923)
 	{
 	}
 }
-Goal(924).Title("SCL_Inquisition");
-Goal(924)
+Goal(925).Title("SCL_Inquisition");
+Goal(925)
 {
 	INIT
 	{
@@ -545592,8 +545604,8 @@ Goal(924)
 	{
 	}
 }
-Goal(925).Title("Shared_CombatDialogs");
-Goal(925)
+Goal(926).Title("Shared_CombatDialogs");
+Goal(926)
 {
 	INIT
 	{
@@ -545723,8 +545735,8 @@ Goal(925)
 	{
 	}
 }
-Goal(926).Title("Start");
-Goal(926)
+Goal(927).Title("Start");
+Goal(927)
 {
 	INIT
 	{
@@ -545755,8 +545767,8 @@ Goal(926)
 		SetFlag(Hireling_State_AllowReplace_a8bffa48-dffb-4615-a318-cc2df8b8a551, NULL_00000000-0000-0000-0000-000000000000, 0, 1);
 	}
 }
-Goal(927).Title("Test");
-Goal(927)
+Goal(928).Title("Test");
+Goal(928)
 {
 	INIT
 	{
@@ -546499,8 +546511,8 @@ Goal(927)
 	{
 	}
 }
-Goal(928).Title("Test_PostEA");
-Goal(928)
+Goal(929).Title("Test_PostEA");
+Goal(929)
 {
 	INIT
 	{
@@ -546632,8 +546644,8 @@ Goal(928)
 	{
 	}
 }
-Goal(929).Title("TUT_GameOverLogic");
-Goal(929)
+Goal(930).Title("TUT_GameOverLogic");
+Goal(930)
 {
 	INIT
 	{
@@ -546656,8 +546668,8 @@ Goal(929)
 	{
 	}
 }
-Goal(930).Title("TUT_Helm");
-Goal(930)
+Goal(931).Title("TUT_Helm");
+Goal(931)
 {
 	INIT
 	{
@@ -548793,8 +548805,8 @@ Goal(930)
 		PROC_CheckPartyFull();
 	}
 }
-Goal(931).Title("TUT_Laboratory");
-Goal(931)
+Goal(932).Title("TUT_Laboratory");
+Goal(932)
 {
 	INIT
 	{
@@ -549426,8 +549438,8 @@ Goal(931)
 	{
 	}
 }
-Goal(932).Title("TUT_LowerDeck");
-Goal(932)
+Goal(933).Title("TUT_LowerDeck");
+Goal(933)
 {
 	INIT
 	{
@@ -549927,8 +549939,8 @@ Goal(932)
 	{
 	}
 }
-Goal(933).Title("TUT_Misc");
-Goal(933)
+Goal(934).Title("TUT_Misc");
+Goal(934)
 {
 	INIT
 	{
@@ -551083,8 +551095,8 @@ Goal(933)
 	{
 	}
 }
-Goal(934).Title("TUT_NOT_EA");
-Goal(934)
+Goal(935).Title("TUT_NOT_EA");
+Goal(935)
 {
 	INIT
 	{
@@ -551112,8 +551124,8 @@ Goal(934)
 	{
 	}
 }
-Goal(935).Title("TUT_OriginMoments_Shadowheart");
-Goal(935)
+Goal(936).Title("TUT_OriginMoments_Shadowheart");
+Goal(936)
 {
 	INIT
 	{
@@ -551141,8 +551153,8 @@ Goal(935)
 	{
 	}
 }
-Goal(936).Title("TUT_OriginMoments_Shadowheart_PostEA");
-Goal(936)
+Goal(937).Title("TUT_OriginMoments_Shadowheart_PostEA");
+Goal(937)
 {
 	INIT
 	{
@@ -551168,8 +551180,8 @@ Goal(936)
 	{
 	}
 }
-Goal(937).Title("TUT_Start");
-Goal(937)
+Goal(938).Title("TUT_Start");
+Goal(938)
 {
 	INIT
 	{
@@ -551707,8 +551719,8 @@ Goal(937)
 	{
 	}
 }
-Goal(938).Title("TUT_TransformChamber");
-Goal(938)
+Goal(939).Title("TUT_TransformChamber");
+Goal(939)
 {
 	INIT
 	{
@@ -552701,8 +552713,8 @@ Goal(938)
 		
 	}
 }
-Goal(939).Title("TUT_Tutorials_TUTOnly");
-Goal(939)
+Goal(940).Title("TUT_Tutorials_TUTOnly");
+Goal(940)
 {
 	INIT
 	{
@@ -552943,8 +552955,8 @@ Goal(939)
 	{
 	}
 }
-Goal(940).Title("TUT_WakeUp");
-Goal(940)
+Goal(941).Title("TUT_WakeUp");
+Goal(941)
 {
 	INIT
 	{
@@ -552974,8 +552986,8 @@ Goal(940)
 	{
 	}
 }
-Goal(941).Title("Tutorial");
-Goal(941)
+Goal(942).Title("Tutorial");
+Goal(942)
 {
 	INIT
 	{
@@ -553001,8 +553013,8 @@ Goal(941)
 	{
 	}
 }
-Goal(942).Title("Vignettes");
-Goal(942)
+Goal(943).Title("Vignettes");
+Goal(943)
 {
 	INIT
 	{
@@ -553530,8 +553542,8 @@ Goal(942)
 	{
 	}
 }
-Goal(943).Title("Z_GLO_Act2_DebugSetup");
-Goal(943)
+Goal(944).Title("Z_GLO_Act2_DebugSetup");
+Goal(944)
 {
 	INIT
 	{
@@ -553668,8 +553680,8 @@ Goal(943)
 	{
 	}
 }
-Goal(944).Title("Z_GLO_Act3_DebugSetup");
-Goal(944)
+Goal(945).Title("Z_GLO_Act3_DebugSetup");
+Goal(945)
 {
 	INIT
 	{
@@ -554394,8 +554406,8 @@ Goal(944)
 	{
 	}
 }
-Goal(945).Title("Z_GLO_DLC");
-Goal(945)
+Goal(946).Title("Z_GLO_DLC");
+Goal(946)
 {
 	INIT
 	{
@@ -554940,8 +554952,8 @@ Goal(945)
 	{
 	}
 }
-Goal(946).Title("Z_Shared_Campaign_At_End");
-Goal(946)
+Goal(947).Title("Z_Shared_Campaign_At_End");
+Goal(947)
 {
 	INIT
 	{
@@ -554960,8 +554972,8 @@ Goal(946)
 	{
 	}
 }
-Goal(947).Title("Z_Shared_CharacterCreation");
-Goal(947)
+Goal(948).Title("Z_Shared_CharacterCreation");
+Goal(948)
 {
 	INIT
 	{
@@ -555165,8 +555177,8 @@ Goal(947)
 	{
 	}
 }
-Goal(948).Title("Z_Shared_CharacterCreation_AfterEvents");
-Goal(948)
+Goal(949).Title("Z_Shared_CharacterCreation_AfterEvents");
+Goal(949)
 {
 	INIT
 	{
@@ -555203,8 +555215,8 @@ Goal(948)
 	{
 	}
 }
-Goal(949).Title("Z_Shared_CharacterCreation_CCStartNewSupport");
-Goal(949)
+Goal(950).Title("Z_Shared_CharacterCreation_CCStartNewSupport");
+Goal(950)
 {
 	INIT
 	{
@@ -555226,8 +555238,8 @@ Goal(949)
 	{
 	}
 }
-Goal(950).Title("Z_Shared_TutorialCharacterCreation");
-Goal(950)
+Goal(951).Title("Z_Shared_TutorialCharacterCreation");
+Goal(951)
 {
 	INIT
 	{
@@ -555343,8 +555355,8 @@ Goal(950)
 	{
 	}
 }
-Goal(951).Title("ZZZ_LastGoal");
-Goal(951)
+Goal(952).Title("ZZZ_LastGoal");
+Goal(952)
 {
 	INIT
 	{
@@ -555585,8 +555597,8 @@ Goal(951)
 	{
 	}
 }
-Goal(952).Title("Zzz_LastUnderStart");
-Goal(952)
+Goal(953).Title("Zzz_LastUnderStart");
+Goal(953)
 {
 	INIT
 	{
@@ -555620,8 +555632,8 @@ Goal(952)
 	{
 	}
 }
-Goal(953).Title("ZZZ_Tutorials");
-Goal(953)
+Goal(954).Title("ZZZ_Tutorials");
+Goal(954)
 {
 	INIT
 	{
@@ -555694,8 +555706,8 @@ Goal(11).SubGoal(848);
 Goal(11).SubGoal(849);
 Goal(11).SubGoal(851);
 Goal(11).SubGoal(857);
-Goal(11).SubGoal(883);
-Goal(11).SubGoal(925);
+Goal(11).SubGoal(884);
+Goal(11).SubGoal(926);
 Goal(2).SubGoals(AND);
 Goal(3).SubGoals(AND);
 Goal(15).SubGoals(AND);
@@ -555743,8 +555755,8 @@ Goal(848).SubGoals(AND);
 Goal(849).SubGoals(AND);
 Goal(851).SubGoals(AND);
 Goal(857).SubGoals(AND);
-Goal(883).SubGoals(AND);
-Goal(925).SubGoals(AND);
+Goal(884).SubGoals(AND);
+Goal(926).SubGoals(AND);
 Goal(12).SubGoal(5);
 Goal(12).SubGoal(10);
 Goal(12).SubGoal(43);
@@ -555777,12 +555789,12 @@ Goal(12).SubGoal(756);
 Goal(12).SubGoal(772);
 Goal(12).SubGoal(791);
 Goal(12).SubGoal(818);
-Goal(12).SubGoal(873);
-Goal(12).SubGoal(903);
+Goal(12).SubGoal(874);
 Goal(12).SubGoal(904);
 Goal(12).SubGoal(905);
-Goal(12).SubGoal(915);
-Goal(12).SubGoal(923);
+Goal(12).SubGoal(906);
+Goal(12).SubGoal(916);
+Goal(12).SubGoal(924);
 Goal(5).SubGoals(AND);
 Goal(10).SubGoals(AND);
 Goal(43).SubGoals(AND);
@@ -555815,12 +555827,12 @@ Goal(756).SubGoals(AND);
 Goal(772).SubGoals(AND);
 Goal(791).SubGoals(AND);
 Goal(818).SubGoals(AND);
-Goal(873).SubGoals(AND);
-Goal(903).SubGoals(AND);
+Goal(874).SubGoals(AND);
 Goal(904).SubGoals(AND);
 Goal(905).SubGoals(AND);
-Goal(915).SubGoals(AND);
-Goal(923).SubGoals(AND);
+Goal(906).SubGoals(AND);
+Goal(916).SubGoals(AND);
+Goal(924).SubGoals(AND);
 Goal(88).SubGoal(89);
 Goal(88).SubGoal(91);
 Goal(88).SubGoal(92);
@@ -556016,7 +556028,7 @@ Goal(88).SubGoal(287);
 Goal(88).SubGoal(288);
 Goal(88).SubGoal(732);
 Goal(88).SubGoal(733);
-Goal(88).SubGoal(921);
+Goal(88).SubGoal(922);
 Goal(89).SubGoals(AND);
 Goal(91).SubGoals(AND);
 Goal(92).SubGoals(AND);
@@ -556212,7 +556224,7 @@ Goal(287).SubGoals(AND);
 Goal(288).SubGoals(AND);
 Goal(732).SubGoals(AND);
 Goal(733).SubGoals(AND);
-Goal(921).SubGoals(AND);
+Goal(922).SubGoals(AND);
 Goal(160).SubGoal(158);
 Goal(158).SubGoals(AND);
 Goal(181).SubGoal(136);
@@ -556424,7 +556436,7 @@ Goal(318).SubGoal(476);
 Goal(318).SubGoal(477);
 Goal(318).SubGoal(478);
 Goal(318).SubGoal(479);
-Goal(318).SubGoal(924);
+Goal(318).SubGoal(925);
 Goal(319).SubGoals(AND);
 Goal(320).SubGoals(AND);
 Goal(321).SubGoals(AND);
@@ -556570,7 +556582,7 @@ Goal(476).SubGoals(AND);
 Goal(477).SubGoals(AND);
 Goal(478).SubGoals(AND);
 Goal(479).SubGoals(AND);
-Goal(924).SubGoals(AND);
+Goal(925).SubGoals(AND);
 Goal(363).SubGoal(365);
 Goal(363).SubGoal(371);
 Goal(365).SubGoals(AND);
@@ -557065,72 +557077,72 @@ Goal(798).SubGoals(AND);
 Goal(799).SubGoals(AND);
 Goal(800).SubGoals(AND);
 Goal(801).SubGoals(AND);
-Goal(916).SubGoal(14);
-Goal(916).SubGoal(77);
-Goal(916).SubGoal(80);
-Goal(916).SubGoal(83);
-Goal(916).SubGoal(290);
-Goal(916).SubGoal(441);
-Goal(916).SubGoal(735);
-Goal(916).SubGoal(737);
-Goal(916).SubGoal(740);
-Goal(916).SubGoal(741);
-Goal(916).SubGoal(742);
-Goal(916).SubGoal(743);
-Goal(916).SubGoal(745);
-Goal(916).SubGoal(746);
-Goal(916).SubGoal(762);
-Goal(916).SubGoal(763);
-Goal(916).SubGoal(764);
-Goal(916).SubGoal(765);
-Goal(916).SubGoal(766);
-Goal(916).SubGoal(767);
-Goal(916).SubGoal(768);
-Goal(916).SubGoal(769);
-Goal(916).SubGoal(770);
-Goal(916).SubGoal(771);
-Goal(916).SubGoal(776);
-Goal(916).SubGoal(778);
-Goal(916).SubGoal(779);
-Goal(916).SubGoal(782);
-Goal(916).SubGoal(784);
-Goal(916).SubGoal(789);
-Goal(916).SubGoal(790);
-Goal(916).SubGoal(808);
-Goal(916).SubGoal(809);
-Goal(916).SubGoal(816);
-Goal(916).SubGoal(822);
-Goal(916).SubGoal(823);
-Goal(916).SubGoal(824);
-Goal(916).SubGoal(826);
-Goal(916).SubGoal(830);
-Goal(916).SubGoal(831);
-Goal(916).SubGoal(832);
-Goal(916).SubGoal(833);
-Goal(916).SubGoal(835);
-Goal(916).SubGoal(836);
-Goal(916).SubGoal(837);
-Goal(916).SubGoal(838);
-Goal(916).SubGoal(839);
-Goal(916).SubGoal(840);
-Goal(916).SubGoal(841);
-Goal(916).SubGoal(842);
-Goal(916).SubGoal(843);
-Goal(916).SubGoal(844);
-Goal(916).SubGoal(845);
-Goal(916).SubGoal(850);
-Goal(916).SubGoal(856);
-Goal(916).SubGoal(858);
-Goal(916).SubGoal(875);
-Goal(916).SubGoal(880);
-Goal(916).SubGoal(887);
-Goal(916).SubGoal(889);
-Goal(916).SubGoal(893);
-Goal(916).SubGoal(901);
-Goal(916).SubGoal(926);
-Goal(916).SubGoal(928);
-Goal(916).SubGoal(943);
-Goal(916).SubGoal(944);
+Goal(917).SubGoal(14);
+Goal(917).SubGoal(77);
+Goal(917).SubGoal(80);
+Goal(917).SubGoal(83);
+Goal(917).SubGoal(290);
+Goal(917).SubGoal(441);
+Goal(917).SubGoal(735);
+Goal(917).SubGoal(737);
+Goal(917).SubGoal(740);
+Goal(917).SubGoal(741);
+Goal(917).SubGoal(742);
+Goal(917).SubGoal(743);
+Goal(917).SubGoal(745);
+Goal(917).SubGoal(746);
+Goal(917).SubGoal(762);
+Goal(917).SubGoal(763);
+Goal(917).SubGoal(764);
+Goal(917).SubGoal(765);
+Goal(917).SubGoal(766);
+Goal(917).SubGoal(767);
+Goal(917).SubGoal(768);
+Goal(917).SubGoal(769);
+Goal(917).SubGoal(770);
+Goal(917).SubGoal(771);
+Goal(917).SubGoal(776);
+Goal(917).SubGoal(778);
+Goal(917).SubGoal(779);
+Goal(917).SubGoal(782);
+Goal(917).SubGoal(784);
+Goal(917).SubGoal(789);
+Goal(917).SubGoal(790);
+Goal(917).SubGoal(808);
+Goal(917).SubGoal(809);
+Goal(917).SubGoal(816);
+Goal(917).SubGoal(822);
+Goal(917).SubGoal(823);
+Goal(917).SubGoal(824);
+Goal(917).SubGoal(826);
+Goal(917).SubGoal(830);
+Goal(917).SubGoal(831);
+Goal(917).SubGoal(832);
+Goal(917).SubGoal(833);
+Goal(917).SubGoal(835);
+Goal(917).SubGoal(836);
+Goal(917).SubGoal(837);
+Goal(917).SubGoal(838);
+Goal(917).SubGoal(839);
+Goal(917).SubGoal(840);
+Goal(917).SubGoal(841);
+Goal(917).SubGoal(842);
+Goal(917).SubGoal(843);
+Goal(917).SubGoal(844);
+Goal(917).SubGoal(845);
+Goal(917).SubGoal(850);
+Goal(917).SubGoal(856);
+Goal(917).SubGoal(858);
+Goal(917).SubGoal(876);
+Goal(917).SubGoal(881);
+Goal(917).SubGoal(888);
+Goal(917).SubGoal(890);
+Goal(917).SubGoal(894);
+Goal(917).SubGoal(902);
+Goal(917).SubGoal(927);
+Goal(917).SubGoal(929);
+Goal(917).SubGoal(944);
+Goal(917).SubGoal(945);
 Goal(14).SubGoals(AND);
 Goal(77).SubGoals(AND);
 Goal(80).SubGoals(AND);
@@ -557187,75 +557199,75 @@ Goal(845).SubGoals(AND);
 Goal(850).SubGoals(AND);
 Goal(856).SubGoals(AND);
 Goal(858).SubGoals(AND);
-Goal(875).SubGoals(AND);
-Goal(880).SubGoals(AND);
-Goal(887).SubGoals(AND);
-Goal(889).SubGoals(AND);
-Goal(893).SubGoals(AND);
-Goal(901).SubGoals(AND);
-Goal(926).SubGoals(AND);
-Goal(928).SubGoals(AND);
-Goal(943).SubGoals(AND);
+Goal(876).SubGoals(AND);
+Goal(881).SubGoals(AND);
+Goal(888).SubGoals(AND);
+Goal(890).SubGoals(AND);
+Goal(894).SubGoals(AND);
+Goal(902).SubGoals(AND);
+Goal(927).SubGoals(AND);
+Goal(929).SubGoals(AND);
 Goal(944).SubGoals(AND);
-Goal(920).SubGoal(919);
-Goal(919).SubGoals(AND);
-Goal(926).SubGoal(45);
-Goal(926).SubGoal(49);
-Goal(926).SubGoal(75);
-Goal(926).SubGoal(76);
-Goal(926).SubGoal(78);
-Goal(926).SubGoal(79);
-Goal(926).SubGoal(88);
-Goal(926).SubGoal(213);
-Goal(926).SubGoal(289);
-Goal(926).SubGoal(291);
-Goal(926).SubGoal(318);
-Goal(926).SubGoal(346);
-Goal(926).SubGoal(425);
-Goal(926).SubGoal(480);
-Goal(926).SubGoal(491);
-Goal(926).SubGoal(496);
-Goal(926).SubGoal(572);
-Goal(926).SubGoal(668);
-Goal(926).SubGoal(687);
-Goal(926).SubGoal(702);
-Goal(926).SubGoal(730);
-Goal(926).SubGoal(731);
-Goal(926).SubGoal(739);
-Goal(926).SubGoal(744);
-Goal(926).SubGoal(749);
-Goal(926).SubGoal(751);
-Goal(926).SubGoal(752);
-Goal(926).SubGoal(773);
-Goal(926).SubGoal(781);
-Goal(926).SubGoal(787);
-Goal(926).SubGoal(806);
-Goal(926).SubGoal(810);
-Goal(926).SubGoal(811);
-Goal(926).SubGoal(813);
-Goal(926).SubGoal(814);
-Goal(926).SubGoal(815);
-Goal(926).SubGoal(825);
-Goal(926).SubGoal(829);
-Goal(926).SubGoal(853);
-Goal(926).SubGoal(855);
-Goal(926).SubGoal(871);
-Goal(926).SubGoal(872);
-Goal(926).SubGoal(876);
-Goal(926).SubGoal(879);
-Goal(926).SubGoal(898);
-Goal(926).SubGoal(899);
-Goal(926).SubGoal(907);
-Goal(926).SubGoal(908);
-Goal(926).SubGoal(909);
-Goal(926).SubGoal(911);
-Goal(926).SubGoal(912);
-Goal(926).SubGoal(914);
-Goal(926).SubGoal(920);
-Goal(926).SubGoal(927);
-Goal(926).SubGoal(941);
-Goal(926).SubGoal(942);
-Goal(926).SubGoal(952);
+Goal(945).SubGoals(AND);
+Goal(921).SubGoal(920);
+Goal(920).SubGoals(AND);
+Goal(927).SubGoal(45);
+Goal(927).SubGoal(49);
+Goal(927).SubGoal(75);
+Goal(927).SubGoal(76);
+Goal(927).SubGoal(78);
+Goal(927).SubGoal(79);
+Goal(927).SubGoal(88);
+Goal(927).SubGoal(213);
+Goal(927).SubGoal(289);
+Goal(927).SubGoal(291);
+Goal(927).SubGoal(318);
+Goal(927).SubGoal(346);
+Goal(927).SubGoal(425);
+Goal(927).SubGoal(480);
+Goal(927).SubGoal(491);
+Goal(927).SubGoal(496);
+Goal(927).SubGoal(572);
+Goal(927).SubGoal(668);
+Goal(927).SubGoal(687);
+Goal(927).SubGoal(702);
+Goal(927).SubGoal(730);
+Goal(927).SubGoal(731);
+Goal(927).SubGoal(739);
+Goal(927).SubGoal(744);
+Goal(927).SubGoal(749);
+Goal(927).SubGoal(751);
+Goal(927).SubGoal(752);
+Goal(927).SubGoal(773);
+Goal(927).SubGoal(781);
+Goal(927).SubGoal(787);
+Goal(927).SubGoal(806);
+Goal(927).SubGoal(810);
+Goal(927).SubGoal(811);
+Goal(927).SubGoal(813);
+Goal(927).SubGoal(814);
+Goal(927).SubGoal(815);
+Goal(927).SubGoal(825);
+Goal(927).SubGoal(829);
+Goal(927).SubGoal(853);
+Goal(927).SubGoal(855);
+Goal(927).SubGoal(872);
+Goal(927).SubGoal(873);
+Goal(927).SubGoal(877);
+Goal(927).SubGoal(880);
+Goal(927).SubGoal(899);
+Goal(927).SubGoal(900);
+Goal(927).SubGoal(908);
+Goal(927).SubGoal(909);
+Goal(927).SubGoal(910);
+Goal(927).SubGoal(912);
+Goal(927).SubGoal(913);
+Goal(927).SubGoal(915);
+Goal(927).SubGoal(921);
+Goal(927).SubGoal(928);
+Goal(927).SubGoal(942);
+Goal(927).SubGoal(943);
+Goal(927).SubGoal(953);
 Goal(45).SubGoals(AND);
 Goal(49).SubGoals(AND);
 Goal(75).SubGoals(AND);
@@ -557296,38 +557308,37 @@ Goal(825).SubGoals(AND);
 Goal(829).SubGoals(AND);
 Goal(853).SubGoals(AND);
 Goal(855).SubGoals(AND);
-Goal(871).SubGoals(AND);
 Goal(872).SubGoals(AND);
-Goal(876).SubGoals(AND);
-Goal(879).SubGoals(AND);
-Goal(898).SubGoals(AND);
+Goal(873).SubGoals(AND);
+Goal(877).SubGoals(AND);
+Goal(880).SubGoals(AND);
 Goal(899).SubGoals(AND);
-Goal(907).SubGoals(AND);
+Goal(900).SubGoals(AND);
 Goal(908).SubGoals(AND);
 Goal(909).SubGoals(AND);
-Goal(911).SubGoals(AND);
+Goal(910).SubGoals(AND);
 Goal(912).SubGoals(AND);
-Goal(914).SubGoals(AND);
-Goal(920).SubGoals(AND);
-Goal(927).SubGoals(AND);
-Goal(941).SubGoals(AND);
+Goal(913).SubGoals(AND);
+Goal(915).SubGoals(AND);
+Goal(921).SubGoals(AND);
+Goal(928).SubGoals(AND);
 Goal(942).SubGoals(AND);
-Goal(952).SubGoals(AND);
-Goal(941).SubGoal(906);
-Goal(941).SubGoal(929);
-Goal(941).SubGoal(930);
-Goal(941).SubGoal(931);
-Goal(941).SubGoal(932);
-Goal(941).SubGoal(933);
-Goal(941).SubGoal(934);
-Goal(941).SubGoal(935);
-Goal(941).SubGoal(936);
-Goal(941).SubGoal(937);
-Goal(941).SubGoal(938);
-Goal(941).SubGoal(939);
-Goal(941).SubGoal(940);
-Goal(906).SubGoals(AND);
-Goal(929).SubGoals(AND);
+Goal(943).SubGoals(AND);
+Goal(953).SubGoals(AND);
+Goal(942).SubGoal(907);
+Goal(942).SubGoal(930);
+Goal(942).SubGoal(931);
+Goal(942).SubGoal(932);
+Goal(942).SubGoal(933);
+Goal(942).SubGoal(934);
+Goal(942).SubGoal(935);
+Goal(942).SubGoal(936);
+Goal(942).SubGoal(937);
+Goal(942).SubGoal(938);
+Goal(942).SubGoal(939);
+Goal(942).SubGoal(940);
+Goal(942).SubGoal(941);
+Goal(907).SubGoals(AND);
 Goal(930).SubGoals(AND);
 Goal(931).SubGoals(AND);
 Goal(932).SubGoals(AND);
@@ -557339,10 +557350,11 @@ Goal(937).SubGoals(AND);
 Goal(938).SubGoals(AND);
 Goal(939).SubGoals(AND);
 Goal(940).SubGoals(AND);
-Goal(946).SubGoal(947);
-Goal(946).SubGoal(948);
-Goal(947).SubGoals(AND);
-Goal(948).SubGoals(AND);
+Goal(941).SubGoals(AND);
+Goal(947).SubGoal(948);
 Goal(947).SubGoal(949);
+Goal(948).SubGoals(AND);
 Goal(949).SubGoals(AND);
+Goal(948).SubGoal(950);
+Goal(950).SubGoals(AND);
 
