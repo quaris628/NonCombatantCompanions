@@ -519156,6 +519156,7 @@ Goal(863)
 	{
 		// Handle group hide
 		
+		// Use separate DB to track whether someone is hiding, b/c HasAppliedStatus isn't reliable when off-stage
 		
 		PROC
 		PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_PartyMember)
@@ -519273,7 +519274,49 @@ Goal(863)
 		
 		// Noncombatant moves onstage => make their hiding status persist
 		
-		// TODO
+		IF
+		WentOnStage(_Object, 1)
+		AND
+		HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		THEN
+		PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_Object);
+		
+		PROC
+		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage((CHARACTER)_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		THEN
+		PROC_QUARIS_NCC_IfWasHidingApplyStatus(_PartyMember);
+		PROC_QUARIS_NCC_IfWasNotHidingRemoveStatus(_PartyMember);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		//DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember);
+		// Workaround to this status not showing after the noncombatant comes back on stage
+		//RemoveStatus(_PartyMember, "SNEAKING");
+		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+		// TODO: handle race conditions here better
+		//TimerLaunch("QUARIS_NCC_IfWasHidingApplyStatus_DelayForSecondApplyStatus", 0);
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
+		
+		IF
+		TimerFinished("QUARIS_NCC_IfWasHidingApplyStatus_DelayForSecondApplyStatus")
+		AND
+		DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember)
+		THEN
+		PROC_ApplySneakingStatusIfNotAlreadyApplied(_PartyMember);
+		NOT DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember);
+		
+		PROC
+		PROC_QUARIS_NCC_IfWasNotHidingRemoveStatus((CHARACTER)_PartyMember)
+		AND
+		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
+		THEN
+		RemoveStatus(_PartyMember, "SNEAKING");
 	}
 	EXIT
 	{
@@ -519371,8 +519414,9 @@ Goal(866)
 		//  - LeaveCombat = 1
 		//  - SnapToGround = 1
 		TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
-		NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Noncombatant);
+		//NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Noncombatant);
 		SetOnStage(_Noncombatant, 1);
+		//PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Noncombatant);
 		// Workaround to this status not showing after the noncombatant comes back on stage
 		RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
 		ApplyStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
@@ -519385,20 +519429,21 @@ Goal(866)
 		AND
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 		THEN
-		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Summon);
+		//NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Summon);
 		SetOnStage(_Summon, 1);
-		// Attempt to fix the status not showing when the noncombatant comes back on stage
-		// TODO: Test, is this still an issue?
-		//RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
-		//ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		// Workaround to this status not showing after the noncombatant comes back on stage
+		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
+		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Summon);
 		
 		IF
 		CharacterLeftParty(_Character)
 		THEN
-		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Character);
+		//NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Character);
 		// Weirdly, someone leaving the party seems to make them move on-stage automatically?
 		// But do it explicitly too, just it case this helps handle something I'm not anticipating
 		SetOnStage(_Character, 1);
+		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Character);
 	}
 	EXIT
 	{
@@ -519611,6 +519656,7 @@ Goal(870)
 		HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		THEN
 		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
 		
 		// Character leaves party => ensure they're a combatant
 		
@@ -519635,6 +519681,7 @@ Goal(870)
 		HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 0)
 		THEN
 		ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
 		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons(_Companion);
 		
 		PROC
@@ -519647,6 +519694,7 @@ Goal(870)
 		HasAppliedStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", 0)
 		THEN
 		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
 		
 		PROC
 		PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle((CHARACTER)_Companion)
@@ -519664,6 +519712,7 @@ Goal(870)
 		THEN
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
 		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
+		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
 		
 		PROC
 		PROC_QUARIS_NCC_SetNoncombatantToggleOff((CHARACTER)_Companion)
@@ -519683,6 +519732,7 @@ Goal(870)
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 		THEN
 		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
+		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
 	}
 	EXIT
 	{

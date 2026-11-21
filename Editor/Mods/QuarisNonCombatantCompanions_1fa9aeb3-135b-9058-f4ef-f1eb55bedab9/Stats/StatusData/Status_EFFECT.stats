@@ -5,9 +5,8 @@
       <fields>
         <field name="UUID" type="IdTableFieldDefinition" value="664144b5-adf6-4b66-8f04-4846ed7ea46c" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_Main" />
-        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd227bb61g7691g2aa5gcddag1c7dcf4e952b" version="2" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h65bc44a0gbc90g6377gfaacgfae4437b3afa" version="3" />
-        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_BanishingSmite_Melee" />
+        <field name="Using" type="BaseClassTableFieldDefinition" value="b53fa348-4528-4960-be78-e999cb88915c" />
+        <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableCombatlog" enumeration_type_name="StatusPropertyFlags" version="1" />
       </fields>
     </stat_object>
     <stat_object is_substat="false">
@@ -46,6 +45,23 @@
         <field name="UUID" type="IdTableFieldDefinition" value="8a633a66-1edd-4f1f-bb59-38d42c65e744" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove" />
         <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisableCombatlog;DisablePortraitIndicator" enumeration_type_name="StatusPropertyFlags" version="1" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="b53fa348-4528-4960-be78-e999cb88915c" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_Parent" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h2cdb4611g2309g2b8fg5ac5g6f2a28010452" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h9dd6be53g545eg1040gad90gb37f94941a3e" version="1" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_BanishingSmite_Melee" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="661461c7-4ac4-46fb-809f-faf966e57963" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_CombatLogVisual" />
+        <field name="Using" type="BaseClassTableFieldDefinition" value="b53fa348-4528-4960-be78-e999cb88915c" />
+        <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisablePortraitIndicator" enumeration_type_name="StatusPropertyFlags" version="1" />
       </fields>
     </stat_object>
   </stat_objects>

@@ -54,6 +54,7 @@ AND
 HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 THEN
 ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
 
 // Character leaves party => ensure they're a combatant
 
@@ -78,6 +79,7 @@ AND
 HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 0)
 THEN
 ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
 PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons(_Companion);
 
 PROC
@@ -90,6 +92,7 @@ AND
 HasAppliedStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", 0)
 THEN
 ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
 
 PROC
 PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle((CHARACTER)_Companion)
@@ -107,6 +110,7 @@ PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Companion)
 THEN
 PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
 RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
+RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
 
 PROC
 PROC_QUARIS_NCC_SetNoncombatantToggleOff((CHARACTER)_Companion)
@@ -126,6 +130,7 @@ AND
 CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 THEN
 RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
+RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
 EXITSECTION
 
 ENDEXITSECTION

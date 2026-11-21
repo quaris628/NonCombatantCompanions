@@ -25,4 +25,6 @@
   <content contentuid="h92ed7679gd9f4g6a09ga1ebg180575c123dc" version="6">This setting cannot be changed while any combat is in progress.&lt;br&gt;If all combatants in your party die, the game is over.</content>
   <content contentuid="hd24a1f2dgf9aagedb5g1ff4gb00212261468" version="4">Non-combatants who are in a dialogue remain in the dialogue until it finishes. They are still considered dismissed immediately for all other intents and purposes.</content>
   <content contentuid="h55b85541g6af8ga892g7a85gd22a1b15b697" version="2">Temporary followers who are attached to a companion will always join combat.&lt;br&gt;Non-combatants will remain in in-progress dialogues even if a combat starts.</content>
+  <content contentuid="h2cdb4611g2309g2b8fg5ac5g6f2a28010452" version="1">Non-Combatant</content>
+  <content contentuid="h9dd6be53g545eg1040gad90gb37f94941a3e" version="1">This creature will not join combat.</content>
 </contentList>

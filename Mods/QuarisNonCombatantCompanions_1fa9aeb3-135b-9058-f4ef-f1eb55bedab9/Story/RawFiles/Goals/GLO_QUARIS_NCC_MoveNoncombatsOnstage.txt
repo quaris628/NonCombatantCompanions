@@ -29,8 +29,9 @@ THEN
 //  - LeaveCombat = 1
 //  - SnapToGround = 1
 TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
-NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Noncombatant);
+//NOT DB_QUARIS_NCC_OffstagePartyMemberIsHiding(_Noncombatant);
 SetOnStage(_Noncombatant, 1);
+//PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Noncombatant);
 // Workaround to this status not showing after the noncombatant comes back on stage
 RemoveStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main");
 ApplyStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
@@ -43,20 +44,21 @@ DB_Summons(_Summon)
 AND
 CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 THEN
-NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Summon);
+//NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Summon);
 SetOnStage(_Summon, 1);
-// Attempt to fix the status not showing when the noncombatant comes back on stage
-// TODO: Test, is this still an issue?
-//RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
-//ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+// Workaround to this status not showing after the noncombatant comes back on stage
+RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
+ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Summon);
 
 IF
 CharacterLeftParty(_Character)
 THEN
-NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Character);
+//NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_Character);
 // Weirdly, someone leaving the party seems to make them move on-stage automatically?
 // But do it explicitly too, just it case this helps handle something I'm not anticipating
 SetOnStage(_Character, 1);
+PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Character);
 EXITSECTION
 
 ENDEXITSECTION
