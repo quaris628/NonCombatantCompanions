@@ -10,7 +10,7 @@ KBSECTION
 // Use separate DB to track whether someone is hiding, b/c HasAppliedStatus isn't reliable when off-stage
 
 PROC
-PROC_QUARIS_NCC_SetOffstagePartyMemberIsHiding((CHARACTER)_PartyMember)
+PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
 AND
 HasAppliedStatus(_PartyMember, "SNEAKING", 1)
 THEN
@@ -27,6 +27,16 @@ THEN
 // I don't understand why.
 ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 ApplyStatus(_PartyMember, "SNEAKING", -1.0);
+
+// Noncombatant moves onstage => make their hiding status persist
+
+IF
+WentOnStage(_Object, 1)
+AND
+DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object)
+THEN
+NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding((CHARACTER)_Object);
+ApplyStatus((CHARACTER)_Object, "SNEAKING", -1.0);
 
 // When group hide is used and fails for an offstage noncombatant => toggle their hiding state
 
@@ -96,23 +106,6 @@ AND
 DB_QUARIS_NCC_OffstageNoncombatantWasNotHidingTemp(_PartyMember)
 THEN
 DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
-
-// Noncombatant moves onstage => make their hiding status persist
-
-IF
-WentOnStage(_Object, 1)
-AND
-HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
-THEN
-PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_Object);
-
-PROC
-PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_PartyMember)
-AND
-DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
-THEN
-ApplyStatus(_PartyMember, "SNEAKING", -1.0);
-NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
 EXITSECTION
 
 ENDEXITSECTION
