@@ -520622,36 +520622,12 @@ Goal(863)
 		PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_Object);
 		
 		PROC
-		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage((CHARACTER)_PartyMember)
-		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
-		THEN
-		PROC_QUARIS_NCC_IfWasHidingApplyStatus(_PartyMember);
-		PROC_QUARIS_NCC_IfWasNotHidingRemoveStatus(_PartyMember);
-		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
-		
-		PROC
 		PROC_QUARIS_NCC_IfWasHidingApplyStatus((CHARACTER)_PartyMember)
 		AND
 		DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
 		THEN
 		ApplyStatus(_PartyMember, "SNEAKING", -1.0);
 		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember);
-		
-		IF
-		TimerFinished("QUARIS_NCC_IfWasHidingApplyStatus_DelayForSecondApplyStatus")
-		AND
-		DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember)
-		THEN
-		PROC_ApplySneakingStatusIfOffstageAndNotAlreadyApplied(_PartyMember);
-		NOT DB_QUARIS_NCC_NoncombatantWasHidingTemp(_PartyMember);
-		
-		PROC
-		PROC_QUARIS_NCC_IfWasNotHidingRemoveStatus((CHARACTER)_PartyMember)
-		AND
-		NOT DB_QUARIS_NCC_OffstageNoncombatantIsHiding(_PartyMember)
-		THEN
-		RemoveStatus(_PartyMember, "SNEAKING");
 	}
 	EXIT
 	{
@@ -520761,7 +520737,6 @@ Goal(866)
 		// Workaround to this status not showing after the noncombatant comes back on stage
 		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
 		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Summon);
 		
 		IF
 		CharacterLeftParty(_Character)
@@ -520769,7 +520744,6 @@ Goal(866)
 		// Weirdly, someone leaving the party seems to make them move on-stage automatically?
 		// But do it explicitly too, just it case this helps handle something I'm not anticipating
 		SetOnStage(_Character, 1);
-		PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Character);
 	}
 	EXIT
 	{

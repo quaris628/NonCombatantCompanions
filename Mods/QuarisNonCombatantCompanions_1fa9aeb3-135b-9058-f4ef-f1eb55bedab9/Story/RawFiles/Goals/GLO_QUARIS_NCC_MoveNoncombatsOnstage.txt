@@ -46,7 +46,6 @@ SetOnStage(_Summon, 1);
 // Workaround to this status not showing after the noncombatant comes back on stage
 RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
 ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Summon);
 
 IF
 CharacterLeftParty(_Character)
@@ -54,7 +53,6 @@ THEN
 // Weirdly, someone leaving the party seems to make them move on-stage automatically?
 // But do it explicitly too, just it case this helps handle something I'm not anticipating
 SetOnStage(_Character, 1);
-PROC_QUARIS_NCC_SyncHideStatusWhenNoncombatantsMoveOnstage(_Character);
 EXITSECTION
 
 ENDEXITSECTION
