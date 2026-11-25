@@ -79,8 +79,8 @@
       <fields>
         <field name="UUID" type="IdTableFieldDefinition" value="875b110f-bb7e-4763-85af-9056361bad39" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator" />
-        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h6504fdafgd0f8ge758g061bg3c8e250ed485" version="1" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h3946ee85g2770gdcedgf617g83dee62609f5" version="2" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h6504fdafgd0f8ge758g061bg3c8e250ed485" version="2" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h3946ee85g2770gdcedgf617g83dee62609f5" version="3" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink_Dismiss" />
         <field name="StackId" type="StringTableFieldDefinition" value="QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator" />
         <field name="TickType" type="EnumerationTableFieldDefinition" value="StartTurn" enumeration_type_name="TickType" version="1" />

@@ -22,9 +22,9 @@
   <content contentuid="hc5532a28g83d0g82dcg6ba3g8e180fa18538" version="5">The mysterious outer planes are known to occasionally whisk away unsuspecting creatures.</content>
   <content contentuid="he307a95fg1a65g5f78g74dbg33bed70fc0b1" version="4">The mysterious outer planes are known to occasionally whisk away unsuspecting creatures.</content>
   <content contentuid="h20f78501gce73g56f4g6b73ge14bf0dd9630" version="1">Test Passive</content>
-  <content contentuid="h92ed7679gd9f4g6a09ga1ebg180575c123dc" version="6">This setting cannot be changed while any combat is in progress.&lt;br&gt;If all combatants in your party die, the game is over.</content>
+  <content contentuid="h92ed7679gd9f4g6a09ga1ebg180575c123dc" version="8">- This setting cannot be changed while any combat is in progress.&lt;br&gt;- Non-combatants staying alive won't prevent a game-over from all party members dying.</content>
   <content contentuid="hd24a1f2dgf9aagedb5g1ff4gb00212261468" version="4">Non-combatants who are in a dialogue remain in the dialogue until it finishes. They are still considered dismissed immediately for all other intents and purposes.</content>
-  <content contentuid="h55b85541g6af8ga892g7a85gd22a1b15b697" version="8">Combat starting does not remove non-combatants from in-progress dialogue.&lt;br&gt;Characters who temporarily join the party as attached followers always join combat.&lt;br&gt;Vanishing from the material plane breaks concentration.&lt;br&gt;Conditions affecting non-combatants may not be displayed immediately upon returning to the material plane.</content>
+  <content contentuid="h55b85541g6af8ga892g7a85gd22a1b15b697" version="12">- Characters who temporarily join the party as attached followers never become non-combatants.&lt;br&gt;- Extraplanar travel breaks concentration, and can remove a few types of conditions.&lt;br&gt;- Upon returning to the material plane, there may be a delay in conditions displaying or taking effect.&lt;br&gt;- Non-combatants always remain in dialogues that they've already joined.</content>
   <content contentuid="h2cdb4611g2309g2b8fg5ac5g6f2a28010452" version="1">Non-Combatant</content>
   <content contentuid="h9dd6be53g545eg1040gad90gb37f94941a3e" version="1">This creature will not join combat.</content>
   <content contentuid="h7c8b9c4cgb9adg2fdag4cbcg9737faa30721" version="2">Vanished from the Material Plane</content>
@@ -32,8 +32,8 @@
   <content contentuid="hbb624da5ga5c4g4979g59f7g42fa65a2de61" version="1">QUARIS_TestProneToggle</content>
   <content contentuid="h927c47ecgaac7g6ab4g0568g25f0c8da8389" version="1">Recovering from Extraplanar Transport</content>
   <content contentuid="hfe6b5b2ag766eg280bg6639g6b7ab77f4651" version="2">This creature has recently returned to the material plane. They need a moment to readjust.&lt;br&gt;Conditions that affect them may take a moment to be displayed again.</content>
-  <content contentuid="h6504fdafgd0f8ge758g061bg3c8e250ed485" version="1">Recovering from Extraplanar Transport</content>
-  <content contentuid="h3946ee85g2770gdcedgf617g83dee62609f5" version="2">This creature has recently returned to the material plane. They may need a moment to readjust.&lt;br&gt;Conditions that affect them may take a moment to be displayed again.</content>
+  <content contentuid="h6504fdafgd0f8ge758g061bg3c8e250ed485" version="2">Recovering from Extraplanar Travel</content>
+  <content contentuid="h3946ee85g2770gdcedgf617g83dee62609f5" version="3">This creature has recently returned to the material plane. They may need a moment to readjust.&lt;br&gt;Conditions that affect them may take a moment to be displayed again or take effect.</content>
   <content contentuid="hbafcaddfg5008g2919g380bg86cf0c29bda7" version="1">This creature will not join combat.&lt;br&gt;While any combat is happening, they will vanish from the material plane.</content>
   <content contentuid="h42b1cd06gedbfg0798gc740ga20377f6ca70" version="1">Recovering from Extraplanar Transport</content>
   <content contentuid="hfe00c7adg5069gb455gb97ag51b4bcbd4573" version="1">​</content>

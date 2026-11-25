@@ -5,7 +5,7 @@
         <node id="root">
             <children>
                 <node id="TooltipExtraTexts">
-                    <attribute id="Text" type="TranslatedString" handle="h92ed7679gd9f4g6a09ga1ebg180575c123dc" version="6"/>
+                    <attribute id="Text" type="TranslatedString" handle="h92ed7679gd9f4g6a09ga1ebg180575c123dc" version="8"/>
                     <attribute id="UUID" type="guid" value="4854764b-6d9d-4e59-9736-7ecf9d4e1f29"/>
                 </node>
             </children>
