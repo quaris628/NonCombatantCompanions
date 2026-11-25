@@ -6,12 +6,12 @@
         <field name="UUID" type="IdTableFieldDefinition" value="cb1d4da1-e1e5-4772-8cde-0c7da76bb951" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatantToggle" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd84d6471g083bg32d1g9e35g5621f93eb0a8" version="2" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h84d4cf9fgcb18gfcbag7170gca308122c957" version="9" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h84d4cf9fgcb18gfcbag7170gca308122c957" version="10" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_BanishingSmite_Melee" />
         <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar" enumeration_type_name="PassiveFlags" version="1" />
         <field name="ToggleOnFunctors" type="FunctorsTableFieldDefinition" value="ApplyStatus(QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd, 100, -1)" />
         <field name="ToggleOffFunctors" type="FunctorsTableFieldDefinition" value="ApplyStatus(QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove, 100, -1)" />
-        <field name="ExtraDescription" type="TranslatedStringTableFieldDefinition" handle="h55b85541g6af8ga892g7a85gd22a1b15b697" version="4" />
+        <field name="ExtraDescription" type="TranslatedStringTableFieldDefinition" handle="h55b85541g6af8ga892g7a85gd22a1b15b697" version="7" />
         <field name="PriorityOrder" type="IntegerTableFieldDefinition" value="-99" />
         <field name="LoreDescription" type="TranslatedStringTableFieldDefinition" handle="hc5532a28g83d0g82dcg6ba3g8e180fa18538" version="5" />
         <field name="TooltipPermanentWarnings" type="StringTableFieldDefinition" value="4854764b-6d9d-4e59-9736-7ecf9d4e1f29" />

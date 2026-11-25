@@ -12,8 +12,7 @@ DB_PartyMembers(_PartyMember)
 AND
 HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
 THEN
-PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_PartyMember);
-SetOnStage(_PartyMember, 0);
+PROC_QUARIS_NCC_MoveOffstage(_PartyMember);
 
 IF
 StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
@@ -22,8 +21,13 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 AND
 DB_PartyMembers((CHARACTER)_Object)
 THEN
-PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_Object);
-SetOnStage(_Object, 0);
+PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Object);
+
+PROC
+PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Character)
+THEN
+PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_Character);
+SetOnStage(_Character, 0);
 EXITSECTION
 
 ENDEXITSECTION

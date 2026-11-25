@@ -1,0 +1,10 @@
+new entry "QUARIS_NCC_EmptyKnockedDownStatus"
+type "StatusData"
+data "StatusType" "KNOCKED_DOWN"
+data "DisplayName" "h927c47ecgaac7g6ab4g0568g25f0c8da8389;1"
+data "Description" "hfe6b5b2ag766eg280bg6639g6b7ab77f4651;2"
+data "Icon" "Spell_Abjuration_MagicCircle"
+data "Instant" "Yes"
+data "TickType" "StartTurn"
+data "StatusPropertyFlags" "DisableOverhead;DisableCombatlog;DisablePortraitIndicator"
+

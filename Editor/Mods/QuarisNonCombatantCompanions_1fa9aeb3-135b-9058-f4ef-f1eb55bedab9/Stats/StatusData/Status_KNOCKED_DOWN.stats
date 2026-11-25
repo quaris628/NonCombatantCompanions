@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stats stat_object_definition_id="53eea14d-0e3f-4411-9d44-36d1ff0a6775">
+  <stat_objects>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="711d7a51-1ef0-4ef3-880b-8c41c2baba55" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_EmptyKnockedDownStatus" />
+        <field name="Instant" type="EnumerationTableFieldDefinition" value="Yes" enumeration_type_name="YesNo" version="1" />
+        <field name="TickType" type="EnumerationTableFieldDefinition" value="StartTurn" enumeration_type_name="TickType" version="1" />
+        <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisableCombatlog;DisablePortraitIndicator" enumeration_type_name="StatusPropertyFlags" version="1" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h927c47ecgaac7g6ab4g0568g25f0c8da8389" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hfe6b5b2ag766eg280bg6639g6b7ab77f4651" version="2" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_MagicCircle" />
+      </fields>
+    </stat_object>
+  </stat_objects>
+</stats>

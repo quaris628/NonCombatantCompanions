@@ -15,8 +15,8 @@ AND
 DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _TargetCharacter)
 AND
 QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage(_Noncombatant)
-AND
-HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
+//AND
+//HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
 AND
 GetPosition(_TargetCharacter, _TargetX, _TargetY, _TargetZ)
 AND
@@ -30,8 +30,9 @@ THEN
 //  - SnapToGround = 1
 // Note that this will also teleport the character's summons, but not their followers
 TeleportToPosition(_Noncombatant, _ValidX, _ValidY, _ValidZ, "QUARIS_NCC_NoncombatantMovingOnstage", 0, 0, 1, 1, 1);
-SetOnStage(_Noncombatant, 1);
+PROC_QUARIS_NCC_MoveOnstage(_Noncombatant);
 PROC_QUARIS_NCC_PutOwnedSummonsOnstage(_Noncombatant);
+
 
 PROC
 PROC_QUARIS_NCC_PutOwnedSummonsOnstage((CHARACTER)_OwnerPartyMember)
@@ -40,17 +41,26 @@ DB_Summons(_Summon)
 AND
 CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 THEN
-SetOnStage(_Summon, 1);
-// Workaround to this status not showing after the noncombatant comes back on stage
-RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
-ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Summon);
 
 IF
 CharacterLeftParty(_Character)
 THEN
 // Weirdly, someone leaving the party seems to make them move on-stage automatically?
 // But do it explicitly too, just it case this helps handle something I'm not anticipating
+PROC_QUARIS_NCC_MoveOnstage(_Character);
+
+PROC
+PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
+THEN
 SetOnStage(_Character, 1);
+// Fix to a permanent softlock: When KnockedDown/Incapacitated/etc statuses are removed
+// by moving someone off-stage then that character's hotbar would remain permanently disabled.
+// Adding and (ideally quickly) removing a hotbar-disabling status after moving back on-stage
+// seems to un-disable the hotbar though, working around that softlock.
+// TODO: What if moved off-stage again while they still have this status?
+//       Does it need to get removed and reapplied, or is just having it good enough?
+ApplyStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus", 6.0);
 EXITSECTION
 
 ENDEXITSECTION

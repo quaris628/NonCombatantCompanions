@@ -3,7 +3,7 @@
   <content contentuid="hd227bb61g7691g2aa5gcddag1c7dcf4e952b" version="2">Non-Combatant</content>
   <content contentuid="h65bc44a0gbc90g6377gfaacgfae4437b3afa" version="3">This creature will not join combat.</content>
   <content contentuid="hd84d6471g083bg32d1g9e35g5621f93eb0a8" version="2">Toggle Non-Combatant</content>
-  <content contentuid="h84d4cf9fgcb18gfcbag7170gca308122c957" version="9">Enable to make this companion and their summons vanish from the world whenever combat is happening.</content>
+  <content contentuid="h84d4cf9fgcb18gfcbag7170gca308122c957" version="10">Enable to make this companion and their summons vanish from the material plane while combat is happening.</content>
   <content contentuid="h7243af2cg23c8g048cg881eg015d12299367" version="1">Non-Combatants Teleport to You</content>
   <content contentuid="h55155a67g173fgc237gaa53ga39e2c72a03e" version="1">Enable to make non-combatant companions who are grouped with you teleport to you when they reappear after combat. If this is disabled, noncombatants do not move from where they were before combat started.</content>
   <content contentuid="h540987f6g62c3gc49cg8bd6ga2e88fbbd6a3" version="1">If combat ended because the players fled a hostile area, then non-combatants are always teleported to you, even if this setting is disabled.</content>
@@ -24,9 +24,12 @@
   <content contentuid="h20f78501gce73g56f4g6b73ge14bf0dd9630" version="1">Test Passive</content>
   <content contentuid="h92ed7679gd9f4g6a09ga1ebg180575c123dc" version="6">This setting cannot be changed while any combat is in progress.&lt;br&gt;If all combatants in your party die, the game is over.</content>
   <content contentuid="hd24a1f2dgf9aagedb5g1ff4gb00212261468" version="4">Non-combatants who are in a dialogue remain in the dialogue until it finishes. They are still considered dismissed immediately for all other intents and purposes.</content>
-  <content contentuid="h55b85541g6af8ga892g7a85gd22a1b15b697" version="4">Combat starting does not remove non-combatants from in-progress dialogue.&lt;br&gt;Characters who temporarily join the party as attached followers always join combat.</content>
+  <content contentuid="h55b85541g6af8ga892g7a85gd22a1b15b697" version="7">Combat starting does not remove non-combatants from in-progress dialogue.&lt;br&gt;Characters who temporarily join the party as attached followers always join combat.&lt;br&gt;Vanishing from the material plane breaks concentration.</content>
   <content contentuid="h2cdb4611g2309g2b8fg5ac5g6f2a28010452" version="1">Non-Combatant</content>
   <content contentuid="h9dd6be53g545eg1040gad90gb37f94941a3e" version="1">This creature will not join combat.</content>
   <content contentuid="h7c8b9c4cgb9adg2fdag4cbcg9737faa30721" version="1">Outside the Material Plane</content>
   <content contentuid="h8be4cf7cg3f11ga41agdcf3g2a1112739585" version="1">This non-combatant has been whisked away from the material plane.&lt;br&gt;Don't worry, I'm sure they'll return in time for dinner.</content>
+  <content contentuid="hbb624da5ga5c4g4979g59f7g42fa65a2de61" version="1">QUARIS_TestProneToggle</content>
+  <content contentuid="h927c47ecgaac7g6ab4g0568g25f0c8da8389" version="1">Recovering from Extraplanar Transport</content>
+  <content contentuid="hfe6b5b2ag766eg280bg6639g6b7ab77f4651" version="2">This creature has recently returned to the material plane. They need a moment to readjust.&lt;br&gt;Conditions that affect them may take a moment to be displayed again.</content>
 </contentList>
