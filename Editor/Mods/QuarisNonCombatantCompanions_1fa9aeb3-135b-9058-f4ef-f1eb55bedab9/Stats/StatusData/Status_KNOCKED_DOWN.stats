@@ -8,9 +8,8 @@
         <field name="Instant" type="EnumerationTableFieldDefinition" value="Yes" enumeration_type_name="YesNo" version="1" />
         <field name="TickType" type="EnumerationTableFieldDefinition" value="StartTurn" enumeration_type_name="TickType" version="1" />
         <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisableCombatlog;DisablePortraitIndicator" enumeration_type_name="StatusPropertyFlags" version="1" />
-        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h927c47ecgaac7g6ab4g0568g25f0c8da8389" version="1" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hfe6b5b2ag766eg280bg6639g6b7ab77f4651" version="2" />
-        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_MagicCircle" />
+        <field name="StackId" type="StringTableFieldDefinition" value="QUARIS_NCC_EmptyKnockedDownStatus" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hfe00c7adg5069gb455gb97ag51b4bcbd4573" version="1" />
       </fields>
     </stat_object>
   </stat_objects>

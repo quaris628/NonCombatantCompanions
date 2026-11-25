@@ -520673,6 +520673,7 @@ Goal(866)
 		PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Character)
 		THEN
 		PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_Character);
+		RemoveStatus(_Character, "QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator");
 		SetOnStage(_Character, 0);
 	}
 	EXIT
@@ -520699,8 +520700,6 @@ Goal(867)
 		DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _TargetCharacter)
 		AND
 		QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage(_Noncombatant)
-		//AND
-		//HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
 		AND
 		GetPosition(_TargetCharacter, _TargetX, _TargetY, _TargetZ)
 		AND
@@ -520738,13 +520737,23 @@ Goal(867)
 		PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
 		THEN
 		SetOnStage(_Character, 1);
-		// Fix to a permanent softlock: When KnockedDown/Incapacitated/etc statuses are removed
-		// by moving someone off-stage then that character's hotbar would remain permanently disabled.
-		// Adding and (ideally quickly) removing a hotbar-disabling status after moving back on-stage
-		// seems to un-disable the hotbar though, working around that softlock.
-		// TODO: What if moved off-stage again while they still have this status?
-		//       Does it need to get removed and reapplied, or is just having it good enough?
-		ApplyStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus", 6.0);
+		ApplyStatus(_Character, "QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator", 6.0);
+		// Fix to a softlock: When KnockedDown/Incapacitated/etc statuses are removed by
+		// moving off-stage then that character's hotbar would remain permanently disabled.
+		// But adding and (ideally very quickly) removing a hotbar-disabling status after
+		// moving back on-stage seems to un-disable the hotbar, preventing the softlock.
+		RemoveStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus");
+		// Keep duration longer than or equal to 0.1 seconds
+		// b/c when I tested with durations shorter than 0.1, the status didn't seem to apply at all
+		ApplyStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus", 0.1);
+		RealtimeObjectTimerLaunch(_Character, "QUARIS_NCC_EmptyKnockedDownStatus_RemoveDelay", 1);
+		
+		IF
+		ObjectTimerFinished(_Character, "QUARIS_NCC_EmptyKnockedDownStatus_RemoveDelay")
+		AND
+		IsOnStage(_Character, 1)
+		THEN
+		RemoveStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus");
 	}
 	EXIT
 	{

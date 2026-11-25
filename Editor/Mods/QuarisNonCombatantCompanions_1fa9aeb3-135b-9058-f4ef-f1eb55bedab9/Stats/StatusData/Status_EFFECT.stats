@@ -7,6 +7,8 @@
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_Main" />
         <field name="Using" type="BaseClassTableFieldDefinition" value="b53fa348-4528-4960-be78-e999cb88915c" />
         <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableCombatlog" enumeration_type_name="StatusPropertyFlags" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hbafcaddfg5008g2919g380bg86cf0c29bda7" version="1" />
+        <field name="StackId" type="StringTableFieldDefinition" value="QUARIS_NCC_IsNoncombatant_Main" />
       </fields>
     </stat_object>
     <stat_object is_substat="false">
@@ -29,7 +31,7 @@
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h2129014bgf42ag177dg5e2bg8ed3bca963f7" version="3" />
         <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hcc68e71egafd0g0f7fgaab1g66afdd9b2deb" version="2" />
-        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink_Dismiss" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_MagicCircle" />
         <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableCombatlog;DisableOverhead" enumeration_type_name="StatusPropertyFlags" version="1" />
       </fields>
     </stat_object>
@@ -68,9 +70,21 @@
       <fields>
         <field name="UUID" type="IdTableFieldDefinition" value="c38f71b9-3859-4dc5-9e7f-68ded879f2d0" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IsOffstageNoncombatant_VisualIndicator" />
-        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h7c8b9c4cgb9adg2fdag4cbcg9737faa30721" version="1" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h8be4cf7cg3f11ga41agdcf3g2a1112739585" version="1" />
-        <field name="Icon" type="StringTableFieldDefinition" value="PassiveFeature_Generic_Darkness" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h7c8b9c4cgb9adg2fdag4cbcg9737faa30721" version="2" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h8be4cf7cg3f11ga41agdcf3g2a1112739585" version="2" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_MagicCircle_Elemental" />
+      </fields>
+    </stat_object>
+    <stat_object is_substat="false">
+      <fields>
+        <field name="UUID" type="IdTableFieldDefinition" value="875b110f-bb7e-4763-85af-9056361bad39" />
+        <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator" />
+        <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h6504fdafgd0f8ge758g061bg3c8e250ed485" version="1" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h3946ee85g2770gdcedgf617g83dee62609f5" version="2" />
+        <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink_Dismiss" />
+        <field name="StackId" type="StringTableFieldDefinition" value="QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator" />
+        <field name="TickType" type="EnumerationTableFieldDefinition" value="StartTurn" enumeration_type_name="TickType" version="1" />
+        <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableCombatlog" enumeration_type_name="StatusPropertyFlags" version="1" />
       </fields>
     </stat_object>
   </stat_objects>
