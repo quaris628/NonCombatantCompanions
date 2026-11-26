@@ -52,6 +52,7 @@ PROC
 PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
 THEN
 SetOnStage(_Character, 1);
+RemoveStatus(_Character, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR");
 ApplyStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR", 6.0);
 // Fix to a softlock: When KnockedDown/Incapacitated/etc statuses are removed by
 // moving off-stage then that character's hotbar would remain permanently disabled.

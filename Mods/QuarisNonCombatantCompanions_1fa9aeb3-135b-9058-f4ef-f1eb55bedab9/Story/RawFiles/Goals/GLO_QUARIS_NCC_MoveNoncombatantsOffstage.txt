@@ -27,6 +27,7 @@ PROC
 PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Character)
 THEN
 PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_Character);
+ApplyStatus(_Character, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR", -1.0);
 RemoveStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR");
 SetOnStage(_Character, 0);
 EXITSECTION
