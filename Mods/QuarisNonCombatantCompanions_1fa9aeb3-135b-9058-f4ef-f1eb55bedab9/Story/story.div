@@ -520284,7 +520284,7 @@ Goal(860)
 		AND
 		InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 		AND
-		HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 0)
+		HasAppliedStatus(_PartyMembers, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 		AND
 		QRY_OnlyOnce("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonAvatarCompanions")
 		THEN
@@ -520299,7 +520299,7 @@ Goal(860)
 		AND
 		InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 		AND
-		HasAppliedStatus(_PartyMembers, "QUARIS_NCC_CompanionIsNoncombatant", 1)
+		HasAppliedStatus(_PartyMembers, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		THEN
 		DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Noncombatant);
 		DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning myself");
@@ -520428,7 +520428,7 @@ Goal(861)
 		PROC_QUARIS_NCC_RemoveForceOffstageToggle((CHARACTER)_PartyMember)
 		THEN
 		RemovePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
-		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		RemoveStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR");
 		
 		// Sync visual indicator
 		
@@ -520437,16 +520437,16 @@ Goal(861)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
 		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", 0)
 		THEN
-		ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+		ApplyStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", -1.0);
 		
 		PROC
 		PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff((CHARACTER)_PartyMember)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 		THEN
-		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		RemoveStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR");
 	}
 	EXIT
 	{
@@ -520469,14 +520469,14 @@ Goal(862)
 		AND
 		DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object)
 		THEN
-		ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IsOffstageNoncombatant_VisualIndicator", -1.0);
+		ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR", -1.0);
 		
 		// Noncombatant moves onstage => remove is-offstage status
 		
 		IF
 		WentOnStage(_Object, 1)
 		THEN
-		RemoveStatus((CHARACTER)_Object, "QUARIS_NCC_IsOffstageNoncombatant_VisualIndicator");
+		RemoveStatus((CHARACTER)_Object, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR");
 	}
 	EXIT
 	{
@@ -520554,7 +520554,7 @@ Goal(864)
 		IF
 		CastSpellFailed(_Object, "Shout_Hide", "shout", "", 0)
 		AND
-		HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		HasAppliedStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		THEN
@@ -520656,12 +520656,12 @@ Goal(866)
 		AND
 		DB_PartyMembers(_PartyMember)
 		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		THEN
 		PROC_QUARIS_NCC_MoveOffstage(_PartyMember);
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_Main", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", _, _)
 		AND
 		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 		AND
@@ -520673,7 +520673,7 @@ Goal(866)
 		PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Character)
 		THEN
 		PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_Character);
-		RemoveStatus(_Character, "QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator");
+		RemoveStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR");
 		SetOnStage(_Character, 0);
 	}
 	EXIT
@@ -520693,7 +520693,7 @@ Goal(867)
 		AND
 		DB_PartyMembers(_Noncombatant)
 		AND
-		HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		AND
 		QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage(_Noncombatant)
 		AND
@@ -520737,23 +520737,23 @@ Goal(867)
 		PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
 		THEN
 		SetOnStage(_Character, 1);
-		ApplyStatus(_Character, "QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator", 6.0);
+		ApplyStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR", 6.0);
 		// Fix to a softlock: When KnockedDown/Incapacitated/etc statuses are removed by
 		// moving off-stage then that character's hotbar would remain permanently disabled.
 		// But adding and (ideally very quickly) removing a hotbar-disabling status after
 		// moving back on-stage seems to un-disable the hotbar, preventing the softlock.
-		RemoveStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus");
+		RemoveStatus(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN");
 		// Keep duration longer than or equal to 0.1 seconds
 		// b/c when I tested with durations shorter than 0.1, the status didn't seem to apply at all
-		ApplyStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus", 0.1);
-		RealtimeObjectTimerLaunch(_Character, "QUARIS_NCC_EmptyKnockedDownStatus_RemoveDelay", 1);
+		ApplyStatus(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN", 0.1);
+		RealtimeObjectTimerLaunch(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN_RemoveDelay", 1);
 		
 		IF
-		ObjectTimerFinished(_Character, "QUARIS_NCC_EmptyKnockedDownStatus_RemoveDelay")
+		ObjectTimerFinished(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN_RemoveDelay")
 		AND
 		IsOnStage(_Character, 1)
 		THEN
-		RemoveStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus");
+		RemoveStatus(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN");
 	}
 	EXIT
 	{
@@ -520821,7 +520821,7 @@ Goal(869)
 		PROC
 		PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
 		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		THEN
 		DB_QUARIS_NCC_IsOffstageNoncombatant(_PartyMember);
 		
@@ -520832,7 +520832,7 @@ Goal(869)
 		AND
 		DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object)
 		THEN
-		ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+		ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
 		
 		// Noncombatant moves onstage => make their noncombatant status persist
 		
@@ -520882,7 +520882,7 @@ Goal(870)
 		// Noncombatants might technically be in combat for a very short amount of time,
 		// before they are taken off stage in reaction to the combat having started?
 		// But we don't want to count that
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 		AND
 		// I suspect IsInCombat would return 1 for narrative combats, but I couldn't
 		// find any documentation to confirm, and it's difficult to test.
@@ -520917,17 +520917,17 @@ Goal(871)
 		// Watch hidden technical statuses => set flags
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_ADD", _, _)
 		THEN
-		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd");
+		RemoveStatus(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_ADD");
 		DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_REMOVE", _, _)
 		THEN
-		RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
+		RemoveStatus(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_REMOVE");
 		NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 		NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
@@ -520943,16 +520943,16 @@ Goal(871)
 		AND
 		IsPartyFollower(_PartyMember, 0)
 		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", 0)
 		THEN
-		ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+		ApplyStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", -1.0);
 		
 		IF
 		DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 		AND
 		DB_PartyMembers(_PartyMember)
 		THEN
-		RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+		RemoveStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR");
 	}
 	EXIT
 	{
@@ -520980,7 +520980,7 @@ Goal(872)
 		AND
 		IsDead(_PartyMember, 0)
 		AND
-		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 		AND
 		IsSummon(_PartyMember, 0)
 		AND
@@ -521026,15 +521026,15 @@ Goal(873)
 		// Watch hidden technical statuses => apply/remove main status
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD", _, _)
 		THEN
-		RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd");
+		RemoveStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD");
 		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToCompanion((CHARACTER)_Object);
 		
 		IF
-		StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove", _, _)
+		StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE", _, _)
 		THEN
-		RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove");
+		RemoveStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE");
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Object);
 		
 		// Noncombatant summons something => make summon a noncombatant too
@@ -521048,10 +521048,10 @@ Goal(873)
 		AND
 		CharacterGetOwner(_Summon, _OwnerPartyMember)
 		AND
-		HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		THEN
-		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
 		
 		// Character leaves party => ensure they're a combatant
 		
@@ -521073,10 +521073,10 @@ Goal(873)
 		AND
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 		AND
-		HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		HasAppliedStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 		THEN
-		ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-		ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
+		ApplyStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+		ApplyStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
 		PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons(_Companion);
 		
 		PROC
@@ -521086,10 +521086,10 @@ Goal(873)
 		AND
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 		AND
-		HasAppliedStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", 0)
+		HasAppliedStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 		THEN
-		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-		ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+		ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
 		
 		PROC
 		PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle((CHARACTER)_Companion)
@@ -521106,13 +521106,13 @@ Goal(873)
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Companion)
 		THEN
 		PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
-		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
-		RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
+		RemoveStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
+		RemoveStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
 		
 		PROC
 		PROC_QUARIS_NCC_SetNoncombatantToggleOff((CHARACTER)_Companion)
 		AND
-		HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 1)
+		HasAppliedStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 		THEN
 		TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
 		// This ^ should also trigger QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove
@@ -521126,8 +521126,8 @@ Goal(873)
 		AND
 		CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 		THEN
-		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
-		RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
+		RemoveStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
+		RemoveStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
 	}
 	EXIT
 	{

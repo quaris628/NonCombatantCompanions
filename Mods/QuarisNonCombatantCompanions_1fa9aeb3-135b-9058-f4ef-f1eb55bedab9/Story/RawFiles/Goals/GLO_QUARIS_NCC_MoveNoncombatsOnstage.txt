@@ -8,7 +8,7 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 AND
 DB_PartyMembers(_Noncombatant)
 AND
-HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IsNoncombatant_Main", 1)
+HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 AND
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage(_Noncombatant)
 AND
@@ -52,23 +52,23 @@ PROC
 PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
 THEN
 SetOnStage(_Character, 1);
-ApplyStatus(_Character, "QUARIS_NCC_RecentlyMovedOnStage_VisualIndicator", 6.0);
+ApplyStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR", 6.0);
 // Fix to a softlock: When KnockedDown/Incapacitated/etc statuses are removed by
 // moving off-stage then that character's hotbar would remain permanently disabled.
 // But adding and (ideally very quickly) removing a hotbar-disabling status after
 // moving back on-stage seems to un-disable the hotbar, preventing the softlock.
-RemoveStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus");
+RemoveStatus(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN");
 // Keep duration longer than or equal to 0.1 seconds
 // b/c when I tested with durations shorter than 0.1, the status didn't seem to apply at all
-ApplyStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus", 0.1);
-RealtimeObjectTimerLaunch(_Character, "QUARIS_NCC_EmptyKnockedDownStatus_RemoveDelay", 1);
+ApplyStatus(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN", 0.1);
+RealtimeObjectTimerLaunch(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN_RemoveDelay", 1);
 
 IF
-ObjectTimerFinished(_Character, "QUARIS_NCC_EmptyKnockedDownStatus_RemoveDelay")
+ObjectTimerFinished(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN_RemoveDelay")
 AND
 IsOnStage(_Character, 1)
 THEN
-RemoveStatus(_Character, "QUARIS_NCC_EmptyKnockedDownStatus");
+RemoveStatus(_Character, "QUARIS_NCC_EMPTY_KNOCKED_DOWN");
 EXITSECTION
 
 ENDEXITSECTION

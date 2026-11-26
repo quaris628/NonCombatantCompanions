@@ -10,7 +10,7 @@ KBSECTION
 PROC
 PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 THEN
 DB_QUARIS_NCC_IsOffstageNoncombatant(_PartyMember);
 
@@ -21,7 +21,7 @@ WentOnStage(_Object, 0)
 AND
 DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object)
 THEN
-ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
+ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
 
 // Noncombatant moves onstage => make their noncombatant status persist
 

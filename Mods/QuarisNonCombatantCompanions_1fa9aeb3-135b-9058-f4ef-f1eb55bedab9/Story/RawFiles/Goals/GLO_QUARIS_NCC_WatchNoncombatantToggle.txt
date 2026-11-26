@@ -29,15 +29,15 @@ KBSECTION
 // Watch hidden technical statuses => apply/remove main status
 
 IF
-StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd", _, _)
+StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD", _, _)
 THEN
-RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalAdd");
+RemoveStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD");
 PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToCompanion((CHARACTER)_Object);
 
 IF
-StatusApplied(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove", _, _)
+StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE", _, _)
 THEN
-RemoveStatus(_Object, "QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove");
+RemoveStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE");
 PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Object);
 
 // Noncombatant summons something => make summon a noncombatant too
@@ -51,10 +51,10 @@ DB_PartyMembers(_OwnerPartyMember)
 AND
 CharacterGetOwner(_Summon, _OwnerPartyMember)
 AND
-HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IsNoncombatant_Main", 1)
+HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 THEN
-ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
+ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
 
 // Character leaves party => ensure they're a combatant
 
@@ -76,10 +76,10 @@ PROC_QUARIS_NCC_IfNoCombatApplyStatusIsNoncombatantToCompanion((CHARACTER)_Compa
 AND
 DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 AND
-HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 0)
+HasAppliedStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 THEN
-ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-ApplyStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
+ApplyStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+ApplyStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
 PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons(_Companion);
 
 PROC
@@ -89,10 +89,10 @@ DB_Summons(_Summon)
 AND
 CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 AND
-HasAppliedStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", 0)
+HasAppliedStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 THEN
-ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main", -1.0);
-ApplyStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual", -1.0);
+ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
 
 PROC
 PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle((CHARACTER)_Companion)
@@ -109,13 +109,13 @@ PROC
 PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Companion)
 THEN
 PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
-RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main");
-RemoveStatus(_Companion, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
+RemoveStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
+RemoveStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
 
 PROC
 PROC_QUARIS_NCC_SetNoncombatantToggleOff((CHARACTER)_Companion)
 AND
-HasAppliedStatus(_Companion, "QUARIS_NCC_IsNoncombatant_Main", 1)
+HasAppliedStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 THEN
 TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
 // This ^ should also trigger QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove
@@ -129,8 +129,8 @@ DB_Summons(_Summon)
 AND
 CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 THEN
-RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_Main");
-RemoveStatus(_Summon, "QUARIS_NCC_IsNoncombatant_CombatLogVisual");
+RemoveStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
+RemoveStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
 EXITSECTION
 
 ENDEXITSECTION

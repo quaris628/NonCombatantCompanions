@@ -16,17 +16,17 @@ KBSECTION
 // Watch hidden technical statuses => set flags
 
 IF
-StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd", _, _)
+StatusApplied(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_ADD", _, _)
 THEN
-RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalAdd");
+RemoveStatus(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_ADD");
 DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 
 IF
-StatusApplied(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove", _, _)
+StatusApplied(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_REMOVE", _, _)
 THEN
-RemoveStatus(_Object, "QUARIS_NCC_NoncombatantsAreForcedOffstage_HiddenTechnicalRemove");
+RemoveStatus(_Object, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_REMOVE");
 NOT DB_QUARIS_NCC_CharacterHasForceNoncombatantsOffstageToggleOn((CHARACTER)_Object);
 NOT DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1);
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0);
@@ -42,16 +42,16 @@ IsSummon(_PartyMember, 0)
 AND
 IsPartyFollower(_PartyMember, 0)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", 0)
 THEN
-ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+ApplyStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", -1.0);
 
 IF
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 AND
 DB_PartyMembers(_PartyMember)
 THEN
-RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+RemoveStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR");
 EXITSECTION
 
 ENDEXITSECTION

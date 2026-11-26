@@ -9,7 +9,7 @@ KBSECTION
 IF
 CastSpellFailed(_Object, "Shout_Hide", "shout", "", 0)
 AND
-HasAppliedStatus(_Object, "QUARIS_NCC_IsNoncombatant_Main", 1)
+HasAppliedStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
 AND
 DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 THEN

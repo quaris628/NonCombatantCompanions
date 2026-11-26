@@ -1,4 +1,4 @@
-new entry "QUARIS_NCC_EmptyKnockedDownStatus"
+new entry "QUARIS_NCC_EMPTY_KNOCKED_DOWN"
 type "StatusData"
 data "StatusType" "KNOCKED_DOWN"
 data "DisplayName" "hfe00c7adg5069gb455gb97ag51b4bcbd4573;1"

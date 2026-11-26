@@ -94,7 +94,7 @@ PROC
 PROC_QUARIS_NCC_RemoveForceOffstageToggle((CHARACTER)_PartyMember)
 THEN
 RemovePassive(_PartyMember, "QUARIS_NCC_ForceNoncombatantsOffstageToggle");
-RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+RemoveStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR");
 
 // Sync visual indicator
 
@@ -103,16 +103,16 @@ PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_ApplyIfOn((CHARACTER)_PartyMem
 AND
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(1)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", 0)
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", 0)
 THEN
-ApplyStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator", -1.0);
+ApplyStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR", -1.0);
 
 PROC
 PROC_QUARIS_NCC_SyncForcedOffstageVisualIndicator_RemoveIfOff((CHARACTER)_PartyMember)
 AND
 DB_QUARIS_NCC_AreNoncombatantsForcedOffstage(0)
 THEN
-RemoveStatus(_PartyMember, "QUARIS_NCC_NoncombatantsAreForcedOffstage_VisualIndicator");
+RemoveStatus(_PartyMember, "QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR");
 EXITSECTION
 
 ENDEXITSECTION

@@ -17,7 +17,7 @@ DB_PartyMembers(_PartyMember)
 AND
 IsDead(_PartyMember, 0)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IsNoncombatant_Main", 0)
+HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
 AND
 IsSummon(_PartyMember, 0)
 AND
