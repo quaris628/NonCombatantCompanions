@@ -8,7 +8,7 @@ Died(_Character)
 AND
 NOT QRY_QUARIS_NCC_IsAnyPartyMemberCombatantAlive()
 THEN
-ShowGameOverMenu();
+PROC_QUARIS_NCC_ShowGameOverMenuForTpk();
 
 QRY
 QRY_QUARIS_NCC_IsAnyPartyMemberCombatantAlive()
@@ -17,13 +17,20 @@ DB_PartyMembers(_PartyMember)
 AND
 IsDead(_PartyMember, 0)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
+NOT QRY_QUARIS_NCC_IsNoncombatant(_PartyMember)
 AND
 IsSummon(_PartyMember, 0)
 AND
 IsPartyFollower(_PartyMember, 0)
 THEN
 DB_NOOP(1);
+
+// TODO: handle everyone downed and stablized (or otherwise permanently incapacitated?)
+
+PROC
+PROC_QUARIS_NCC_ShowGameOverMenuForTpk()
+THEN
+ShowGameOverMenu();
 EXITSECTION
 
 ENDEXITSECTION

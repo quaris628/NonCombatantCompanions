@@ -1,36 +1,23 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
-DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+
 KBSECTION
 // Handle syncing/displaying noncombatant status while off-stage
 
-// Use separate DB to track whether someone is a noncombatant, b/c HasAppliedStatus isn't reliable when off-stage
-
-PROC
-PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding((CHARACTER)_PartyMember)
-AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
-THEN
-DB_QUARIS_NCC_IsOffstageNoncombatant(_PartyMember);
-
-// Noncombatant moves offstage => make their noncombatant status persist
+// Move off-stage => give status
 
 IF
 WentOnStage(_Object, 0)
 AND
-DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object)
+QRY_QUARIS_NCC_IsNoncombatant((CHARACTER)_Object)
 THEN
 ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+// Piggyback the is-offstage-noncombatant status here,
+// so that it's applied after the is-noncombatant status regardless of script names
+ApplyStatus((CHARACTER)_Object, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR", -1.0);
 
-// Noncombatant moves onstage => make their noncombatant status persist
-
-IF
-WentOnStage(_Object, 1)
-AND
-DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object)
-THEN
-NOT DB_QUARIS_NCC_IsOffstageNoncombatant((CHARACTER)_Object);
+// Moving back on-stage doesn't need any special handling; the noncombatant status just persists on its own
 EXITSECTION
 
 ENDEXITSECTION

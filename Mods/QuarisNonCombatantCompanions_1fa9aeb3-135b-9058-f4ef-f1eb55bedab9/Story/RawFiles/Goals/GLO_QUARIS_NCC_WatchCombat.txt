@@ -28,15 +28,17 @@ QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
 AND
 DB_PartyMembers(_PartyMember)
 AND
-// Noncombatants might technically be in combat for a very short amount of time,
-// before they are taken off stage in reaction to the combat having started?
-// But we don't want to count that
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
-AND
 // I suspect IsInCombat would return 1 for narrative combats, but I couldn't
 // find any documentation to confirm, and it's difficult to test.
 // If it doesn't, then it might be necessary to check IsInNarrativeCombat here.
 IsInCombat(_PartyMember, 1)
+AND
+IsDead(_PartyMember, 0)
+AND
+// Noncombatants might technically be in combat for a very short amount of time,
+// before they are taken off stage in reaction to the combat having started?
+// But we don't want to count that
+NOT QRY_QUARIS_NCC_IsNoncombatant(_PartyMember)
 THEN
 DB_NOOP(1);
 

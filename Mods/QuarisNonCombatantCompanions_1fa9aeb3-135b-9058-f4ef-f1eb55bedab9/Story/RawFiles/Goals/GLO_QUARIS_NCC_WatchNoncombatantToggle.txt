@@ -12,35 +12,23 @@ KBSECTION
 //  - This code can ensure the status won't be added if it's already there
 //  - This code can differentiate between the toggle being changed by the user
 //    vs. the visual indicator status being added/removed programmatically
+//    (such as the status being reapplied when the noncombatant moves off-stage)
 
-// If someone leaves the party, then they might need to enter combat
-// (E.g.: Laezel or Shadowheart in act 1; or Jaheira, Minsc, and maybe Wyll in act 3).
-// So remove the non-combatant status whenever someone leaves the party.
-
-// When (re)joining the party, always default to not combatant,
-// to avoid being locked out of controlling the character
-// in case a combat is occurring halfway across the map.
-// (Plus it's much simpler to implement.)
-
-// TODO: Add some sort of exception for the Lae'zel romance scene where she fights you?
-// (Or does she technically leave the party? And so would that already be handled?)
-// Any other exceptions for combat?
-
-// Watch hidden technical statuses => apply/remove main status
+// Handle triggers
 
 IF
 StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD", _, _)
 THEN
 RemoveStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD");
-PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToCompanion((CHARACTER)_Object);
+PROC_QUARIS_NCC_HandleEnableNoncombatantAttempt((CHARACTER)_Object);
 
 IF
 StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE", _, _)
 THEN
 RemoveStatus(_Object, "QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE");
-PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Object);
+PROC_QUARIS_NCC_HandleDisableNoncombatantAttempt((CHARACTER)_Object);
 
-// Noncombatant summons something => make summon a noncombatant too
+// Noncombatant summons something => make summon noncombatant
 
 IF
 CharacterJoinedParty(_Summon)
@@ -51,86 +39,87 @@ DB_PartyMembers(_OwnerPartyMember)
 AND
 CharacterGetOwner(_Summon, _OwnerPartyMember)
 AND
-HasAppliedStatus(_OwnerPartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
+QRY_QUARIS_NCC_IsNoncombatant(_OwnerPartyMember)
 THEN
-ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
-ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
+PROC_QUARIS_NCC_SetIsNoncombatantTrue(_Summon);
 
-// Character leaves party => ensure they're a combatant
-
-IF
-CharacterLeftParty(_Character)
-THEN
-PROC_QUARIS_NCC_SetNoncombatantToggleOff(_Character);
-
-// Apply main status
+// Handle ui toggle enabled
 
 PROC
-PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToCompanion((CHARACTER)_Companion)
+PROC_QUARIS_NCC_HandleEnableNoncombatantAttempt((CHARACTER)_Companion)
+AND
+NOT QRY_QUARIS_NCC_IsNoncombatant(_Companion)
 THEN
-PROC_QUARIS_NCC_IfNoCombatApplyStatusIsNoncombatantToCompanion(_Companion);
-PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle(_Companion);
+PROC_QUARIS_NCC_IfNoCombatMakeNoncombatant(_Companion);
+PROC_QUARIS_NCC_IfCombatToggleNoncombatant(_Companion);
 
 PROC
-PROC_QUARIS_NCC_IfNoCombatApplyStatusIsNoncombatantToCompanion((CHARACTER)_Companion)
+PROC_QUARIS_NCC_IfNoCombatMakeNoncombatant((CHARACTER)_Companion)
 AND
 DB_QUARIS_NCC_IsAnyCombatInProgress(0)
 AND
-HasAppliedStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
+NOT QRY_QUARIS_NCC_IsNoncombatant(_Companion)
 THEN
-ApplyStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
-ApplyStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
-PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons(_Companion);
+PROC_QUARIS_NCC_SetIsNoncombatantTrue(_Companion);
+PROC_QUARIS_NCC_MakeSummonsNoncombatants(_Companion);
 
 PROC
-PROC_QUARIS_NCC_ApplyStatusIsNoncombatantToSummons((CHARACTER)_OwnerCompanion)
+PROC_QUARIS_NCC_MakeSummonsNoncombatants((CHARACTER)_OwnerCompanion)
 AND
 DB_Summons(_Summon)
 AND
 CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
 AND
-HasAppliedStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
+NOT QRY_QUARIS_NCC_IsNoncombatant(_Summon)
 THEN
-ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
-ApplyStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
+PROC_QUARIS_NCC_SetIsNoncombatantTrue(_Summon);
+
+// Handle ui toggle disabled
 
 PROC
-PROC_QUARIS_NCC_IfCombatUndoNoncombatantToggle((CHARACTER)_Companion)
+PROC_QUARIS_NCC_HandleDisableNoncombatantAttempt((CHARACTER)_Companion)
+AND
+QRY_QUARIS_NCC_IsNoncombatant(_Companion)
+THEN
+PROC_QUARIS_NCC_IfNoCombatMakeCombatant(_Companion);
+PROC_QUARIS_NCC_IfCombatToggleNoncombatant(_Companion);
+
+PROC
+PROC_QUARIS_NCC_IfNoCombatMakeCombatant((CHARACTER)_Companion)
+AND
+DB_QUARIS_NCC_IsAnyCombatInProgress(0)
+AND
+QRY_QUARIS_NCC_IsNoncombatant(_Companion)
+THEN
+PROC_QUARIS_NCC_SetIsNoncombatantFalse(_Companion);
+PROC_QUARIS_NCC_MakeSummonsCombatants(_Companion);
+
+PROC
+PROC_QUARIS_NCC_MakeSummonsCombatants((CHARACTER)_OwnerCompanion)
+AND
+DB_Summons(_Summon)
+AND
+CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
+AND
+QRY_QUARIS_NCC_IsNoncombatant(_Summon)
+THEN
+PROC_QUARIS_NCC_SetIsNoncombatantFalse(_Summon);
+
+// Toggle noncombatant passive
+// (Intended for reverting back to an old state, so that the
+// UI toggle matches the internally-tracked source of truth)
+
+PROC
+PROC_QUARIS_NCC_IfCombatToggleNoncombatant((CHARACTER)_Companion)
 AND
 DB_QUARIS_NCC_IsAnyCombatInProgress(1)
 THEN
 TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
-// This ^ should also trigger QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove
-// which shouldn't do anything else in this case
-
-// Remove main status
-
-PROC
-PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromCompanion((CHARACTER)_Companion)
-THEN
-PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons(_Companion);
-RemoveStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
-RemoveStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
-
-PROC
-PROC_QUARIS_NCC_SetNoncombatantToggleOff((CHARACTER)_Companion)
-AND
-HasAppliedStatus(_Companion, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
-THEN
-TogglePassive(_Companion, "QUARIS_NCC_IsNoncombatantToggle");
-// This ^ should also trigger QUARIS_NCC_IsNoncombatant_HiddenTechnicalRemove
-// which should take care of removing QUARIS_NCC_IsNoncombatant_Main
-// from the companion and their summons
-
-PROC
-PROC_QUARIS_NCC_RemoveStatusIsNoncombatantFromSummons((CHARACTER)_OwnerCompanion)
-AND
-DB_Summons(_Summon)
-AND
-CharacterGetOwner((CHARACTER)_Summon, _OwnerCompanion)
-THEN
-RemoveStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
-RemoveStatus(_Summon, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
+// This ^ will trigger QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_ADD
+// or QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICAL_REMOVE being applied.
+// That should do nothing, since PROC_QUARIS_NCC_HandleEnableNoncombatantAttempt
+// and PROC_QUARIS_NCC_HandleDisableNoncombatantAttempt do nothing if the
+// attempted change would already match the result of QRY_QUARIS_NCC_IsNoncombatant.
 EXITSECTION
 
 ENDEXITSECTION

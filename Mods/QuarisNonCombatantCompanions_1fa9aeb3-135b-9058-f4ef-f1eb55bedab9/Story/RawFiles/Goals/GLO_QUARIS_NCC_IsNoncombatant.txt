@@ -1,0 +1,36 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+DB_QUARIS_NCC_Noncombatants((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+KBSECTION
+// Setter/getter wrapper for whether a party member is a noncombatant
+// In general, don't use HasAppliedStatus for this, b/c it's unreliable for off-stage characters
+
+QRY
+QRY_QUARIS_NCC_IsNoncombatant((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_Noncombatants(_PartyMember)
+THEN
+DB_NOOP(1);
+
+PROC
+PROC_QUARIS_NCC_SetIsNoncombatantTrue((CHARACTER)_PartyMember)
+AND
+NOT DB_QUARIS_NCC_Noncombatants(_PartyMember)
+THEN
+DB_QUARIS_NCC_Noncombatants(_PartyMember);
+ApplyStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", -1.0);
+ApplyStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL", -1.0);
+PROC_QUARIS_NCC_IfNoncombatantsOffstageMoveOffstage(_PartyMember);
+
+PROC
+PROC_QUARIS_NCC_SetIsNoncombatantFalse((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_Noncombatants(_PartyMember)
+THEN
+NOT DB_QUARIS_NCC_Noncombatants(_PartyMember);
+RemoveStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN");
+RemoveStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_COMBAT_LOG_VISUAL");
+EXITSECTION
+
+ENDEXITSECTION

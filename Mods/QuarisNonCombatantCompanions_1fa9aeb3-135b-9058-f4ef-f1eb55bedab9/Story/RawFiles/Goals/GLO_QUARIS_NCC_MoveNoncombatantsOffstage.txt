@@ -10,26 +10,26 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
 AND
 DB_PartyMembers(_PartyMember)
 AND
-HasAppliedStatus(_PartyMember, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
+QRY_QUARIS_NCC_IsNoncombatant(_PartyMember)
 THEN
 PROC_QUARIS_NCC_MoveOffstage(_PartyMember);
 
-IF
-StatusApplied(_Object, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", _, _)
+PROC
+PROC_QUARIS_NCC_IfNoncombatantsOffstageMoveOffstage((CHARACTER)_PartyMember)
 AND
 DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
-AND
-DB_PartyMembers((CHARACTER)_Object)
 THEN
-PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Object);
+PROC_QUARIS_NCC_MoveOffstage(_PartyMember);
 
 PROC
-PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_Character)
+PROC_QUARIS_NCC_MoveOffstage((CHARACTER)_PartyMember)
 THEN
-PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_Character);
-ApplyStatus(_Character, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR", -1.0);
-RemoveStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR");
-SetOnStage(_Character, 0);
+PROC_QUARIS_NCC_SetOffstageNoncombatantIsHiding(_PartyMember);
+SetOnStage(_PartyMember, 0);
+
+// Applying QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR
+// in the same THEN block as SetOnStage wasn't making the status show.
+// Handled in GLO_QUARIS_NCC_PersistNoncombatantThruStageTransitions instead.
 EXITSECTION
 
 ENDEXITSECTION

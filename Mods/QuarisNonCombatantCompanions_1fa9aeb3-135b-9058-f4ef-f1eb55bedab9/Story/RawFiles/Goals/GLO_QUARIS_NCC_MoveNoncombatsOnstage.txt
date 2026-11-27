@@ -8,15 +8,15 @@ DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
 AND
 DB_PartyMembers(_Noncombatant)
 AND
-HasAppliedStatus(_Noncombatant, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
+QRY_QUARIS_NCC_IsNoncombatant(_Noncombatant)
 AND
 QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage(_Noncombatant)
 AND
-DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _TargetCharacter)
+DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _TargetPartyMember)
 AND
 QRY_QUARIS_NCC_ClearTargetForMovingNoncombatantOnStage(_Noncombatant)
 AND
-GetPosition(_TargetCharacter, _TargetX, _TargetY, _TargetZ)
+GetPosition(_TargetPartyMember, _TargetX, _TargetY, _TargetZ)
 AND
 FindValidPosition(_TargetX, _TargetY, _TargetZ, 10.0, _Noncombatant, 1, _ValidX, _ValidY, _ValidZ)
 THEN

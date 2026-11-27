@@ -51,7 +51,7 @@ DB_PartyMembers(_PartyMembers)
 AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 AND
-HasAppliedStatus(_PartyMembers, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 0)
+NOT QRY_QUARIS_NCC_IsNoncombatant(_PartyMembers)
 AND
 QRY_OnlyOnce("QUARIS_NCC_GetTargetForMovingNoncombatantOnstage_NonAvatarCompanions")
 THEN
@@ -66,7 +66,7 @@ DB_PartyMembers(_PartyMembers)
 AND
 InSamePartyGroup(_Noncombatant, _PartyMembers, 1)
 AND
-HasAppliedStatus(_PartyMembers, "QUARIS_NCC_IS_NONCOMBATANT_MAIN", 1)
+QRY_QUARIS_NCC_IsNoncombatant(_PartyMembers)
 THEN
 DB_QUARIS_NCC_TargetForMovingNoncombatantOnStage(_Noncombatant, _Noncombatant);
 DebugLog("QRY_QUARIS_NCC_GetTargetForMovingNoncombatantOnStage returning myself");

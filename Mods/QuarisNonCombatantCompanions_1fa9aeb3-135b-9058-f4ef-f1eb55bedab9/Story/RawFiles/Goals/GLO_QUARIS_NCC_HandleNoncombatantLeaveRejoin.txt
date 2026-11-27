@@ -1,0 +1,45 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+DB_QUARIS_NCC_OutOfPartyNoncombatants((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+KBSECTION
+// Watch for noncombatants leaving and rejoining the party
+
+// If someone leaves the party, then they might need to enter combat
+// (E.g.: Laezel or Shadowheart in act 1; or Jaheira, Minsc, and maybe Wyll in act 3).
+// So remove the non-combatant status whenever someone leaves the party.
+// If/when the (former) non-combatant rejoins, then restore their non-combatant status.
+
+// Note that summons get dismissed upon their owner leaving the party.
+// Therefore, summons should be removed from the normal is-noncombatant DB upon leaving,
+// but summons don't need any handling upon their hypothetical owner rejoining since that never happens.
+
+// TODO: Add some sort of exception for the Lae'zel romance scene where she fights you?
+// (Or does she technically leave the party? And so would that already be handled?)
+// Any other exceptions for combat?
+
+IF
+CharacterLeftParty(_Character)
+AND
+QRY_QUARIS_NCC_IsNoncombatant(_Character)
+THEN
+PROC_QUARIS_NCC_SetIsNoncombatantFalse(_Character);
+PROC_QUARIS_NCC_IfNotSummonSetOutOfPartyNoncombatant(_Character);
+
+IF
+CharacterJoinedParty(_Character)
+AND
+DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character)
+THEN
+NOT DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character);
+PROC_QUARIS_NCC_SetIsNoncombatantTrue(_Character);
+
+PROC
+PROC_QUARIS_NCC_IfNotSummonSetOutOfPartyNoncombatant((CHARACTER)_Character)
+AND
+IsSummon(_Character, 0)
+THEN
+DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character);
+EXITSECTION
+
+ENDEXITSECTION
