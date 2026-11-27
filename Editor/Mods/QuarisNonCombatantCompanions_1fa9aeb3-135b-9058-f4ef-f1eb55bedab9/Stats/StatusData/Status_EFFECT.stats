@@ -29,7 +29,7 @@
         <field name="UUID" type="IdTableFieldDefinition" value="66f8a7c5-4217-4d87-8d52-e26e33dde5a0" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_IS_NONCOMBATANT_PARENT" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h9a6f68b1g10c6gb2a0g2ed8gca347082679b" version="1" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h1e430d5fgd74fg11faga6e3g29be40ccddd9" version="2" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h1e430d5fgd74fg11faga6e3g29be40ccddd9" version="3" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_BanishingSmite_Melee" />
       </fields>
     </stat_object>
@@ -46,7 +46,7 @@
         <field name="UUID" type="IdTableFieldDefinition" value="687abe31-8873-47de-802d-dd59a625289e" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h2129014bgf42ag177dg5e2bg8ed3bca963f7" version="4" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hcc68e71egafd0g0f7fgaab1g66afdd9b2deb" version="3" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="hcc68e71egafd0g0f7fgaab1g66afdd9b2deb" version="4" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_MagicCircle" />
         <field name="StatusPropertyFlags" type="EnumerationListTableFieldDefinition" value="DisableOverhead;DisableCombatlog" enumeration_type_name="StatusPropertyFlags" version="1" />
         <field name="StackId" type="StringTableFieldDefinition" value="QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_VISUAL_INDICATOR" />
@@ -81,7 +81,7 @@
         <field name="UUID" type="IdTableFieldDefinition" value="875b110f-bb7e-4763-85af-9056361bad39" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="h6504fdafgd0f8ge758g061bg3c8e250ed485" version="2" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h3946ee85g2770gdcedgf617g83dee62609f5" version="3" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h3946ee85g2770gdcedgf617g83dee62609f5" version="4" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Transmutation_Blink_Dismiss" />
         <field name="StackId" type="StringTableFieldDefinition" value="QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR" />
         <field name="TickType" type="EnumerationTableFieldDefinition" value="StartTurn" enumeration_type_name="TickType" version="1" />

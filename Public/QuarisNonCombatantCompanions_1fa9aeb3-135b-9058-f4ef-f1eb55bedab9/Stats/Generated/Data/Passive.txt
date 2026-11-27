@@ -16,7 +16,7 @@ data "ToggleOffFunctors" "ApplyStatus(QUARIS_NCC_IS_NONCOMBATANT_HIDDEN_TECHNICA
 new entry "QUARIS_NCC_ForceNoncombatantsOffstageToggle"
 type "PassiveData"
 data "DisplayName" "hd7e4600cg8e89gc9f0g871bg4ec94e99f421;11"
-data "Description" "h00de74d5g9872g6bd0gb776g486fd6287ad9;8"
+data "Description" "h00de74d5g9872g6bd0gb776g486fd6287ad9;9"
 data "LoreDescription" "he307a95fg1a65g5f78g74dbg33bed70fc0b1;4"
 data "Icon" "Spell_Abjuration_MagicCircle"
 data "PriorityOrder" "-98"

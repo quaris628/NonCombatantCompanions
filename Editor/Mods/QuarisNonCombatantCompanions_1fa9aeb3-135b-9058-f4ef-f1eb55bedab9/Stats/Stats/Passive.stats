@@ -24,7 +24,7 @@
         <field name="UUID" type="IdTableFieldDefinition" value="96b4630b-8141-49da-9310-175fffca4fda" />
         <field name="Name" type="NameTableFieldDefinition" value="QUARIS_NCC_ForceNoncombatantsOffstageToggle" />
         <field name="DisplayName" type="TranslatedStringTableFieldDefinition" handle="hd7e4600cg8e89gc9f0g871bg4ec94e99f421" version="11" />
-        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h00de74d5g9872g6bd0gb776g486fd6287ad9" version="8" />
+        <field name="Description" type="TranslatedStringTableFieldDefinition" handle="h00de74d5g9872g6bd0gb776g486fd6287ad9" version="9" />
         <field name="Icon" type="StringTableFieldDefinition" value="Spell_Abjuration_MagicCircle" />
         <field name="Properties" type="EnumerationListTableFieldDefinition" value="IsToggled;ToggledDefaultAddToHotbar;ToggleForParty" enumeration_type_name="PassiveFlags" version="1" />
         <field name="ToggleOnFunctors" type="FunctorsTableFieldDefinition" value="ApplyStatus(QUARIS_NCC_NONCOMBATANTS_ARE_FORCED_OFFSTAGE_HIDDEN_TECHNICAL_ADD, 100, -1)" />
