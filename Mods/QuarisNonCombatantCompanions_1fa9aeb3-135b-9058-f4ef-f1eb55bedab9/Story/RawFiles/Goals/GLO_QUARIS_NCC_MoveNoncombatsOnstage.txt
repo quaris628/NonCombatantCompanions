@@ -41,19 +41,17 @@ CharacterGetOwner((CHARACTER)_Summon, _OwnerPartyMember)
 THEN
 PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Summon);
 
-IF
-CharacterLeftParty(_Character)
-THEN
-// Weirdly, someone leaving the party seems to make them move on-stage automatically?
-// But do it explicitly too, just it case this helps handle something I'm not anticipating
-PROC_QUARIS_NCC_MoveOnstage(_Character);
-
 PROC
 PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
 THEN
 SetOnStage(_Character, 1);
 RemoveStatus(_Character, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR");
 ApplyStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR", 6.0);
+PROC_QUARIS_NCC_HandleKnockedDownBugAfterMovingBackOnstage(_Character);
+
+PROC
+PROC_QUARIS_NCC_HandleKnockedDownBugAfterMovingBackOnstage((CHARACTER)_Character)
+THEN
 // Fix to a softlock: When KnockedDown/Incapacitated/etc statuses are removed by
 // moving off-stage then that character's hotbar would remain permanently disabled.
 // But adding and (ideally very quickly) removing a hotbar-disabling status after

@@ -520616,7 +520616,8 @@ Goal(864)
 {
 	INIT
 	{
-		DB_QUARIS_NCC_OutOfPartyNoncombatants((CHARACTER)NULL_00000000-0000-0000-0000-000000000000);
+		// second column is 1 if noncombatant was on-stage when they left the party, otherwise 0 (i.e. they were off-stage)
+		DB_QUARIS_NCC_OutOfPartyNoncombatants((CHARACTER)NULL_00000000-0000-0000-0000-000000000000, 0);
 	}
 	KB
 	{
@@ -520640,23 +520641,57 @@ Goal(864)
 		AND
 		QRY_QUARIS_NCC_IsNoncombatant(_Character)
 		THEN
+		// Leaving the party seems to make the character automatically move back on-stage
 		PROC_QUARIS_NCC_SetIsNoncombatantFalse(_Character);
 		PROC_QUARIS_NCC_IfNotSummonSetOutOfPartyNoncombatant(_Character);
+		RemoveStatus(_Character, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR");
 		
 		IF
 		CharacterJoinedParty(_Character)
 		AND
-		DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character)
+		DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character, _)
 		THEN
-		NOT DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character);
 		PROC_QUARIS_NCC_SetIsNoncombatantTrue(_Character);
+		NOT DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character, 0);
+		NOT DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character, 1);
+		
+		IF
+		CharacterJoinedParty(_Character)
+		AND
+		DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character, 0)
+		THEN
+		PROC_QUARIS_NCC_HandleKnockedDownBugAfterMovingBackOnstage(_Character);
+		
+		// Set out-of-party noncombatant
 		
 		PROC
 		PROC_QUARIS_NCC_IfNotSummonSetOutOfPartyNoncombatant((CHARACTER)_Character)
 		AND
 		IsSummon(_Character, 0)
 		THEN
-		DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character);
+		PROC_QUARIS_NCC_IfWasOnstageSetOutOfPartyNoncombatantWasOnstage(_Character);
+		PROC_QUARIS_NCC_IfWasOffstageSetOutOfPartyNoncombatantWasOffstage(_Character);
+		
+		PROC
+		PROC_QUARIS_NCC_IfWasOnstageSetOutOfPartyNoncombatantWasOnstage((CHARACTER)_Character)
+		AND
+		// This DB *might* be out-of-date by a frame or two?
+		// But it's ok if this check is not airtight; the knocked-down bug can still be
+		// remedied by putting the character off-stage and bringing them back again.
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(0)
+		THEN
+		DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character, 1);
+		
+		PROC
+		PROC_QUARIS_NCC_IfWasOffstageSetOutOfPartyNoncombatantWasOffstage((CHARACTER)_Character)
+		AND
+		// This DB *might* be out-of-date by a frame or two?
+		// But it's ok if this check is not airtight; the knocked-down bug can still be
+		// remedied by putting the character off-stage and bringing them back again.
+		DB_QUARIS_NCC_AreNoncombatantsOffstage(1)
+		THEN
+		DB_QUARIS_NCC_OutOfPartyNoncombatants(_Character, 0);
+		ApplyStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR", 6.0);
 	}
 	EXIT
 	{
@@ -520809,19 +520844,17 @@ Goal(868)
 		THEN
 		PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Summon);
 		
-		IF
-		CharacterLeftParty(_Character)
-		THEN
-		// Weirdly, someone leaving the party seems to make them move on-stage automatically?
-		// But do it explicitly too, just it case this helps handle something I'm not anticipating
-		PROC_QUARIS_NCC_MoveOnstage(_Character);
-		
 		PROC
 		PROC_QUARIS_NCC_MoveOnstage((CHARACTER)_Character)
 		THEN
 		SetOnStage(_Character, 1);
 		RemoveStatus(_Character, "QUARIS_NCC_IS_OFFSTAGE_NONCOMBATANT_VISUAL_INDICATOR");
 		ApplyStatus(_Character, "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR", 6.0);
+		PROC_QUARIS_NCC_HandleKnockedDownBugAfterMovingBackOnstage(_Character);
+		
+		PROC
+		PROC_QUARIS_NCC_HandleKnockedDownBugAfterMovingBackOnstage((CHARACTER)_Character)
+		THEN
 		// Fix to a softlock: When KnockedDown/Incapacitated/etc statuses are removed by
 		// moving off-stage then that character's hotbar would remain permanently disabled.
 		// But adding and (ideally very quickly) removing a hotbar-disabling status after
