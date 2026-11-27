@@ -520467,7 +520467,7 @@ Goal(862)
 		// in case a combat is occurring halfway across the map.
 		// (Plus it's much simpler to implement.)
 		
-		// Game load => give toggle
+		// Game load => set up toggle
 		
 		IF
 		LevelLoaded(_)
@@ -520479,31 +520479,49 @@ Goal(862)
 		AND
 		DB_PartyMembers(_PartyMember)
 		THEN
-		PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
+		PROC_QUARIS_NCC_SetUpIsNoncombatantToggle(_PartyMember);
 		
-		// Character joins party => give toggle
+		// Character joins party => set up toggle
 		
 		IF
 		CharacterJoinedParty(_PartyMember)
 		AND
+		// probably unnecessary, but just in case of shennanigans with definitions not exactly matching...
 		DB_PartyMembers(_PartyMember)
 		THEN
-		PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
+		PROC_QUARIS_NCC_SetUpIsNoncombatantToggle(_PartyMember);
 		
-		// Give toggle
+		// Set up toggle
 		
 		PROC
-		PROC_QUARIS_NCC_GiveIsNoncombatantToggle((CHARACTER)_PartyMember)
+		PROC_QUARIS_NCC_SetUpIsNoncombatantToggle((CHARACTER)_PartyMember)
 		AND
 		IsSummon(_PartyMember, 0)
 		AND
 		IsPartyFollower(_PartyMember, 0)
 		AND
 		NOT QRY_QUARIS_NCC_IsAvatar(_PartyMember)
+		THEN
+		PROC_QUARIS_NCC_GiveIsNoncombatantToggleIfNotPresent(_PartyMember);
+		PROC_QUARIS_NCC_DisableIsNoncombatantToggleIfCombatInProgress(_PartyMember);
+		
+		// Give toggle
+		
+		PROC
+		PROC_QUARIS_NCC_GiveIsNoncombatantToggleIfNotPresent((CHARACTER)_PartyMember)
 		AND
 		HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 0)
 		THEN
 		AddPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
+		
+		// Disable toggle if combat in progress
+		
+		PROC
+		PROC_QUARIS_NCC_DisableIsNoncombatantToggleIfCombatInProgress((CHARACTER)_PartyMember)
+		AND
+		DB_QUARIS_NCC_IsAnyCombatInProgress(1)
+		THEN
+		ApplyStatus(_PartyMember, "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL", -1.0);
 	}
 	EXIT
 	{
@@ -520837,6 +520855,7 @@ Goal(869)
 		THEN
 		NOT DB_QUARIS_NCC_IsAnyCombatInProgress(0);
 		DB_QUARIS_NCC_IsAnyCombatInProgress(1);
+		PROC_QUARIS_NCC_DisableNoncombatantToggle();
 		
 		IF
 		CombatEnded(_Combat)
@@ -520845,6 +520864,7 @@ Goal(869)
 		THEN
 		NOT DB_QUARIS_NCC_IsAnyCombatInProgress(1);
 		DB_QUARIS_NCC_IsAnyCombatInProgress(0);
+		PROC_QUARIS_NCC_EnableNoncombatantToggle();
 		
 		QRY
 		QRY_QUARIS_NCC_IsAnyPartyMemberInCombat()
@@ -520862,6 +520882,36 @@ Goal(869)
 		IsInCombat(_PartyMember, 1)
 		THEN
 		DB_NOOP(1);
+		
+		PROC
+		PROC_QUARIS_NCC_DisableNoncombatantToggle()
+		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 1)
+		THEN
+		ApplyStatus(_PartyMember, "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL", -1.0);
+		
+		PROC
+		PROC_QUARIS_NCC_EnableNoncombatantToggle()
+		AND
+		DB_PartyMembers(_PartyMember)
+		AND
+		HasAppliedStatus(_PartyMember, "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL", 1)
+		THEN
+		RemoveStatus(_PartyMember, "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL");
+		// Having OnStatusRemove in EnabledContext doesn't trigger the toggle re-enabling for some reason,
+		// but applying an empty status (to trigger OnStatusApplied) does trigger the toggle re-enabling
+		// so keep doing this as a workaround
+		ApplyStatus(_PartyMember, "QUARIS_NCC_ENABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL", 0.1);
+		RealtimeObjectTimerLaunch(_PartyMember, "QUARIS_NCC_ENABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL_RemoveDelay", 0);
+		
+		IF
+		ObjectTimerFinished(_PartyMember, "QUARIS_NCC_ENABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL_RemoveDelay")
+		AND
+		IsOnStage(_PartyMember, 1)
+		THEN
+		RemoveStatus(_PartyMember, "QUARIS_NCC_ENABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL");
 	}
 	EXIT
 	{

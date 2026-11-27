@@ -65,3 +65,15 @@ data "StackId" "QUARIS_NCC_RECENTLY_MOVED_ON_STAGE_VISUAL_INDICATOR"
 data "TickType" "StartTurn"
 data "StatusPropertyFlags" "DisableOverhead;DisableCombatlog"
 
+new entry "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL"
+type "StatusData"
+data "StatusType" "EFFECT"
+data "StackId" "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL"
+data "StatusPropertyFlags" "DisableOverhead;DisableCombatlog;DisablePortraitIndicator"
+
+new entry "QUARIS_NCC_ENABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL"
+type "StatusData"
+data "StatusType" "EFFECT"
+data "StackId" "QUARIS_NCC_ENABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL"
+data "StatusPropertyFlags" "DisableOverhead;DisableCombatlog;DisablePortraitIndicator"
+

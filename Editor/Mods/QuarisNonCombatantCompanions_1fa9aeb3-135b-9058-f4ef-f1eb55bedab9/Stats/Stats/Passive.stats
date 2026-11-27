@@ -15,6 +15,8 @@
         <field name="PriorityOrder" type="IntegerTableFieldDefinition" value="-99" />
         <field name="LoreDescription" type="TranslatedStringTableFieldDefinition" handle="hc5532a28g83d0g82dcg6ba3g8e180fa18538" version="5" />
         <field name="TooltipPermanentWarnings" type="StringTableFieldDefinition" value="4854764b-6d9d-4e59-9736-7ecf9d4e1f29" />
+        <field name="EnabledConditions" type="StringTableFieldDefinition" value="not HasStatus('QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL');" />
+        <field name="EnabledContext" type="EnumerationListTableFieldDefinition" value="OnStatusApplied;OnStatusRemove" enumeration_type_name="StatsFunctorContext" version="1" />
       </fields>
     </stat_object>
     <stat_object is_substat="false">

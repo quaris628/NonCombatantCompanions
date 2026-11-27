@@ -10,7 +10,7 @@ KBSECTION
 // in case a combat is occurring halfway across the map.
 // (Plus it's much simpler to implement.)
 
-// Game load => give toggle
+// Game load => set up toggle
 
 IF
 LevelLoaded(_)
@@ -22,31 +22,49 @@ TimerFinished("QUARIS_NCC_IsNoncombatantToggle_InitDelay")
 AND
 DB_PartyMembers(_PartyMember)
 THEN
-PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
+PROC_QUARIS_NCC_SetUpIsNoncombatantToggle(_PartyMember);
 
-// Character joins party => give toggle
+// Character joins party => set up toggle
 
 IF
 CharacterJoinedParty(_PartyMember)
 AND
+// probably unnecessary, but just in case of shennanigans with definitions not exactly matching...
 DB_PartyMembers(_PartyMember)
 THEN
-PROC_QUARIS_NCC_GiveIsNoncombatantToggle(_PartyMember);
+PROC_QUARIS_NCC_SetUpIsNoncombatantToggle(_PartyMember);
 
-// Give toggle
+// Set up toggle
 
 PROC
-PROC_QUARIS_NCC_GiveIsNoncombatantToggle((CHARACTER)_PartyMember)
+PROC_QUARIS_NCC_SetUpIsNoncombatantToggle((CHARACTER)_PartyMember)
 AND
 IsSummon(_PartyMember, 0)
 AND
 IsPartyFollower(_PartyMember, 0)
 AND
 NOT QRY_QUARIS_NCC_IsAvatar(_PartyMember)
+THEN
+PROC_QUARIS_NCC_GiveIsNoncombatantToggleIfNotPresent(_PartyMember);
+PROC_QUARIS_NCC_DisableIsNoncombatantToggleIfCombatInProgress(_PartyMember);
+
+// Give toggle
+
+PROC
+PROC_QUARIS_NCC_GiveIsNoncombatantToggleIfNotPresent((CHARACTER)_PartyMember)
 AND
 HasPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle", 0)
 THEN
 AddPassive(_PartyMember, "QUARIS_NCC_IsNoncombatantToggle");
+
+// Disable toggle if combat in progress
+
+PROC
+PROC_QUARIS_NCC_DisableIsNoncombatantToggleIfCombatInProgress((CHARACTER)_PartyMember)
+AND
+DB_QUARIS_NCC_IsAnyCombatInProgress(1)
+THEN
+ApplyStatus(_PartyMember, "QUARIS_NCC_DISABLE_NONCOMBATANT_TOGGLE_HIDDEN_TECHNICAL", -1.0);
 EXITSECTION
 
 ENDEXITSECTION
